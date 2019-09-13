@@ -1,0 +1,9 @@
+container:
+  volume: ./examples:/config
+  image: dukov/image_gen:latest
+  containerRuntime: docker
+  privileged: false
+builder:
+  userDataFileName: user-data
+  networkConfigFileName : network-config
+  outputMetadataFileName: output-metadata.yaml
