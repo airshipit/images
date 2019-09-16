@@ -13,13 +13,19 @@
 - project:
     check:
       jobs:
-        - noop
+        - airship-images-functional
     gate:
       jobs:
-        - noop
+        - airship-images-functional
     post:
       jobs:
         - images-upload-git-mirror
+
+- job:
+    name: airship-images-functional
+    pre-run: playbooks/airship-airshipctl-deploy-docker.yaml
+    run: playbooks/airship-images-test.yaml
+    nodeset: airship-images-single-node
 
 - job:
     name: images-upload-git-mirror
@@ -31,6 +37,12 @@
       - name: git_mirror_credentials
         secret: images-airshipit-github-secret
         pass-to-parent: true
+
+- nodeset:
+    name: airship-images-single-node
+    nodes:
+      - name: primary
+        label: ubuntu-bionic
 
 - secret:
     name: images-airshipit-github-secret
