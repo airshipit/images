@@ -91,3 +91,30 @@
           42KNrmxDI03/UT/t2dws//TnRMiMbSYh5H+cswD3/oBa95v3aNYPEmTwrmV1ZmFA503h0
           t7f0OWCVHEPh3ye0V79ch9N3pGVwYCMppv9VZLv4p9TWwn05sBWhPO5YUp3hjm/ndXMo9
           zQoJltyhWXRMAqvC2Hr1oh6yCJoWBIai+7017Ylk0EwVwosiV4GWo1B5g5PnZc=
+
+- secret:
+    name: airship_images_quay_creds
+    data:
+      username: !encrypted/pkcs1-oaep
+        - JRjXyCt5TL+vLN85fTbMdn5MV1FmBLwTvUxwHTwNoupMtJxB/UIO6ZTNi/Z2rPHbd+Xn8
+          ocZfo6xwJIWBIVARMvyRzw5BiJMkXbchaGRZTxV3hBTXpCODi3Q//gksMEPC7qIvOEC3t
+          ZoAcKUdyHnbSaeW/SkNRdw9Rf1Xw1Asi3Y5v0a6XFJIvBNW5jfQk0gqQfIN5q2TwpKlea
+          /IdUJOngXL6HwIB5P72omJIjw7cnr8jl/jCqsksGqdDXry9SDcdZ6a6bca4ERnugG3J2l
+          PI1tmshhSH//Tx4vTpc+1H56LeuifSBLmD5tSlPDpmRjLsBiEMMXxl78PRuPgJV/OqKB+
+          /ocNPHR+JHEKlyQalUGJCukrOEADUkB2KT46VS9UMNgq7k7Gjg2/xYZ+OiygFxnG1g7NK
+          2TymguZyjKOA4iShmANpjXG7Djvd95U+b7X1cMZh2txEroxBXEF7ipwMFkf/ZCsOUj252
+          DXWTmVUcPg3qDqJFOKPE8CjidsgOTx6e9TOYnHtGVrx7jfhpbiDRnK//r7vB7K+6gd8mH
+          UI9tQjhiJdDO15wcMdP/yxRaTalcnuYtkuNIsWRNkG6e65OlOXU09WrCJUI6Er4pwdtoO
+          C9yc4J4jIDxXzMRkaFcFM7788dTqVtUbkPXNrlNer9+bm0a3ICRV+hwFx9tOZY=
+      password: !encrypted/pkcs1-oaep
+        - jkqP17SRq99CN+bd+Bn2M+zgzdTJ1KIix/yRGfR4eoZV5Q2k7Tttclujfa00BuRcdiw7P
+          w35RTJHqCG863wdKFG8MVbQ8sYUy3CrXnP/or6+ogAHW6yBO6HijL9Y6aQbLv/id8bnwL
+          gK+xLc7dfRYTn4G4aBZZRpOaG4tR9qs8nozo6E4ZzbiK/fZB962odoXXIaFBKc6UOTrfk
+          r83Y8UDzqiiGbVcdopIW8EYVIdQ/CuQXej3xhcO6OP/vadz9A6EFP0/U5bcdCsjqr2N+L
+          5pUhCpedFgwvGDXbVYRGI7kRa3vCAq0qFLMDedTCm9KnzJwsCWZz+KXUGy7bo6k0t344E
+          ZO4uGqf0JEU9DmK734B06MuB0DMob2r57LWLmrVD3SzufyCPRuQx7OPycLKkzRSRRuv7x
+          /6STdimjGQXAed05tDyG58wW4xH2G7RUPquYiYNUPmnZjMA8tId4Z6Hy4cwP0okZTVBsl
+          EBCgj+OW/nhkmXsyrvtU8Ht+lqJ1JBV9nsLXg6etZ6F+t2YhkXLeYM+NMcYd/YblnqVfP
+          AjTkj/BXDxrcdOO7ZdTwlTZCJl8+bCL7enSzPdQ/JcA1Tg3PWdV5zH1HUXF8CD366Vll3
+          z8JKyfkkD/Y37wO9FyInaN66enQljC7hbO/iJ/y5aGdYmfm2WN8TFd8mvuuydQ=
+
