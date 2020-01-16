@@ -20,6 +20,7 @@
     post:
       jobs:
         - images-upload-git-mirror
+        - airship-images-publish
 
 - job:
     name: airship-images-functional
@@ -37,6 +38,17 @@
       - name: git_mirror_credentials
         secret: images-airshipit-github-secret
         pass-to-parent: true
+
+- job:
+    name: airship-images-publish
+    nodeset: airship-images-single-node
+    timeout: 1800
+    post-timeout: 1800
+    pre-run: playbooks/airship-airshipctl-deploy-docker.yaml
+    run: playbooks/airship-images-publish.yaml
+    secrets:
+      - name: airship_images_quay_creds
+        secret: airship_images_quay_creds
 
 - nodeset:
     name: airship-images-single-node
