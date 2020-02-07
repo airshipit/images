@@ -15,6 +15,10 @@
 
 - hosts: primary
   tasks:
+    - name: Install python-docker module
+      apt:
+        name: python-docker
+        state: present
     - name: Publish images
       block:
         - docker_login:
