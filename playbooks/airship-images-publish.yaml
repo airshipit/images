@@ -19,6 +19,8 @@
       apt:
         name: python-docker
         state: present
+      become: true
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
     - name: Publish images
       block:
         - docker_login:
