@@ -60,7 +60,7 @@ function _make_iso(){
     -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
-    -volid "DEBIAN_CUSTOM" \
+    -volid "config-2" \
     --grub2-boot-info \
     --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
     -eltorito-boot \
@@ -82,6 +82,7 @@ function _make_metadata(){
 function _check_input_data_set_vars(){
   CHROOT="${HOME}/LIVE_BOOT/chroot"
   export CHROOT
+  export CLOUD_DATA_LATEST="${HOME}/LIVE_BOOT/image/openstack/latest"
   echo "${BUILDER_CONFIG:?}"
   if [ ! -f "${BUILDER_CONFIG}" ]
   then

@@ -25,9 +25,11 @@ _debootstrap
 
 chroot "${CHROOT}" < "${BASEDIR}/packages_install.sh"
 
-cat "${NET_CONFIG}" >> "${CHROOT}/etc/cloud/cloud.cfg.d/network-config.cfg"
-cat "${USER_DATA}" >> "${CHROOT}/etc/cloud/cloud.cfg.d/user-data.cfg"
-echo "datasource_list: [ NoCloud, None ]" > \
+mkdir -p "${CLOUD_DATA_LATEST}"
+cp "${BASEDIR}/meta_data.json" "${CLOUD_DATA_LATEST}"
+cp "${USER_DATA}" "${CLOUD_DATA_LATEST}/user_data"
+cp "${NET_CONFIG}" "${CLOUD_DATA_LATEST}/network_data.json"
+echo "datasource_list: [ ConfigDrive, None ]" > \
     "${CHROOT}/etc/cloud/cloud.cfg.d/95_no_cloud_ds.cfg"
 
 _make_kernel

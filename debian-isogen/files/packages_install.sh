@@ -25,7 +25,8 @@ apt-get update && apt-get install  -y --no-install-recommends \
    curl \
    gnupg \
    iptables
-echo "deb http://ftp.debian.org/debian unstable main" >> /etc/apt/sources.list
+UNSTABLE_REPO="deb http://ftp.debian.org/debian unstable main"
+echo "${UNSTABLE_REPO}" >> /etc/apt/sources.list.d/unstable.list
 apt-get update && apt-get install  -y --no-install-recommends \
       cloud-init
-rm -rf /var/lib/apt/lists/*
+rm -rf /etc/apt/sources.list.d/unstable.list /var/lib/apt/lists/*
