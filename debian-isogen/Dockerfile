@@ -24,19 +24,16 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
       org.opencontainers.image.licenses='Apache-2.0'
 
 RUN apt-get update && apt-get install -y \
+    curl\
     debootstrap \
     grub-efi-amd64-bin \
     grub-pc-bin \
     mtools \
     squashfs-tools \
     xorriso \
-    curl\
     && rm -rf /var/lib/apt/lists/*
 
-COPY ./files/build.sh /builder/
-COPY ./files/functions.sh /builder/
-COPY ./files/grub.conf /builder/
-COPY ./files/packages_install.sh /builder/
+COPY files/ /builder/
 
 RUN curl -L https://github.com/mikefarah/yq/releases/download/2.4.0/yq_linux_amd64 -o /bin/yq \
     && chmod +x /bin/yq
