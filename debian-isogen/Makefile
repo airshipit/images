@@ -80,6 +80,7 @@ build_isogen:
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
 	docker build . --quiet \
+	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
@@ -94,6 +95,7 @@ ifeq ($(USE_PROXY), true)
 	--build-arg GIT_COMMIT=$(COMMIT) > $(BUILD_DIR)/image_id
 else
 	docker build . --quiet \
+	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
