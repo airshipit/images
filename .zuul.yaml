@@ -36,7 +36,7 @@
       git_mirror_repository: airshipit/images
     secrets:
       - name: git_mirror_credentials
-        secret: images-airshipit-github-secret
+        secret: images_airshipit_github_secret
         pass-to-parent: true
 
 - job:
@@ -57,7 +57,7 @@
         label: ubuntu-bionic
 
 - secret:
-    name: images-airshipit-github-secret
+    name: images_airshipit_github_secret
     data:
       user: git
       host: github.com
