@@ -14,9 +14,11 @@
     check:
       jobs:
         - airship-images-functional
+        - airship-images-build
     gate:
       jobs:
         - airship-images-functional
+        - airship-images-build
     post:
       jobs:
         - images-upload-git-mirror
@@ -24,7 +26,7 @@
 
 - job:
     name: airship-images-functional
-    pre-run: playbooks/airship-airshipctl-deploy-docker.yaml
+    pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-test.yaml
     nodeset: airship-images-single-node
 
@@ -40,11 +42,17 @@
         pass-to-parent: true
 
 - job:
+    name: airship-images-build
+    nodeset: airship-images-single-node
+    pre-run: playbooks/airship-images-deploy-docker.yaml
+    run: playbooks/airship-images-build.yaml
+
+- job:
     name: airship-images-publish
     nodeset: airship-images-single-node
     timeout: 1800
     post-timeout: 1800
-    pre-run: playbooks/airship-airshipctl-deploy-docker.yaml
+    pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-publish.yaml
     secrets:
       - name: airship_images_quay_creds
