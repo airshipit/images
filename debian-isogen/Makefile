@@ -79,7 +79,7 @@ build_isogen:
 	mkdir -p $(BUILD_DIR)
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
-	docker build . --quiet \
+	docker build . \
 	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -92,17 +92,18 @@ ifeq ($(USE_PROXY), true)
 	--build-arg HTTPS_PROXY=$(PROXY) \
 	--build-arg no_proxy=$(NO_PROXY) \
 	--build-arg NO_PROXY=$(NO_PROXY) \
-	--build-arg GIT_COMMIT=$(COMMIT) > $(BUILD_DIR)/image_id
+	--build-arg GIT_COMMIT=$(COMMIT)
 else
-	docker build . --quiet \
+	docker build . \
 	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=$(IMAGE_NAME)" \
-	--build-arg GIT_COMMIT=$(COMMIT) > $(BUILD_DIR)/image_id
+	--build-arg GIT_COMMIT=$(COMMIT)
 endif
+	echo $(shell docker images -q $(IMAGE)) > $(BUILD_DIR)/image_id
 else
 	echo $(IMAGE_ID) > $(BUILD_DIR)/image_id
 endif

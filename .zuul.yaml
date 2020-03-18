@@ -28,6 +28,7 @@
     name: airship-images-functional
     pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-test.yaml
+    post-run: playbooks/airship-collect-logs.yaml
     nodeset: airship-images-single-node
 
 - job:
@@ -46,6 +47,7 @@
     nodeset: airship-images-single-node
     pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-build.yaml
+    post-run: playbooks/airship-collect-logs.yaml
 
 - job:
     name: airship-images-publish

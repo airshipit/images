@@ -1,0 +1,45 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: populate service facts
+  service_facts:
+
+- name: set runtime logs dir
+  set_fact:
+    runtime_logs_dir: "{{ logs_dir }}/runtime"
+
+- name: ensure directory for runtime logs exists
+  file:
+    state: directory
+    path: "{{ runtime_logs_dir }}"
+
+- name: dump docker logs
+  shell: |-
+    journalctl --unit "docker" --no-pager > "{{ runtime_logs_dir }}/docker.log"
+  when: ansible_facts.services['docker.service'] is defined
+  args:
+    executable: /bin/bash
+  become: true
+
+- name: dump containerd logs
+  shell: |-
+    journalctl --unit "containerd" --no-pager > "{{ runtime_logs_dir }}/containerd.log"
+  when: ansible_facts.services['containerd.service'] is defined
+  args:
+    executable: /bin/bash
+  become: true
+
+- name: "Downloads logs to executor"
+  synchronize:
+    src: "{{ runtime_logs_dir }}"
+    dest: "{{ zuul.executor.log_root }}/{{ inventory_hostname }}"
+    mode: pull
