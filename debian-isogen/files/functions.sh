@@ -23,6 +23,16 @@ function _debootstrap (){
     http://ftp.debian.org/debian/
 }
 
+function _use_ubuntu_net_device_names (){
+# this prioritizes the path policy over slot
+# giving ubuntu compatible interface names
+  cat <<EOF>"${HOME}"/LIVE_BOOT/chroot/usr/lib/systemd/network/99-default.link
+[Link]
+NamePolicy=kernel database onboard path slot
+MACAddressPolicy=persistent
+EOF
+}
+
 function _make_kernel(){
   mkdir -p "${HOME}"/LIVE_BOOT/{scratch,image/live}
   mksquashfs \

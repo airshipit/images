@@ -24,9 +24,22 @@ apt-get update && apt-get install  -y --no-install-recommends \
    openssh-server \
    curl \
    gnupg \
-   iptables
+   iptables \
+   ifenslave \
+   bridge-utils \
+   tcpdump \
+   iputils-ping \
+   vlan
 UNSTABLE_REPO="deb http://ftp.debian.org/debian unstable main"
 echo "${UNSTABLE_REPO}" >> /etc/apt/sources.list.d/unstable.list
+
+# ensure we support bonding and 802.1q
+
+echo 'bonding' >> /etc/modules
+echo '8021q' >> /etc/modules
+
 apt-get update && apt-get install  -y --no-install-recommends \
       cloud-init
 rm -rf /etc/apt/sources.list.d/unstable.list /var/lib/apt/lists/*
+
+

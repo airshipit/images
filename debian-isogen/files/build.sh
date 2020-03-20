@@ -25,6 +25,8 @@ _debootstrap
 
 chroot "${CHROOT}" < "${BASEDIR}/packages_install.sh"
 
+_use_ubuntu_net_device_names
+
 mkdir -p "${CLOUD_DATA_LATEST}"
 cp "${BASEDIR}/meta_data.json" "${CLOUD_DATA_LATEST}"
 cp "${USER_DATA}" "${CLOUD_DATA_LATEST}/user_data"
