@@ -30,7 +30,7 @@ _use_ubuntu_net_device_names
 mkdir -p "${CLOUD_DATA_LATEST}"
 cp "${BASEDIR}/meta_data.json" "${CLOUD_DATA_LATEST}"
 cp "${USER_DATA}" "${CLOUD_DATA_LATEST}/user_data"
-cp "${NET_CONFIG}" "${CLOUD_DATA_LATEST}/network_data.json"
+yq r -j "${NET_CONFIG}" > "${CLOUD_DATA_LATEST}/network_data.json"
 echo "datasource_list: [ ConfigDrive, None ]" > \
     "${CHROOT}/etc/cloud/cloud.cfg.d/95_no_cloud_ds.cfg"
 
