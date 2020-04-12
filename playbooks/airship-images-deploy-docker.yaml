@@ -14,5 +14,5 @@
 
 - hosts: all
   roles:
-    - install-docker
+    - ensure-docker
     - airship-images-configure-docker
