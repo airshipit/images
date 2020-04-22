@@ -18,8 +18,9 @@
     - name: Install python-docker module
       apt:
         pkg:
-        - python-docker
-        - python3-requests
+          - python-docker
+          - python3-requests
+          - pass
         state: present
       become: true
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

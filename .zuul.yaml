@@ -32,17 +32,6 @@
     nodeset: airship-images-single-node
 
 - job:
-    name: images-upload-git-mirror
-    parent: upload-git-mirror
-    description: Mirrors airship/images to airshipit/images
-    vars:
-      git_mirror_repository: airshipit/images
-    secrets:
-      - name: git_mirror_credentials
-        secret: images_airshipit_github_secret
-        pass-to-parent: true
-
-- job:
     name: airship-images-build
     nodeset: airship-images-single-node
     pre-run: playbooks/airship-images-deploy-docker.yaml
@@ -59,6 +48,17 @@
     secrets:
       - name: airship_images_quay_creds
         secret: airship_images_quay_creds
+
+- job:
+    name: images-upload-git-mirror
+    parent: upload-git-mirror
+    description: Mirrors airship/images to airshipit/images
+    vars:
+      git_mirror_repository: airshipit/images
+    secrets:
+      - name: git_mirror_credentials
+        secret: images_airshipit_github_secret
+        pass-to-parent: true
 
 - nodeset:
     name: airship-images-single-node
