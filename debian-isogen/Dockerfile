@@ -39,9 +39,3 @@ RUN curl -L https://github.com/mikefarah/yq/releases/download/2.4.0/yq_linux_amd
     && chmod +x /bin/yq
 
 CMD /bin/bash /builder/build.sh
-
-RUN useradd airship --create-home --shell=/bin/bash
-
-USER airship
-
-WORKDIR /home/airship/

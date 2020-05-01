@@ -14,9 +14,3 @@ RUN set -ex ;\
 FROM ubuntu:18.04 as dist
 
 COPY --from=downloader /tmp/ironic-python-agent /
-
-RUN useradd airship --create-home --shell=/bin/bash
-
-USER airship
-
-WORKDIR /home/airship/
