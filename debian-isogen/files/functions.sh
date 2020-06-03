@@ -18,19 +18,11 @@ function _debootstrap (){
   debootstrap \
     --arch=amd64 \
     --variant=minbase \
-    buster \
+    --foreign \
+    focal \
     "${HOME}"/LIVE_BOOT/chroot \
-    http://ftp.debian.org/debian/
-}
-
-function _use_ubuntu_net_device_names (){
-# this prioritizes the path policy over slot
-# giving ubuntu compatible interface names
-  cat <<EOF>"${HOME}"/LIVE_BOOT/chroot/usr/lib/systemd/network/99-default.link
-[Link]
-NamePolicy=kernel database onboard path slot
-MACAddressPolicy=persistent
-EOF
+    http://archive.ubuntu.com/ubuntu/
+  chroot "${HOME}"/LIVE_BOOT/chroot /debootstrap/debootstrap --second-stage
 }
 
 function _make_kernel(){
@@ -49,7 +41,7 @@ function _make_kernel(){
 function _grub_install (){
   cp /builder/grub.conf "${HOME}"/LIVE_BOOT/scratch/grub.cfg
 
-  touch "${HOME}/LIVE_BOOT/image/DEBIAN_CUSTOM"
+  touch "${HOME}/LIVE_BOOT/image/UBUNTU_FOCAL_CUSTOM"
 
   grub-mkstandalone \
     --format=i386-pc \
@@ -79,14 +71,14 @@ function _make_iso(){
         -boot-load-size 4 \
         -boot-info-table \
         --eltorito-catalog boot/grub/boot.cat \
-    -output "/config/debian-custom.iso" \
+    -output "/config/ubuntu-focal.iso" \
     -graft-points \
         "${HOME}/LIVE_BOOT/image" \
         /boot/grub/bios.img="${HOME}/LIVE_BOOT/scratch/bios.img"
 }
 
 function _make_metadata(){
-  echo "bootImagePath: ${2:?}/debian-custom.iso" > "${1:?}"
+  echo "bootImagePath: ${2:?}/ubuntu-focal.iso" > "${1:?}"
 }
 
 function _check_input_data_set_vars(){
