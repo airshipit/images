@@ -1,0 +1,28 @@
+tarred_charts:
+  - url: https://github.com/project-azorian/rook-ceph-aio/raw/master/rook-ceph-aio/charts/rook-ceph-0.0.1.tgz
+helm_repos:
+  - repo: stable
+    url: https://kubernetes-charts.storage.googleapis.com
+    name: mariadb
+    version: 7.3.14
+  - repo: rook-release
+    url: https://charts.rook.io/release
+    name: rook-ceph
+    version: v1.3.6
+git_repos:
+  - name: helm-stable
+    path: stable/prometheus
+    url: https://github.com/helm/charts
+    sha: 79066e1f0f5ce735aeb4783f2adf4b85992d15de
+    # Note: refspec is only needed when if the given sha is not already available
+    refspec: refs/heads/master
+  - name: openstack-helm
+    path: keystone
+    url: https://github.com/openstack/openstack-helm
+    sha: 30c9f003d227b799c636458dea161e24d5823c33
+    chart_version: 1.2.3
+    dependencies:
+      - name: openstack-helm-infra
+        path: helm-toolkit
+        url: https://github.com/openstack/openstack-helm-infra
+        sha: b1e66fd308b6bc9df090aebb5b3807a0df2d87dd

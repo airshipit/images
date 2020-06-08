@@ -1,0 +1,18 @@
+---
+- name: clone dependency repo
+  git:
+    dest: /tmp/{{ chart_dependency["name"] }}
+    repo: "{{ chart_dependency['url'] }}"
+    version: "{{ chart_dependency['sha'] | default('HEAD') }}"
+    refspec: "{{ chart_dependency['refspec'] | default('refs/heads/master') }}"
+    depth: 1
+
+- name: ensure the parent's charts directory exists
+  file:
+    path: /tmp/{{ chart["name"] }}/{{ chart["path"] }}/charts
+    state: directory
+
+- name: move dependency into parent's charts directory
+  local_action: >-
+    command cp -r /tmp/{{ chart_dependency["name"] }}/{{ chart_dependency["path"] }}
+                  /tmp/{{ chart["name"] }}/{{ chart["path"] }}/charts

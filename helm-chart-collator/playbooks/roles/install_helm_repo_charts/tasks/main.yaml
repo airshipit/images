@@ -1,0 +1,8 @@
+---
+- name: setup repositories
+  command: helm repo add {{ chart["repo"] }} {{ chart["url"] }}
+
+- name: pull charts
+  command: helm pull {{ chart["repo"] }}/{{ chart["name"] }} \
+    --destination=/charts \
+    --version={{ chart["version"] }}

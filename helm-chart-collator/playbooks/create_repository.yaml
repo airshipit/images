@@ -1,0 +1,33 @@
+---
+- hosts: all
+  tasks:
+
+  - name: create charts directory
+    file:
+      path: /charts
+      state: directory
+
+  - include_role:
+      name: ensure_helm
+
+  - include_role:
+      name: install_helm_repo_charts
+    loop: "{{ CHARTS | from_yaml | json_query('helm_repos[*]') | default([], true) }}"
+    loop_control:
+      loop_var: chart
+
+  - include_role:
+      name: install_git_repo_charts
+    loop: "{{ CHARTS | from_yaml | json_query('git_repos[*]') | default([], true) }}"
+    loop_control:
+      loop_var: chart
+
+  - include_role:
+      name: install_tarred_charts
+    loop: "{{ CHARTS | from_yaml | json_query('tarred_charts[*]') | default([], true) }}"
+    loop_control:
+      loop_var: chart
+
+  - name: create index.yaml
+    shell:
+      cmd: helm repo index /charts > /charts/index.yaml

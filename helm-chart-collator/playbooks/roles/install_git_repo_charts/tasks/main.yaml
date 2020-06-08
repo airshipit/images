@@ -1,0 +1,30 @@
+---
+- name: clone repos
+  git:
+    dest: /tmp/{{ chart['name'] }}
+    repo: "{{ chart['url'] }}"
+    version: "{{ chart['sha'] | default('HEAD') }}"
+    refspec: "{{ chart['refspec'] | default('refs/heads/master') }}"
+    depth: 1
+
+- include_tasks: dependencies.yaml
+  loop: "{{ chart['dependencies'] | default([]) }}"
+  loop_control:
+    loop_var: chart_dependency
+
+- name: create unique chart version
+  shell:
+    executable: /bin/bash
+    cmd: |
+      sha=$(sha256sum <<< "{{ chart | to_json }}" | cut -f1 -d' ')
+      version=$(helm show chart /tmp/{{ chart['name'] | quote }}/{{ chart['path'] | quote }} | yq -r .version)
+      printf "%s+source.%s" "$version" "$sha"
+  register: chart_version
+
+- name: package charts into /charts directory
+  shell:
+    cmd: >
+      helm package --destination=/charts
+      {{ '--dependency-update' if not chart.get('dependencies') }}
+      {{ '--version=' + chart.get('chart_version', chart_version.stdout) }}
+      /tmp/{{ chart['name'] }}/{{ chart['path'] }}

@@ -1,0 +1,5 @@
+---
+- name: download chart
+  get_url:
+    dest: /charts
+    url: "{{ chart['url'] }}"

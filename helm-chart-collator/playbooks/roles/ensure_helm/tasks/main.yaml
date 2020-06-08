@@ -1,0 +1,12 @@
+---
+- name: download and unarchive helm
+  unarchive:
+    src: https://get.helm.sh/helm-v3.2.3-linux-amd64.tar.gz
+    remote_src: yes
+    dest: /
+
+- name: move helm into the path
+  command: mv /linux-amd64/helm /bin/helm
+
+- name: assert helm is executable
+  command: helm version
