@@ -5,7 +5,6 @@
     repo: "{{ chart['url'] }}"
     version: "{{ chart['sha'] | default('HEAD') }}"
     refspec: "{{ chart['refspec'] | default('refs/heads/master') }}"
-    depth: 1
 
 - include_tasks: dependencies.yaml
   loop: "{{ chart['dependencies'] | default([]) }}"

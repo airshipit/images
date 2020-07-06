@@ -5,7 +5,6 @@
     repo: "{{ chart_dependency['url'] }}"
     version: "{{ chart_dependency['sha'] | default('HEAD') }}"
     refspec: "{{ chart_dependency['refspec'] | default('refs/heads/master') }}"
-    depth: 1
 
 - name: ensure the parent's charts directory exists
   file:
