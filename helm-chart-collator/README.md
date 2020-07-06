@@ -11,7 +11,7 @@ Charts can be sourced from various locations. Each entry must be recorded in a
 user-defined file before building the image. When the list of charts has been created,
 the `build-image.sh` script can be used to create the image via the command:
 
-```
+```shell
 ./build-image.sh $CHARTSFILE
 ```
 
@@ -24,7 +24,6 @@ heading. Each listing must include the following:
 * `url`: The URL where the Helm Repo is hosted (e.g. `https://kubernetes-charts.storage.googleapis.com`)
 * `name`: The name of the desired chart (e.g. `mariadb`)
 * `version`: The version of the desired chart (e.g. `7.3.14`)
-
 
 ### Charts from Git Repos
 
@@ -54,6 +53,7 @@ require the following:
 ## Example
 
 The following shows an example file for including various helm charts:
+
 * rook-ceph as a tarball from a git repo
 * mariadb from the helm stable repo
 * rook-ceph from the rook repo
@@ -61,7 +61,7 @@ The following shows an example file for including various helm charts:
 * keystone from the openstack-helm git repo
   * The helm-toolkit is also pulled, since it is a dependency of keystone
 
-```
+```yaml
 tarred_charts:
   - url: https://github.com/project-azorian/rook-ceph-aio/raw/master/rook-ceph-aio/charts/rook-ceph-0.0.1.tgz
 helm_repos:
@@ -94,6 +94,6 @@ git_repos:
 
 Once this file has been created, the image can be built with the following:
 
-```
+```yaml
 ./build-image.sh charts.yaml
 ```
