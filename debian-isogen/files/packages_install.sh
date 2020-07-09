@@ -14,12 +14,12 @@
 # limitations under the License.
 
 set -xe
-echo "debian-live" > /etc/hostname
+echo "ubuntu-live" > /etc/hostname
 echo "127.0.0.1 localhost" > /etc/hosts
+echo "deb http://archive.ubuntu.com/ubuntu focal universe" >> /etc/apt/sources.list
 apt-get update && apt-get install  -y --no-install-recommends \
-   linux-image-amd64 \
+   linux-generic \
    live-boot \
-   cloud-init \
    systemd-sysv \
    apt-transport-https \
    openssh-server \
@@ -30,10 +30,20 @@ apt-get update && apt-get install  -y --no-install-recommends \
    bridge-utils \
    tcpdump \
    iputils-ping \
-   vlan
+   vlan \
+   locales \
+   lsb-release \
+   ebtables
 
 # ensure we support bonding and 802.1q
 echo 'bonding' >> /etc/modules
 echo '8021q' >> /etc/modules
+
+locale-gen en_US.UTF-8
+systemctl enable systemd-networkd
+echo 'br_netfilter' >> /etc/modules
+
+apt-get install  -y --no-install-recommends \
+   cloud-init
 
 rm -rf /var/lib/apt/lists/*
