@@ -1,0 +1,5 @@
+- name: "Finalise | Removing .pyc files"
+  shell:
+    cmd: |
+        find "/usr/" "/var/" \( -name "*.pyc" -o -name "__pycache__" \) -delete
+

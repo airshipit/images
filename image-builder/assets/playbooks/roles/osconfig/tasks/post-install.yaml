@@ -1,0 +1,97 @@
+- name: "POST-INSTALL | DNS sanity check"
+  shell:
+    executable: /bin/bash
+    cmd: |
+         set -e
+         proxy="{{ lookup('env', 'HTTP_PROXY') }}"
+         # Ensure proxy address is resolvable, if supplied as a domain name
+         if [[ -n $proxy ]]; then
+           # Extract proxy server address from url
+           proxy_address="$(echo "$proxy" | awk -F/ '{print $3}' | awk -F: '{print $1}')"
+           # If first letter of proxy address is a letter, verify that a DNS lookup is possible
+           if [[ $proxy_address == [a-zA-z]* ]]; then
+             echo "proxy check for '$proxy_address' ..."
+             nslookup $proxy_address > /dev/null || (
+               echo "Failed to resolve proxy '$proxy_address' with dns server '$(cat /etc/resolv.conf)'."
+               echo "Reconfigure DNS setting provided in the 'qcow' playbook to a DNS server that can resolve '$proxy_address'."
+               exit 1
+             )
+           fi
+         fi
+         echo "archive.ubuntu.com DNS check ..."
+         nslookup archive.ubuntu.com || (
+           echo "DNS lookup failure for archive.ubuntu.com with '$(cat /etc/resolv.conf)'"
+           exit 1
+         )
+
+- name: "POST-INSTALL | update source list"
+  apt:
+    update_cache: yes
+
+- name: "POST-INSTALL | generate locales"
+  shell: |
+        set -e
+        locale-gen en_US.UTF-8
+
+- name: "POST-INSTALL | Remove incomplete kernel install by multistrap"
+  shell: |
+        set -e
+        apt-get remove -y '^linux-image-.*'
+        apt-get remove -y '^linux-modules-.*'
+
+- name: "POST-INSTALL | install grub2 and kernel"
+  apt:
+    pkg:
+    - grub2
+    - grub-efi-amd64-signed
+    - efivar
+    - "{{ kernel.base_pkg }}"
+    - "{{ kernel.headers_pkg }}"
+    - kmod
+
+- name: "POST-INSTALL | grub-install LEGACY"
+  shell: |
+        set -e
+        grub-install --target=i386-pc --no-uefi-secure-boot --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=i386-pc --no-uefi-secure-boot --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
+  when: uefi is not defined
+
+- name: "POST-INSTALL | grub-install UEFI"
+  shell: |
+        set -e
+        grub-install --target=x86_64-efi --uefi-secure-boot --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=x86_64-efi --uefi-secure-boot --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
+  when: uefi is defined
+
+- name: "POST-INSTALL | generate grub cfg file"
+  shell: |
+        set -e
+        update-grub
+
+- name: "POST-INSTALL | install other user-requested packages, and kernel-dependent pkgs and ones that fail to install with multistrap"
+  apt:
+    pkg: "{{ post_install_package_list }}"
+
+- name: "POST-INSTALL | write root partition UUID to grub.cfg"
+  shell: |
+        set -e
+        cp -r /usr/lib/grub/* /boot/grub
+        blkid -s UUID -o value $(df -h | grep /$ | awk "{print \$1}") > /tmp/root_uuid
+        sed -i "s@root=/dev/nbd[0-9]p[0-9]@root=UUID=$(cat /tmp/root_uuid)@g" /boot/grub/grub.cfg
+        rm /tmp/root_uuid
+
+- name: "POST-INSTALL | write boot partition UUID to UEFI grub.cfg"
+  shell: |
+        set -e
+        blkid -s UUID -o value $(df -h | grep /boot$ | awk "{print \$1}") > /tmp/boot_uuid
+        echo "search.fs_uuid $(cat /tmp/boot_uuid) root hd0,gpt2" > /boot/efi/EFI/ubuntu/grub.cfg
+        echo 'set prefix=(\$root)'\''/grub'\''' >> /boot/efi/EFI/ubuntu/grub.cfg
+        echo 'configfile \$prefix/grub.cfg' >> /boot/efi/EFI/ubuntu/grub.cfg
+        rm /tmp/boot_uuid
+  when: uefi is defined
+
+- name: "POST-INSTALL | cleanup deb cache"
+  shell: |
+        set -e
+        rm /var/cache/apt/archives/*.deb
+

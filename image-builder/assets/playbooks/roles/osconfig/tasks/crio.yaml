@@ -1,0 +1,40 @@
+- name: "CRI-O | ensuring directory /etc/crio exists"
+  file:
+    path: "/etc/crio"
+    state: directory
+    mode: '0755'
+- name: "CRI-O | Setting up crio"
+  shell:
+    cmd: "crio config > /etc/crio/crio.conf"
+- name: "CRI-O | configure runc path"
+  ini_file:
+    path: /etc/crio/crio.conf
+    section: "crio.runtime.runtimes.runc"
+    option: runtime_path
+    value: "\"/usr/sbin/runc\""
+- name: "CRI-O | configure cgroup manager"
+  ini_file:
+    path: /etc/crio/crio.conf
+    section: "crio.runtime"
+    option: cgroup_manager
+    value: "\"systemd\""
+- name: "CRI-O | configure logs to also output to journald"
+  ini_file:
+    path: /etc/crio/crio.conf
+    section: "crio"
+    option: log_to_journald
+    value: "true"
+
+- name: "CRI-O | Disabling systemd unit"
+  systemd:
+    enabled: no
+    name: crio.service
+- name: "CRI-O | Ensuring systemd preset directory exists"
+  file:
+    path: "/etc/systemd/system-preset"
+    state: directory
+    mode: '0755'
+- name: "CRI-O | Dont enable kubelet unit by default"
+  copy:
+    content: 'disable crio.service'
+    dest: /etc/systemd/system-preset/00-crio.preset

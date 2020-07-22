@@ -1,0 +1,55 @@
+- name: "QCOW | Including any user-defined vars"
+  include_vars:
+    file: main.yaml
+    name: user-vars
+
+- block:
+
+  - name: "QCOW | Creating and attaching qcow image"
+    include_tasks:
+      file: qcow-create-n-attach.yaml
+
+  - name: "QCOW | Creating partitions"
+    include_tasks:
+      file: partitions-and-filesystems.yaml
+    with_indexed_items: "{{ partitions }}"
+
+  - name: "QCOW | Mounting filesystems"
+    include_tasks:
+      file: mount-helper.yaml
+    with_items: "{{ partitions | sort( case_sensitive=True, attribute='mount_order' ) }}"
+    vars:
+      mount_offset: "{{ root_chroot }}"
+      state: mounted
+      fstab: /tmp/junkfstab
+
+  - name: "QCOW | Writing image content"
+    include_tasks:
+      file: writing-image-content.yaml
+
+  - name: "QCOW | chroot prep"
+    include_tasks:
+      file: chroot-prep.yaml
+
+  tags: prep_img
+
+- block:
+
+  - name: "QCOW | chroot cleanup"
+    include_tasks:
+      file: chroot-cleanup.yaml
+
+  - name: "QCOW | Unmounting filesystems"
+    include_tasks:
+      file: mount-helper.yaml
+    with_items: "{{ partitions | sort( reverse=True, case_sensitive=True, attribute='mount' ) }}"
+    vars:
+      mount_offset: "{{ root_chroot }}"
+      state: unmounted
+      fstab: /tmp/junkfstab
+
+  - name: "QCOW | Detaching and compressing QCoW2"
+    include_tasks:
+      file: qcow-detach-n-compress.yaml
+
+  tags: close_img

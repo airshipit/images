@@ -1,0 +1,25 @@
+- name: "Kubernetes | Download and install binaries for {{ k8s_version }}"
+  delegate_to: localhost
+  get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/{{ k8s_version }}/bin/linux/amd64/{{ item }}"
+    dest: "{{ rootfs_root }}/usr/bin/{{ item }}"
+    mode: '0755'
+  with_items:
+    - kubeadm
+    - kubelet
+    - kubectl
+- name: "Kubernetes | write out kubelet unit file"
+  template:
+    src: kubelet.service.j2
+    dest: "/etc/systemd/system/kubelet.service"
+    mode: 0644
+
+- name: "Kubernetes | Ensuring systemd preset directory exists"
+  file:
+    path: "/etc/systemd/system-preset"
+    state: directory
+    mode: '0755'
+- name: "Kubernetes | Dont enable kubelet unit by default"
+  copy:
+    content: 'disable kubelet.service'
+    dest: /etc/systemd/system-preset/00-kubelet.preset

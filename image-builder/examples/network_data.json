@@ -1,0 +1,23 @@
+{
+    "links": [
+        {
+	    "ethernet_mac_address": "52:54:00:6c:99:85",
+            "id": "ens3",
+            "type": "phy"
+        }
+    ],
+    "networks": [
+        {
+            "id": "network0",
+            "link": "ens3",
+	    "network_id": "99e88329-f20d-4741-9596-25bf07847b16",
+            "type": "ipv4_dhcp"
+        }
+    ],
+    "services": [
+        {
+            "address": "8.8.8.8",
+            "type": "dns"
+        }
+    ]
+}

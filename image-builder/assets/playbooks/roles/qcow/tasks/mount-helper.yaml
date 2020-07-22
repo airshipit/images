@@ -1,0 +1,9 @@
+- name: "mount-helper | Setting mount state to {{ state }} for /dev/disk/by-partlabel/{{ item.mount | hash('md5') }} at the mountpoint for {{ item.mount }}"
+  mount:
+    path: "{{ mount_offset }}{{ item.mount }}"
+    src: "/dev/disk/by-partlabel/{{ item.mount | hash('md5') }}"
+    fstype: "{{ item.filesystem.type }}"
+    opts: "{{ item.filesystem.fstab.options }}"
+    state: "{{ state }}"
+    fstab: "{{ fstab }}"
+  when: item.mount != 'none'

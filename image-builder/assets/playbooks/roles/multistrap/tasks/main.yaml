@@ -1,0 +1,51 @@
+- name: "Including any user-defined vars"
+  include_vars:
+    file: main.yaml
+    name: user-vars
+
+- name: "ensuring directory {{ rootfs_root }} exists for rootfs"
+  file:
+    path: "{{ rootfs_root }}"
+    state: directory
+    mode: '0755'
+
+- name: "create temporary directory for multistrap config"
+  tempfile:
+    state: directory
+    suffix: multistrap
+  register: multistrap_tempdir
+
+- name: "write out multistrap config"
+  template:
+    src: multistrap.conf.j2
+    dest: "{{ multistrap_tempdir.path }}/multistrap.conf"
+    validate: multistrap --simulate -f %s
+
+- name: "install required apt keys manually"
+  include_tasks: apt-key-install.yaml
+  loop: "{{ repos }}"
+
+- name: "ensuring directory {{ rootfs_root }}/dev exists for chroot"
+  file:
+    path: "{{ rootfs_root }}/dev"
+    state: directory
+    mode: '0755'
+
+- name: "Setting up devices for chroot"
+  shell: |
+    mknod "{{ rootfs_root }}/dev/random" c 1 8
+    chmod 640 "{{ rootfs_root }}/dev/random"
+    chown 0:0 "{{ rootfs_root }}/dev/random"
+    mknod "{{ rootfs_root }}/dev/urandom" c 1 9
+    chmod 640 "{{ rootfs_root }}/dev/urandom"
+    chown 0:0 "{{ rootfs_root }}/dev/urandom"
+
+- name: "Running multistrap"
+  shell:
+      cmd: "multistrap -f {{ multistrap_tempdir.path }}/multistrap.conf"
+
+- name: "Lock sources.list to prevent conflict and duplicates with multistrap repo list"
+  shell: |
+        set -e
+        if [ -f {{ rootfs_root }}/etc/apt/sources.list ]; then rm {{ rootfs_root }}/etc/apt/sources.list; fi
+        ln -s /dev/null {{ rootfs_root }}/etc/apt/sources.list

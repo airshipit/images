@@ -1,0 +1,19 @@
+- name: "Systemd | Remove machine id"
+  copy:
+    content: ""
+    dest: "/etc/machine-id"
+- name: "Systemd | Link systemd to /sbin/init"
+  file:
+    src: /bin/systemd
+    dest: /sbin/init
+    owner: root
+    group: root
+    state: link
+- name: "Systemd | Enable Systemd Networkd"
+  systemd:
+    enabled: yes
+    name: systemd-networkd.service
+- name: "Systemd | Enable Systemd Networkd-dispatcher"
+  systemd:
+    enabled: yes
+    name: networkd-dispatcher.service

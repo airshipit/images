@@ -1,0 +1,7 @@
+# TODO: Move to airshipctl cloud-init to support customized post-up cmds (ethtool, etc)
+#- name: "ifup-hooks | Defining ifup-hooks: routes, ethtool, etc"
+#  template:
+#    src: ifup-hooks.j2
+#    dest: "/etc/networkd-dispatcher/routable.d/50-ifup-hooks"
+#    mode: 0755
+#  when: ifup-hooks is defined

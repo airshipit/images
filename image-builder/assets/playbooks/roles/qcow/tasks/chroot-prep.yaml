@@ -1,0 +1,30 @@
+- name: "QCOW | mount sys LEGACY"
+  shell: |
+        set -e
+        mkdir -p "{{ root_chroot }}"
+        cd "{{ root_chroot }}"
+        mountpoint sys > /dev/null || mount -t sysfs /sys sys
+        # mount an empty dir to efi directory, otherwise grub will try to configure EFI boot for the target image, **iff** the build node was booted with EFI.
+        if [ -d sys/firmware/efi ]; then mountpoint sys/firmware/efi > /dev/null || mkdir /dummy; mount -o bind /dummy sys/firmware/efi; fi
+  when: uefi is not defined
+
+- name: "QCOW | mount sys UEFI"
+  shell: |
+        set -e
+        mkdir -p "{{ root_chroot }}"
+        cd "{{ root_chroot }}"
+        mountpoint sys > /dev/null || mount -t sysfs /sys sys
+        # Required for building UEFI targets
+        ls /sys/firmware/efi > /dev/null || (echo "efivars not present on build system. Build system must be booted into UEFI mode." && exit 1)
+        mountpoint sys/firmware/efi > /dev/null || mount -o bind /sys/firmware/efi sys/firmware/efi
+  when: uefi is defined
+
+- name: "QCOW | Mount remaining targets"
+  shell: |
+        set -e
+        cd "{{ root_chroot }}"
+        mountpoint proc > /dev/null || mount -t proc /proc proc
+        mountpoint dev > /dev/null || mount -o bind /dev dev
+        mountpoint dev/pts > /dev/null || mount -t devpts /dev/pts dev/pts
+        # temporarily override resolv.conf to working dns
+        chroot "{{ root_chroot }}" /bin/bash -c 'rm /etc/resolv.conf; echo "nameserver {{ dns }}" > /etc/resolv.conf'

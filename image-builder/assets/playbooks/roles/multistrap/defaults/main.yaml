@@ -1,0 +1,94 @@
+rootfs_root: /mnt/rootfs
+rootfs_arch: amd64
+repos:
+    - register_repo_with_rootfs: true
+      name: Ubuntu
+      packages:
+        - apt-file
+        - apt-utils
+        - apt-transport-https
+        - arptables
+        - bash-completion
+        - bc
+        - bridge-utils
+        - chrony
+        - cloud-init
+        - conntrack
+        - curl
+        - dnsutils
+        - dosfstools
+        - e2fsprogs
+        - ebtables
+        - ethtool
+        - file
+        - gettext-base
+        #- kdump-tools # cannot install until after kernel is available
+        #- grub2 # cannot install until after boot partition is available
+        - ifenslave
+        - isc-dhcp-client
+        - iproute2
+        - iptables
+        - iputils-arping
+        - iputils-ping
+        - iputils-tracepath
+        - ipvsadm
+        - less
+        - linux-image-generic # this will be reinstalled later when the boot partition is available
+        - live-boot
+        - locales
+        - locales-all
+        - lsb-release
+        - lsof
+        - man-db
+        - mbr
+        - netplan.io
+        - net-tools
+        - networkd-dispatcher # required for netplan post-up scripts
+        - openssh-server
+        - passwd
+        - python3
+        - python3-apt
+        - socat
+        - systemd
+        - systemd-sysv
+        - strace
+        - sudo
+        - tcpdump
+        - traceroute
+        - vim
+        - vlan
+        - xfsprogs
+        - xz-utils
+      source: http://archive.ubuntu.com/ubuntu/
+      keyring_pkg: ubuntu-keyring
+      suite: focal
+      components: main restricted universe
+    - register_repo_with_rootfs: true
+      name: Ubuntu-Updates
+      packages: []
+      source: http://archive.ubuntu.com/ubuntu/
+      # NOTE: We comment this out as the package comes from the "focal" suite
+      # keyring_pkg: ubuntu-keyring
+      suite: focal-updates
+      omitdebsrc: "true"
+      components: main restricted universe
+    - register_repo_with_rootfs: true
+      name: Ubuntu-Security
+      packages: []
+      source: http://archive.ubuntu.com/ubuntu/
+      # NOTE: We comment this out as the package comes from the "focal" suite
+      # keyring_pkg: ubuntu-keyring
+      suite: focal-security
+      omitdebsrc: "true"
+      components: main restricted universe
+    - register_repo_with_rootfs: true
+      name: Docker
+      packages:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      source: https://download.docker.com/linux/ubuntu
+      keyring_url: https://download.docker.com/linux/ubuntu/gpg
+      suite: focal
+      omitdebsrc: "true"
+      components: stable

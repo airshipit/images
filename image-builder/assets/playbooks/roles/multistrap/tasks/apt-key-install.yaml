@@ -1,0 +1,30 @@
+- when: item.keyring_url is defined
+  block:
+    - name: "ensuring directory {{ rootfs_root }}/etc/apt/trusted.gpg.d exists"
+      file:
+        path: "{{ rootfs_root }}/etc/apt/trusted.gpg.d"
+        state: directory
+        mode: '0755'
+    - name: "create temporary directory for {{ item.name }}'s key'"
+      tempfile:
+        state: directory
+        suffix: aptkey
+      register: aptkey_tmpdir
+    - name: "Download {{ item.keyring_url }} for {{ item.name }} repo"
+      get_url:
+        url: "{{ item.keyring_url }}"
+        dest: "{{ aptkey_tmpdir.path }}/Release.key"
+        mode: '0440'
+    - name: "Installing keyring {{ item.name }}"
+      shell:
+          cmd: gpg --no-options --no-default-keyring --no-auto-check-trustdb --trustdb-name {{ rootfs_root }}/etc/apt/trusted.gpg --no-keyring --import-options import-export --import --import {{ aptkey_tmpdir.path }}/Release.key > {{ rootfs_root }}/etc/apt/trusted.gpg.d/{{ item.name }}.gpg
+
+- when: item.keyring_pkg is defined
+  block:
+    - name: Update the apt cache
+      apt:
+        update_cache: yes
+    - name: "Apt keyring package defined for {{ item.name }} repo, ensuring that this is present on the build host (note that this means you need access to it in the apt sources of the builder)"
+      apt:
+        name: "{{ item.keyring_pkg }}"
+        state: present

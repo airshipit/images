@@ -1,0 +1,26 @@
+
+- name: "Cloud Init | creating {{ root_image }}/openstack/latest directory"
+  file:
+    path: "{{ root_image }}/openstack/latest"
+    state: directory
+    mode: '0755'
+
+#- name: "Cloud Init | Setting cloud-init datasource list"
+#  copy:
+#    content: "datasource_list: [ ConfigDrive, None ]"
+#    dest: "{{ root_image }}/etc/cloud/cloud.cfg.d/95_no_cloud_ds.cfg"
+
+- name: "Cloud Init | seeding meta data"
+  copy:
+    src: "{{ meta_data_file }}"
+    dest: "{{ root_image }}/openstack/latest/meta_data.json"
+
+- name: "Cloud Init | seeding user data"
+  copy:
+    src: "{{ user_data_file }}"
+    dest: "{{ root_image }}/openstack/latest/user_data"
+
+- name: "Cloud Init | seeding network data"
+  copy:
+    src: "{{ network_data_file }}"
+    dest: "{{ root_image }}/openstack/latest/network_data.json"

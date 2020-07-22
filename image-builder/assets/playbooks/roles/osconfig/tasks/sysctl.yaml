@@ -1,0 +1,6 @@
+- sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: no
+  with_items: "{{ sysctl }}"

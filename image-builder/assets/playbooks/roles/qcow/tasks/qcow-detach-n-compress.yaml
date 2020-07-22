@@ -1,0 +1,8 @@
+
+- name: "QCOW | Detaching QCoW from {{ role_img_nbd_device.stdout }}"
+  shell: |
+        qemu-nbd -d "{{ lookup('file', '/tmp/nbd') }}"
+
+- name: "QCOW | Compressing QCoW and writing out to {{ img_output_dir }}/{{ img_name }}"
+  shell: |
+        qemu-img convert -p -O qcow2 -c {{ nbd_build_dir }}/{{ img_name }} {{ img_output_dir }}/{{ img_name }}

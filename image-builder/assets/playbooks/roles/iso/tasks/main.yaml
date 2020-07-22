@@ -1,0 +1,10 @@
+- name: "Task | Including any user-defined vars"
+  include_vars:
+    file: main.yaml
+    name: user-vars
+
+- name: "Task | Preparing Cloud-Init data"
+  include_tasks: cloud-init.yaml
+
+- name: "Task | ISO production"
+  include_tasks: iso.yaml

@@ -1,0 +1,29 @@
+- name: "ISO | Ensure any old iso image at target location is removed"
+  file:
+    state: absent
+    path: "{{ img_output_dir }}/{{ img_name }}"
+
+- name: "ISO | Ensuring {{ img_output_dir }} directory exists"
+  file:
+    path: "{{ img_output_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: "ISO | Writing ISO with xorriso"
+  shell:
+    cmd: |
+        xorriso \
+            -as mkisofs \
+            -iso-level 3 \
+            -full-iso9660-filenames \
+            -volid "config-2" \
+            --grub2-boot-info \
+            --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
+            -eltorito-boot boot/grub/bios.img \
+            -no-emul-boot \
+            -boot-load-size 4 \
+            -boot-info-table \
+            --eltorito-catalog boot/grub/boot.cat \
+            -output {{ img_output_dir }}/{{ img_name }} \
+            -graft-points \
+            {{ root_image }}

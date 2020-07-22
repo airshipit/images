@@ -1,0 +1,7 @@
+# TODO - move to airshipctl cloud-init process, where domain parameter is available
+#- name: "systemd-resolved | Conf file for systemd-resolved DNS settings"
+#  template:
+#    src: resolved.j2
+#    dest: "/etc/systemd/resolved.conf"
+#    mode: 0644
+#  when: domain is defined

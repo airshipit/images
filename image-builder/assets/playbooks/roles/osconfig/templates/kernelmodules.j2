@@ -1,0 +1,9 @@
+{% if "args" in item %}
+{% set content = item.name %}
+{% for arg in item.args %}
+{% set content = content + ' ' + arg.name + '=' + arg.value %}
+{% endfor %}
+{{ content }}
+{% else %}
+{{ item.name }}
+{% endif %}

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+install_pkg(){
+  dpkg -l $1 >& /dev/null || sudo -E apt-get -y install $1
+}
+
+install_pkg qemu-kvm
+install_pkg virtinst
+install_pkg libvirt-bin
+install_pkg cloud-image-utils
+install_pkg ovmf
+install_pkg efivar
+type docker >& /dev/null || install_pkg docker.io
+# required for building UEFI image
+sudo -E modprobe efivars

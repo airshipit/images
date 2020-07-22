@@ -1,0 +1,46 @@
+root_chroot: /mnt/rootfs
+nbd_build_dir: /tmp/nbd_build_dir
+img_output_dir: /config
+img_name: airship-ubuntu.qcow2
+dns: 8.8.8.8
+qcow_capacity: 5G
+partitions:
+    # Ubuntu default is for a separate vfat partition for efi
+    - mount: none
+      mount_order: 99
+      part_start: 1MiB
+      part_end: 5MiB
+      flags:
+        - bios_grub
+    - mount: /boot/efi
+      mount_order: 2
+      part_start: 5MiB
+      part_end: 516MiB
+      flags:
+        - esp
+      filesystem:
+        type: vfat
+        fstab:
+          options: "defaults,errors=remount-ro,noatime"
+          dump: 0
+          fsck: 1
+    - mount: /boot
+      mount_order: 1
+      part_start: 516MiB
+      part_end: 1284MiB
+      filesystem:
+        type: ext4
+        fstab:
+          options: "defaults,errors=remount-ro,noatime"
+          dump: 0
+          fsck: 2
+    - mount: /
+      mount_order: 0
+      part_start: 1284MiB
+      part_end: '100%'
+      filesystem:
+        type: ext4
+        fstab:
+          options: "defaults,errors=remount-ro,noatime"
+          dump: 0
+          fsck: 1
