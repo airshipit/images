@@ -18,7 +18,7 @@
     cmd: |
       sha=$(sha256sum <<< "{{ chart | to_json }}" | cut -f1 -d' ')
       version=$(helm show chart /tmp/{{ chart['name'] | quote }}/{{ chart['path'] | quote }} | yq -r .version)
-      printf "%s+source.%s" "$version" "$sha"
+      printf "%s+source.%s" "$version" "$sha" | cut -c 1-63
   register: chart_version
 
 - name: package charts into /charts directory
