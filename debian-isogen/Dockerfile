@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG FROM=ubuntu:latest
+ARG FROM=ubuntu:focal
 
 FROM ${FROM}
 
@@ -26,6 +26,7 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
 RUN apt-get update && apt-get install -y \
     curl\
     debootstrap \
+    dosfstools \
     grub-efi-amd64-bin \
     grub-pc-bin \
     mtools \

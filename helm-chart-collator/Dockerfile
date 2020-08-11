@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as chart-collator
+FROM ubuntu:focal as chart-collator
 
 SHELL ["bash", "-exc"]
 ENV DEBIAN_FRONTEND noninteractive
