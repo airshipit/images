@@ -24,4 +24,4 @@ docker run \
     -v $(shell realpath $(BUILD_DIR)):/config/ \
     $(shell cat $(BUILD_DIR)/image_id)
 
-Get debian-custom.iso from dir $(BUILD_DIR)
+Get ubuntu_focal.iso from dir $(BUILD_DIR)
