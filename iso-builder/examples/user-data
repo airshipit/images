@@ -1,5 +1,11 @@
 #cloud-config
-
-runcmd:
-  - kubeadm init --pod-network-cidr=192.168.0.0/24 --ignore-preflight-errors 'SystemVerification'
-  - kubectl --kubeconfig /etc/kubernetes/admin.conf taint nodes --all node-role.kubernetes.io/master-
+ssh_pwauth: True
+chpasswd:
+  list: |
+      root:deploY!K8s
+      deployer:deploY!K8s
+users:
+  - default
+  - name: deployer
+    gecos: deployer
+    ssh_pwauth: True

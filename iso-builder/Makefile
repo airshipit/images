@@ -80,6 +80,7 @@ build_isogen:
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
 	docker build . \
+	--iidfile $(BUILD_DIR)/image_id \
 	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -95,6 +96,7 @@ ifeq ($(USE_PROXY), true)
 	--build-arg GIT_COMMIT=$(COMMIT)
 else
 	docker build . \
+	--iidfile $(BUILD_DIR)/image_id \
 	--tag $(IMAGE) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -103,7 +105,6 @@ else
 	--label "org.opencontainers.image.title=$(IMAGE_NAME)" \
 	--build-arg GIT_COMMIT=$(COMMIT)
 endif
-	echo $(shell docker images -q $(IMAGE)) > $(BUILD_DIR)/image_id
 else
 	echo $(IMAGE_ID) > $(BUILD_DIR)/image_id
 endif
@@ -124,7 +125,7 @@ endif
 # style checks
 lint: test-shellcheck
 
-tests: lint unit_tests
+tests: lint unit_tests run_isogen
 
 test-shellcheck: $(SH_TO_CHECK)
 

@@ -1,0 +1,31 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: Define VM {{ vm_name }}
+  virt:
+    name: "{{ vm_name }}"
+    command: define
+    xml: "{{ lookup('template', 'templates/domain.xml.j2') }}"
+
+- name: Start VM {{ vm_name }}
+  virt:
+    name: "{{ vm_name }}"
+    state: running
+
+- name: Wait for ssh to come up on {{ vm_name }}
+  wait_for: host=192.168.122.100 port=22 delay=5 timeout=300
+
+- name: Destroy VM {{ vm_name }}
+  virt:
+    name: "{{ vm_name }}"
+    command: destroy

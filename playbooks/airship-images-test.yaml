@@ -20,3 +20,27 @@
           make:
             chdir: "{{ zuul.project.src_dir }}"
             target: tests
+    - name: install libvirt
+      include_role:
+        name: libvirt-install
+        tasks_from: "{{ item }}"
+      with_items:
+        - main
+        - configure
+    - virt_net:
+        state: active
+        name: default
+    - name: Launch and test VM with UEFI boot mode
+      include_role:
+        name: libvirt-domain
+      vars:
+        vm_name: ubuntu_focal_uefi
+        boot_mode: UEFI
+        src_image: /home/zuul/src/opendev.org/airship/images/iso-builder/build/ubuntu-focal.iso
+    - name: Launch and test VM with Legacy boot mode
+      include_role:
+        name: libvirt-domain
+      vars:
+        vm_name: ubuntu_focal_legacy
+        boot_mode: legacy
+        src_image: /home/zuul/src/opendev.org/airship/images/iso-builder/build/ubuntu-focal.iso
