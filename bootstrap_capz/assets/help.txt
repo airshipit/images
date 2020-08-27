@@ -1,0 +1,64 @@
+
+Azure Ephemeral Configuration File Definition
+---------------------------------------------
+The Azure Bootstrap container creates an Ephemeral K8S cluster on the Azure Cloud platform.
+The container requires authentication credentials and other information about the cluster to deploy.
+It requires a YAML configuration file with the format provided below.
+
+<YAML>
+apiVersion: v1
+kind: AzureConfig
+metadata:
+    name: <Ephemeral K8S cluster name>
+credentials:
+    tenant: <Azure Subscription Tenant ID>
+    client: <Azure Subscription Service Principal ID>
+    secret: <Azure Subscription Service Principal Secret>
+spec:
+    resourceGroup: <Azure Resource Group Name>
+    region: <Azure Region, e.g., centralus>
+    cluster:
+        k8sVersion: <Kubernetes version, e.g., 1.18.6>
+        vmSize: <Azure Compute VM Type, e.g., Standard_B2s>
+        replicas: <Node Replica Number for the cluster. Default is 1>
+        kubeconfig: <Kubernetes version, e.g., 1.18.2>
+</YAML>
+
+It also accepts the JSON file format.
+
+<JSON>
+{
+    "apiVersion":"v1",
+    "kind":"AzureConfig",
+    "metadata":{
+        "name":"<Ephemeral K8S cluster name>"
+    },
+    "credentials":{
+        "tenant":"<Azure Subscription Tenant ID>",
+        "client":"<Azure Subscription Service Principal ID>",
+        "secret":"<Azure Subscription Service Principal Secret>"
+    },
+    "spec":{
+        "resourceGroup":"<Azure Resource Group Name>",
+        "region":"<Azure Region, e.g., centralus>",
+        "cluster":{
+            "k8sVersion":"<Kubernetes version, e.g., 1.18.6>",
+            "vmSize":"<Azure Compute VM Type, e.g., Standard_B2s>",
+            "replicas":<Node Replica Number for the cluster>,
+            "kubeconfig":"<Kubernetes version, e.g., 1.18.2>"
+        }
+    }
+}
+</JSON>
+
+The expected location for the Azure bootstrap configuration file is dictated by the "volume" mount
+specified in the Airship config file (bootstrapInfo.ephemeral.container.volume).
+For example, /home/esidshi/.airship folder and shown in the snippet below:
+
+<Snippet>
+apiVersion: airshipit.org/v1alpha1
+bootstrapInfo:
+  ephemeral:
+    container:
+      volume: /home/esidshi/.airship:/kube
+</Snippet>
