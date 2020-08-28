@@ -1,0 +1,3 @@
+BOOTSTRAP_COMMAND=help
+BOOTSTRAP_CONFIG=openstack-config.yaml
+BOOTSTRAP_VOLUME=/tmp:/kube

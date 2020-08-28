@@ -4,3 +4,4 @@ bootstrap_capg/go.mod
 bootstrap_capz/.vscode/launch.json
 bootstrap_capz/go.mod
 bootstrap_capz/go.sum
+bootstrap_capo/capo-ephemeral

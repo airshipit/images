@@ -1,0 +1,32 @@
+Openstack Ephemeral Configuration File Definition
+-----------------------------------------------------
+The Openstack Bootstrap container creates an Ephemeral K8S cluster on the Openstack.
+The container requires clouds.yaml credentials and other information about the cluster to deploy.
+It requires a YAML configuration file with the format provided below.
+
+<Openstack Config Definition>
+apiVersion: v1
+kind: OpenstackConfig
+metadata:
+  name: <metadata-name>
+credentials:
+  credential: <Clouds.yaml file of devstack>
+  cloudName: <openstack cloud name i.e. devstack>
+spec:
+  cluster:
+    machineSize: <Openstack VM flavor, e.g. ds2G>
+    kubeconfig: <Kubeconfig filename, Default is 'kubeconfig'>
+    securityGroup:<Security Group that'll be attached to the VM>
+</Openstack Config Definition>
+
+The expected location for the Openstack bootstrap configuration file is dictated by the "volume" mount
+specified in the Airship config file (bootstrapInfo.ephemeral.container.volume).
+For example, $HOME/.airship folder and shown in the snippet below:
+
+<Snippet>
+apiVersion: airshipit.org/v1alpha1
+bootstrapInfo:
+  ephemeral:
+    container:
+      volume: /home/stack/.airship:/kube
+</Snippet>

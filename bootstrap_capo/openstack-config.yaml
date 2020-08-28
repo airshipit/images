@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: OpenstackCloudConfig
+metadata:
+  name: capi-openstack
+credentials:
+  credential: clouds.yaml
+  cloudName: devstack
+spec:
+  cluster:
+    machineSize: ds4G
+    kubeconfig: capo.kubeconfig
+    securityGroup: bootstrap-sec-grp
