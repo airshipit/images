@@ -1,1 +1,3 @@
 *build/
+bootstrap_capg/.vscode/launch.json
+bootstrap_capg/go.mod

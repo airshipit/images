@@ -1,0 +1,3 @@
+BOOTSTRAP_COMMAND=help
+BOOTSTRAP_CONFIG=gcp-config.yaml
+BOOTSTRAP_VOLUME=/tmp:/kube

@@ -1,0 +1,66 @@
+
+Google Cloud Ephemeral Configuration File Definition
+-----------------------------------------------------
+The GCP Bootstrap container creates an Ephemeral K8S cluster on the Google Cloud platform.
+The container requires authentication credentials and other information about the cluster to deploy.
+It requires a YAML configuration file with the format provided below.
+
+<YAML>
+apiVersion: v1
+kind: GoogleCloudConfig
+metadata:
+    name: <Ephemeral K8S cluster name>
+credentials:
+    project: <Google Cloud Project ID>
+    account: <Google Cloud Account ID>
+    credential: <credentials.json filename>
+spec:
+    region: <Google Cloud Region, e.g., us-central1>
+    Zone: <Google Cloud Zone, e.g., us-central1-c>
+    cluster:
+        k8sVersion: <Kubernetes version, e.g., 1.16.9-gke.6>
+        machineSize: <Google Cloud Compute VM Type, e.g., e2-medium>
+        diskSize: <Google Cloud compute disk size>
+        replicas: <Node Replica Number for the cluster>
+        kubeconfig: <Kubeconfig filename, Default is 'kubeconfig'>
+</YMAL>
+
+The JSON format is also a valid configuration file for this bootstrap container.
+
+<JSON>
+{
+    "apiVersion": "v1",
+    "kind": "GoogleCloudConfig",
+    "metadata": {
+       "name": "<Ephemeral K8S cluster name>"
+    },
+    "credentials": {
+       "project": "<Google Cloud Project ID>",
+       "account": "<Google Cloud Account ID>",
+       "credential": "<credentials.json filename>"
+    },
+    "spec": {
+       "region": "<Google Cloud Region, e.g., us-central1>",
+       "zone": "<Google Cloud Compute VM Type, e.g., e2-medium>",
+       "cluster": {
+          "k8sVersion": "<Kubernetes version, e.g., 1.16.9-gke.6>",
+          "machineSize": "<Google Cloud Compute VM Type, e.g., e2-medium>",
+          "diskSize": <Google Cloud compute disk size>,
+          "replicas": <Node Replica Number for the cluster>,
+          "kubeconfig": "<Kubeconfig filename, Default is 'kubeconfig'>"
+       }
+    }
+ }
+ </JSON>
+
+The expected location for the GCP bootstrap configuration file is dictated by the "volume" mount
+specified in the Airship config file (bootstrapInfo.ephemeral.container.volume).
+For example, /home/esidshi/.airship folder as shown in the snippet below:
+
+<Snippet>
+apiVersion: airshipit.org/v1alpha1
+bootstrapInfo:
+  ephemeral:
+    container:
+      volume: /home/esidshi/.airship:/kube
+</Snippet>
