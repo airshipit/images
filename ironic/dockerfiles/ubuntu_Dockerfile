@@ -1,0 +1,9 @@
+# Set default image for requirements image
+ARG IMAGE=""
+FROM $IMAGE as requirements
+
+FROM nginx:alpine
+
+# Previously built requirements image
+COPY --from=requirements / /usr/share/nginx/html
+RUN cd /usr/share/nginx/html; tar c -f wheels.tar.gz -z  *.whl *.txt; rm -f *.whl
