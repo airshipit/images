@@ -36,7 +36,7 @@ images: Dockerfile \
 	    --tag $(DOCKER_IMAGE) \
 	    --force-rm=$(DOCKER_FORCE_CLEAN)
 ifeq ($(PUSH_IMAGE), true)
-	docker push $(IMAGE)
+	docker push $(DOCKER_IMAGE)
 endif
 
 .PHONY: clean
