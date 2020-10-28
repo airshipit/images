@@ -40,7 +40,7 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
       org.opencontainers.image.vendor='The Airship Authors' \
       org.opencontainers.image.licenses='Apache-2.0'
 
-RUN adduser --disabled-password bootstrap
+RUN useradd -m bootstrap
 USER bootstrap
 
 WORKDIR /home/bootstrap
