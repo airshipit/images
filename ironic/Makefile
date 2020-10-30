@@ -24,9 +24,9 @@ OPENSTACK_VERSION    ?= stable/ussuri
 DISTRO               ?= ubuntu_bionic
 OS_VER               =  $(word 2, $(subst /, ,$(OPENSTACK_VERSION)))
 IMAGE_TAG            ?= ${OS_VER}-${DISTRO}
-IMAGE_IRONIC         := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/ironic:${IMAGE_TAG}-${DISTRO}
-IMAGE_REQUIREMENTS   := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/requirements:${IMAGE_TAG}-${DISTRO}
-IMAGE_LOCI_WHEELS    := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/loci_wheels:${IMAGE_TAG}-${DISTRO}
+IMAGE_IRONIC         := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/ironic:${IMAGE_TAG}
+IMAGE_REQUIREMENTS   := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/requirements:${IMAGE_TAG}
+IMAGE_LOCI_WHEELS    := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/loci_wheels:${IMAGE_TAG}
 SH_TO_CHECK          := $(wildcard files/*.sh )
 PROXY                ?= http://proxy.foo.com:8000
 NO_PROXY             ?= localhost,127.0.0.1,.svc.cluster.local
@@ -192,7 +192,7 @@ else
 	echo $(IMAGE_ID) > $(BUILD_DIR)/image_id
 endif
 ifeq ($(PUSH_IMAGE), true)
-	docker push $(IMAGE)
+	docker push $(IMAGE_IRONIC)
 endif
 
 clean:
