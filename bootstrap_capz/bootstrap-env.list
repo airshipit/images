@@ -1,0 +1,3 @@
+BOOTSTRAP_COMMAND=help
+BOOTSTRAP_CONFIG=azure-config.yaml
+BOOTSTRAP_VOLUME=/tmp:/kube
