@@ -34,7 +34,7 @@ NO_PROXY             ?= localhost,127.0.0.1,.svc.cluster.local
 USE_PROXY            ?= false
 BASE_IMAGE           ?= docker.io/ubuntu:bionic
 ironic_profiles      ?= "fluent ipxe ipmi qemu tftp"
-ironic_pip_packages  ?= "pycrypto python-openstackclient"
+ironic_pip_packages  ?= "pycrypto python-openstackclient sushy"
 ironic_dist_packages ?= "ethtool lshw iproute2"
 
 all: lint images

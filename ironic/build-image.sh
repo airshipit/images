@@ -18,7 +18,7 @@ set -e
 : "${base_extra_build_args:="--force-rm --pull --no-cache"}"
 # Defaults for projects
 : "${ironic_profiles:="'fluent ipxe ipmi qemu tftp'"}"
-: "${ironic_pip_packages:="pycrypto python-openstackclient"}"
+: "${ironic_pip_packages:="pycrypto python-openstackclient sushy"}"
 : "${ironic_dist_packages:="ethtool lshw iproute2"}"
 # Image tag
 IMAGE_TAG="${OPENSTACK_VERSION#*/}-${DISTRO}"
