@@ -56,6 +56,9 @@ build_requirements:
 	mkdir -p $(BUILD_DIR)
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
+	http_proxy=$(PROXY) https_proxy=$(PROXY) \
+	HTTP_PROXY=$(PROXY) HTTPS_PROXY=$(PROXY) \
+	no_proxy=$(NO_PROXY) NO_PROXY=$(NO_PROXY) \
 	docker build --force-rm --pull --no-cache \
 	https://git.openstack.org/openstack/loci.git \
 	--network host \
@@ -143,6 +146,9 @@ build_ironic:
 	mkdir -p $(BUILD_DIR)
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
+	http_proxy=$(PROXY) https_proxy=$(PROXY) \
+	HTTP_PROXY=$(PROXY) HTTPS_PROXY=$(PROXY) \
+	no_proxy=$(NO_PROXY) NO_PROXY=$(NO_PROXY) \
 	docker build --force-rm --pull --no-cache \
 	https://git.openstack.org/openstack/loci.git \
 	--network host \

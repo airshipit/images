@@ -16,6 +16,9 @@ DOCKER_IMAGE_PREFIX ?= airshipit
 DOCKER_IMAGE_TAG    ?= latest
 DOCKER_IMAGE        ?= $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_PREFIX)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 DOCKER_TARGET_STAGE ?= release
+PROXY             ?= http://proxy.foo.com:8000
+NO_PROXY          ?= localhost,127.0.0.1,.svc.cluster.local
+USE_PROXY         ?= false
 
 PATH += :/usr/local/go/bin
 HELP_FILE ?= /tmp/help.txt
@@ -31,10 +34,23 @@ images: Dockerfile \
 		config/aks_cluster.go \
 		config/azure_config.go \
 		assets/help.txt
+ifeq ($(USE_PROXY), true)
+	@docker build . --network=host \
+	--build-arg MAKE_TARGET=$(DOCKER_MAKE_TARGET) \
+	--tag $(DOCKER_IMAGE) \
+	--build-arg http_proxy=$(PROXY) \
+	--build-arg https_proxy=$(PROXY) \
+	--build-arg HTTP_PROXY=$(PROXY) \
+	--build-arg HTTPS_PROXY=$(PROXY) \
+	--build-arg no_proxy=$(NO_PROXY) \
+	--build-arg NO_PROXY=$(NO_PROXY) \
+	--force-rm=$(DOCKER_FORCE_CLEAN)
+else
 	@docker build . --network=host \
 	    --build-arg MAKE_TARGET=$(DOCKER_MAKE_TARGET) \
 	    --tag $(DOCKER_IMAGE) \
 	    --force-rm=$(DOCKER_FORCE_CLEAN)
+endif
 ifeq ($(PUSH_IMAGE), true)
 	docker push $(DOCKER_IMAGE)
 endif

@@ -11,6 +11,13 @@
 # limitations under the License.
 
 - project:
+    vars:
+      docker_registry: https://quay.io/api/v1/
+      proxy:
+        enabled: false
+        http: ""
+        https: ""
+        noproxy: ""
     check:
       jobs:
         - airship-images-functional

@@ -30,11 +30,15 @@
         - docker_login:
             username: "{{ airship_images_quay_creds.username }}"
             password: "{{ airship_images_quay_creds.password }}"
-            registry_url: "https://quay.io/api/v1/"
+            registry_url: "{{ docker_registry }}"
         - make:
             chdir: "{{ zuul.project.src_dir }}"
             target: "images"
             params:
               COMMIT: "{{ zuul.newrev | default('') }}"
               PUSH_IMAGE: "true"
+              PROXY: "{{ proxy.http }}"
+              NO_PROXY: "{{ proxy.noproxy }}"
+              USE_PROXY: "{{ proxy.enabled | lower }}"
+              DOCKER_REGISTRY: "{{ docker_registry }}"
       become: True
