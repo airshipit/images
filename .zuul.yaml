@@ -12,7 +12,7 @@
 
 - project:
     vars:
-      docker_registry: https://quay.io/api/v1
+      docker_registry: quay.io
       proxy:
         enabled: false
         http: ""
