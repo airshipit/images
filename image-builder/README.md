@@ -1,6 +1,9 @@
 # Overview
 
-Image Builder is a utility used to produce two types of artifacts needed for an airshipctl deployment: an iso (for the ephemeral node), and qcow2’s (used by metal3io to deploy all other nodes). This is accomplished through several stages as follows:
+Image Builder is a utility used to produce two types of artifacts needed for an
+airshipctl deployment: an iso (for the ephemeral node), and qcow2’s (used by
+metal3io to deploy all other nodes). This is accomplished through several stages
+as follows:
 
 1. Build docker image containing the base operating system and basic configuration management
 1. Run configuration management again with customized user-supplied inputs in container runtime
