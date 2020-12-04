@@ -1,0 +1,22 @@
+- name: "QCOW | Installing extlinux"
+  shell: |
+        mkdir -p "{{ root_chroot }}"/boot/syslinux
+        extlinux --install "{{ root_chroot }}"/boot/syslinux/ --device /dev/disk/by-partlabel/{{ ( partitions | selectattr('mount', 'equalto', '/boot') | list | first ).mount | hash('md5') }}
+
+- name: "QCOW | Writing out syslinux config"
+  copy:
+    content: |
+            DEFAULT linux
+            SAY Booting Airship Node
+            LABEL linux
+            KERNEL /vmlinuz
+            APPEND root=/dev/disk/by-partlabel/{{ ( partitions | selectattr('mount', 'equalto', '/') | list | first ).mount | hash('md5') }} initrd=/initrd.img
+    dest: ""{{ root_chroot }}/boot/syslinux/syslinux.cfg"
+
+
+- name: "QCOW | Installing kernel and init ramdisk"
+  shell: |
+        rm -rf "{{ root_chroot }}"/vmlinuz
+        cp -f /mnt/image/vmlinuz "{{ root_chroot }}"/boot/
+        rm -rf /tmp/mnt/initrd.img
+        cp -f /mnt/image/initrd "{{ root_chroot }}"/boot/initrd.img

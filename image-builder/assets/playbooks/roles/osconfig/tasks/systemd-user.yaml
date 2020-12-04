@@ -1,0 +1,13 @@
+- name: "Systemd | Writing user-provided systemd unit {{ item.name }}"
+  template:
+    src: generic-file-writer.j2
+    dest: "/etc/systemd/system/{{ item.name }}"
+  with_items: "{{ systemd }}"
+
+- name: "Systemd | Configuring user-provided systemd unit {{ item.name }}"
+  systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    force: "{{ item.force }}"
+  with_items: "{{ systemd }}"
+

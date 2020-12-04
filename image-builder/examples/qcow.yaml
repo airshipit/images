@@ -1,0 +1,15 @@
+builder:
+  # Required for building 'qcow' over the 'iso' default
+  imageType: qcow
+  # Optional for imageType = qcow. Specify to override 'qcow' playbook default vars.
+  qcowVarsFileName: qcow-control-plane-vars.yaml
+  # Optional for imageType = qcow. Specify to override 'osconfig' playbook default vars.
+  osconfigVarsFileName: osconfig-control-plane-vars.yaml
+  # Optional. Default outputMetadataFileName = output-metadata.yaml
+  outputMetadataFileName: output-metadata.yaml
+  # Optional. When ommitted, defaults to playbook variable img_name
+  outputFileName: control-plane.qcow2
+container:
+  volume: /host/path/to/examples:/config
+  image: port/image-builder:latest-ubuntu_focal
+  containerRuntime: docker

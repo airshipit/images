@@ -1,0 +1,6 @@
+# Settings here will be applied to /boot/grub/grub.cfg when grub is installed
+- name: "Grub | Grub config"
+  template:
+    src: grub.j2
+    dest: "/etc/default/grub"
+    mode: 0644

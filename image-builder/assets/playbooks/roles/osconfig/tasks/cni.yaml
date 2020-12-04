@@ -1,0 +1,12 @@
+- name: "CNI | ensuring directory /opt/cni/bin exists"
+  file:
+    path: "/opt/cni/bin"
+    state: directory
+    mode: '0755'
+
+- name: "CNI | downloading and installing CNI binaries"
+  delegate_to: localhost
+  unarchive:
+      src: "https://github.com/containernetworking/plugins/releases/download/{{ cni_version }}/cni-plugins-linux-amd64-{{ cni_version }}.tgz"
+      dest: "{{ rootfs_root }}/opt/cni/bin"
+      remote_src: yes

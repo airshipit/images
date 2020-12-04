@@ -1,0 +1,19 @@
+- name: "unattended-upgrades | disable apt-daily timer"
+  file:
+    path: /etc/systemd/system/timers.target.wants/apt-daily.timer
+    state: absent
+
+- name: "unattended-upgrades | disable apt-daily-upgrade timer"
+  file:
+    path: /etc/systemd/system/timers.target.wants/apt-daily-upgrade.timer
+    state: absent
+
+- name: "unattended-upgrades | check for apt-daily cron"
+  stat:
+    path: /etc/cron.daily/apt-compat
+  register: stat_result
+- name: "unattended-upgrades | disable apt-daily cron"
+  file:
+    path: /etc/cron.daily/apt-compat
+    mode: '0644'
+  when: stat_result.stat.exists

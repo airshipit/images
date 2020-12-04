@@ -1,0 +1,10 @@
+- name: "Including any user-defined vars"
+  include_vars:
+    file: main.yaml
+    name: user-vars
+
+- name: "building squshfs"
+  include_tasks: squashfs.yaml
+
+- name: "building livecd"
+  include_tasks: livecd.yaml

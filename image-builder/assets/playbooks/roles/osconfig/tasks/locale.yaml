@@ -1,0 +1,5 @@
+- name: "locale | write out locale config"
+  template:
+    src: locale.j2
+    dest: "/etc/default/locale"
+    mode: 0644

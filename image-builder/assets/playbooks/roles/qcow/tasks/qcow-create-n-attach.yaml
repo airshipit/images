@@ -1,0 +1,38 @@
+- name: "QCOW | Enabling nbd kernel module"
+  command: modprobe nbd
+
+- name: "QCOW | 3 second pause after loading nbd kernel module"
+  pause:
+    seconds: 3
+
+- name: "QCOW | Finding availible NBD device to use"
+  shell:
+    executable: /bin/bash
+    cmd: |
+        for dev in /sys/class/block/nbd*; do
+          size="$(cat "$dev"/size)"
+          device="/dev/nbd${dev: -1}"
+          if (( size == 0 )) && ! ls ${device}p* >& /dev/null; then
+            printf "%s" "$device"
+            exit 0
+          fi
+        done
+        # NOTE: if we have got this far, then we have not been able to find a suitable nbd device to consume.
+        exit 1
+  register: role_img_nbd_device
+
+- name: "QCOW | Creating build directory"
+  file:
+    state: directory
+    path: "{{ nbd_build_dir }}"
+
+- name: "QCOW | Creating QCoW2"
+  command: qemu-img create -f qcow2 {{ nbd_build_dir }}/{{ img_name }} {{ qcow_capacity }}
+
+- name: "QCOW | Connecting QCoW2 to {{ role_img_nbd_device.stdout }}"
+  command: qemu-nbd --connect={{ role_img_nbd_device.stdout }} {{ nbd_build_dir }}/{{ img_name }}
+
+- name: "QCOW | Store NBD device"
+  copy:
+    content: "{{ role_img_nbd_device.stdout }}"
+    dest: /tmp/nbd

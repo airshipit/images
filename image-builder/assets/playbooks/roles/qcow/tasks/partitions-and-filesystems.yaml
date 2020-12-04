@@ -1,0 +1,27 @@
+- name: "QCOW | Creating Partitions"
+  parted:
+    device: "{{ lookup('file', '/tmp/nbd') }}"
+    number: "{{ item.0 + 1 }}"
+    state: present
+    label: gpt
+    flags: "{{ item.1.flags | default(omit) }}"
+    part_start: "{{ item.1.part_start }}"
+    part_end: "{{ item.1.part_end }}"
+    name: "{{ item.1.mount | hash('md5') }}"
+    align: minimal
+
+# For some reason, udev does not honor the partition label for by-partlabel symlinks, so we rename them here
+- name: "QCOW | check for symlink"
+  stat:
+    path: /dev/disk/by-partlabel/primary
+  register: symlink
+
+- name: "QCOW | udev symlink rename"
+  command: mv /dev/disk/by-partlabel/primary /dev/disk/by-partlabel/{{ item.1.mount | hash('md5') }}
+  when: symlink.stat.exists
+
+- name: "QCOW | Creating Filesystems"
+  filesystem:
+    fstype: "{{ item.1.filesystem.type }}"
+    dev: "/dev/disk/by-partlabel/{{ item.1.mount | hash('md5') }}"
+  when: item.1.mount != 'none'

@@ -1,0 +1,8 @@
+- name: "File Permissions | Modifying file or directory permissions for {{ item.name }}"
+  file:
+    path: "{{ item.name }}"
+    state: file
+    mode: "{{ item.permissions }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+  with_items: "{{ file_permissions }}"

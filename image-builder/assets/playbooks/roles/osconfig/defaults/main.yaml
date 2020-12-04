@@ -1,0 +1,113 @@
+rootfs_root: /mnt/rootfs
+
+cni_version: v0.8.2
+k8s_version: v1.18.6
+
+kernel:
+    base_pkg: linux-image-generic
+    headers_pkg: linux-headers-generic
+    modules:
+        load:
+            - name: 8021q
+            - name: bonding
+            - name: ip_vs
+            - name: ip_vs_rr
+            - name: ip_vs_wrr
+            - name: ip_vs_sh
+            - name: br_netfilter
+        blacklist:
+            - name: krbd
+
+banners:
+    login: |
+        Airship Node \l: \n.\o
+        Kernel: \s \m \r \v
+        IP address: \4
+    motd: |
+        #!/bin/sh
+        . /etc/lsb-release
+        printf "Airship Node, based on: %s (%s %s %s)\n" "$DISTRIB_DESCRIPTION" "$(uname -o)" "$(uname -r)" "$(uname -m)"
+
+kubelet:
+    # Add only image-builder appropriate kubelet args here.
+    # Add all others to kubeadmcontrolplane.yaml
+    extra_systemd_args: []
+        #- name: reserved-cpus
+        #  value: '0-3'
+
+grub:
+    GRUB_TIMEOUT: 5
+    GRUB_CMDLINE_LINUX_DEFAULT:
+       - name: cgroup_disable
+         value: 'hugetlb'
+
+limits:
+    - name: core_dump
+      domain: '0:'
+      type: 'hard'
+      item: 'core'
+      value: 0
+
+sysctl:
+    - name: net.ipv4.ip_forward
+      value: '1'
+
+# Any directories to create on disk can be defined here
+directories:
+      # Full path to file to create
+    - name: /tmp/testdir
+      permissions: '0755'
+      owner: root
+      group: root
+
+# Any files to write to disk can be defined here
+files:
+      # Full path to file to create
+    - name: /tmp/testdir/test.sh
+      file_content: |
+          #!/bin/bash
+          echo hello world
+      permissions: '0755'
+      owner: root
+      group: root
+
+systemd:
+      # Full name, including systemd suffix. sample.service. sample.mount, sample.timer, etc.
+    - name: sample.service
+      file_content: |
+          [Unit]
+          Description=sample service
+          After=network.target
+
+          [Service]
+          ExecStart=/bin/sleep infinity
+
+          [Install]
+          WantedBy=multi-user.target
+      # whether the target image should run this service on boot
+      enabled: yes
+      # whether to override existing symlinks (e.g. name collision).
+      # Use only if you are intenting to overwrite an existing systemd unit
+      force: no
+
+# Note: You are encouraged to build your own image-builder container, where your desired
+# package list can be supplied to multistrap during the container build. However, this
+# option will allow you to layer additional packages (installed during container runtime,
+# instead of during the container build) where a customized container build is not possible
+# or not desired.
+# This is also needed for a specific subset of packages that fail to install successfully
+# with multistrap (e.g., kdump-tools).
+post_install_package_list:
+    - kdump-tools
+    - apparmor
+    - dbus
+    - rsyslog
+    - logrotate
+
+# Any other adjustments to file or directory permissions, for files that already exist.
+file_permissions:
+      # Full path to file to create
+    - name: /tmp/testdir/test.sh
+      permissions: '0700'
+      owner: root
+      group: root

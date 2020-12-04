@@ -5,3 +5,8 @@ bootstrap_capz/.vscode/launch.json
 bootstrap_capz/go.mod
 bootstrap_capz/go.sum
 bootstrap_capo/capo-ephemeral
+
+# image-builder artifacts to ignore
+image-builder/examples/output-metadata.yaml
+image-builder/examples/*.iso
+image-builder/examples/*.qcow2

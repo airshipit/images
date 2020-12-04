@@ -1,0 +1,11 @@
+# airshipctl cloud-init will overwrite with its own /etc/hostname and /etc/hosts fqdn
+- name: "hostname and hosts | write out hostname file"
+  template:
+    src: hostname.j2
+    dest: "/etc/hostame"
+    mode: 0644
+- name: "hostname and hosts | write out hosts file"
+  template:
+    src: hosts.j2
+    dest: "/etc/hosts"
+    mode: 0644

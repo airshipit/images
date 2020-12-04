@@ -1,0 +1,16 @@
+- name: "QCOW | Writing out rootfs from squashfs"
+  shell: |
+        unsquashfs -d "{{ root_chroot }}" -f /mnt/image/live/filesystem.squashfs
+        exit 0
+
+- name: "QCOW | Writing out fstab"
+  include_tasks: mount-helper.yaml
+  with_items: "{{ partitions | sort( case_sensitive=True, attribute='mount' ) }}"
+  vars:
+    mount_offset: null
+    state: present
+    fstab: "{{ root_chroot }}/etc/fstab"
+
+- name: "QCOW | Setting debug password"
+  shell: |
+        chroot "{{ root_chroot }}" sh -c "echo \"root:password\" | chpasswd"

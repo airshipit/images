@@ -1,0 +1,14 @@
+- name: "ensuring directory {{ root_image }}/live exists"
+  file:
+    path: "{{ root_image }}/live"
+    state: directory
+    mode: '0755'
+
+- name: "Building squashfs"
+  shell:
+    cmd: |
+        mksquashfs \
+            "{{ root_chroot }}" \
+            "{{ root_image }}/live/filesystem.squashfs" \
+            -processors {{ ansible_processor_vcpus }} \
+            -e boot
