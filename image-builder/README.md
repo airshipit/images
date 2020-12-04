@@ -24,7 +24,7 @@ If you do not wish to use the image-builder container published on quay.io, you 
 sudo apt -y install sudo git make
 git clone https://review.opendev.org/airship/images
 cd images/image-builder
-sudo make IMAGE_REGISTRY=mylocalreg build
+sudo make DOCKER_REGISTRY=mylocalreg build
 ```
 
 By default, both the ISO and QCOW share the same base container image. Therefore in most cases it should be sufficient to generate a single container that's reused for all image types and further differentiated in the container runtime phase described in the next section.
@@ -40,7 +40,7 @@ cd images/image-builder
 sudo make IMAGE_TYPE=qcow cut_image
 ```
 
-In the above example, set ``IMAGE_TYPE`` to ``iso`` or ``qcow`` as appropriate. This will be passed into the container to instruct it which type of image to build. Also include ``IMAGE_REGISTRY`` override if you wish to use a local docker image as described in the previous section.
+In the above example, set ``IMAGE_TYPE`` to ``iso`` or ``qcow`` as appropriate. This will be passed into the container to instruct it which type of image to build. Also include ``DOCKER_REGISTRY`` override if you wish to use a local docker image as described in the previous section.
 
 This makefile target uses config files provided in the images/image-builder/examples directory. Modify these files as needed in order to customize your iso and qcow generation.
 
@@ -53,11 +53,11 @@ sudo apt -y install sudo git make
 git clone https://review.opendev.org/airship/images
 cd images/image-builder
 # Create container
-sudo make IMAGE_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 build
+sudo make DOCKER_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 build
 # Create ephemeral ISO
-sudo make IMAGE_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_TYPE=iso cut_image
+sudo make DOCKER_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_TYPE=iso cut_image
 # Create qcow
-sudo make IMAGE_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_TYPE=qcow cut_image
+sudo make DOCKER_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_TYPE=qcow cut_image
 ```
 
 # Division of Configuration Management responsibilities
