@@ -130,6 +130,10 @@ sysctl:
       value: '1'
     - name: kernel.sysrq
       value: '1'
+    - name: net.bridge.bridge-nf-call-ip6tables
+      value: '1'
+    - name: net.bridge.bridge-nf-call-iptables
+      value: '1'
 
 post_install_package_list:
     - kdump-tools

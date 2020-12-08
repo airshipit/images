@@ -22,7 +22,7 @@ repos:
         - ethtool
         - file
         - gettext-base
-        #- kdump-tools # cannot install until after kernel is available
+        - gnupg2
         #- grub2 # cannot install until after boot partition is available
         - ifenslave
         - isc-dhcp-client
@@ -92,3 +92,14 @@ repos:
       suite: focal
       omitdebsrc: "true"
       components: stable
+    - register_repo_with_rootfs: true
+      name: Kubernetes
+      packages:
+        - kubelet=1.18.6-00
+        - kubeadm=1.18.6-00
+        - kubectl=1.18.6-00
+      source: https://apt.kubernetes.io
+      keyring_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      suite: kubernetes-xenial
+      omitdebsrc: "true"
+      components: main

@@ -49,7 +49,9 @@ limits:
       value: 0
 
 sysctl:
-    - name: net.ipv4.ip_forward
+    - name: net.bridge.bridge-nf-call-ip6tables
+      value: '1'
+    - name: net.bridge.bridge-nf-call-iptables
       value: '1'
 
 # Any directories to create on disk can be defined here
