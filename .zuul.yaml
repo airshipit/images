@@ -13,6 +13,8 @@
 - project:
     vars:
       docker_registry: quay.io
+      gcp_sdk: gcr.io/google.com/cloudsdktool/cloud-sdk:308.0.0
+      az_sdk: mcr.microsoft.com/azure-cli:2.8.0
       proxy:
         enabled: false
         http: ""

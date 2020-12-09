@@ -41,4 +41,6 @@
               NO_PROXY: "{{ proxy.noproxy }}"
               USE_PROXY: "{{ proxy.enabled | lower }}"
               DOCKER_REGISTRY: "{{ docker_registry }}"
+              GCP_SDK: "{{ gcp_sdk }}"
+              AZ_SDK: "{{ az_sdk }}"
       become: True

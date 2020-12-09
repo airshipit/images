@@ -19,6 +19,7 @@ DOCKER_TARGET_STAGE ?= release
 PROXY             ?= http://proxy.foo.com:8000
 NO_PROXY          ?= localhost,127.0.0.1,.svc.cluster.local
 USE_PROXY         ?= false
+GCP_SDK ?= gcr.io/google.com/cloudsdktool/cloud-sdk:308.0.0
 
 PATH += :/usr/local/go/bin
 HELP_FILE ?= /tmp/help.txt
@@ -37,6 +38,7 @@ images: Dockerfile \
 ifeq ($(USE_PROXY), true)
 	@docker build . --network=host \
 	--build-arg MAKE_TARGET=$(DOCKER_MAKE_TARGET) \
+	--build-arg GCP_SDK=$(GCP_SDK) \
 	--tag $(DOCKER_IMAGE) \
 	--build-arg http_proxy=$(PROXY) \
 	--build-arg https_proxy=$(PROXY) \
@@ -48,6 +50,7 @@ ifeq ($(USE_PROXY), true)
 else
 	@docker build . --network=host \
 	    --build-arg MAKE_TARGET=$(DOCKER_MAKE_TARGET) \
+	    --build-arg GCP_SDK=$(GCP_SDK) \
 	    --tag $(DOCKER_IMAGE) \
 	    --force-rm=$(DOCKER_FORCE_CLEAN)
 endif
