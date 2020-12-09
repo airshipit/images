@@ -13,17 +13,23 @@
   shell:
     cmd: |
         xorriso \
-            -as mkisofs \
-            -iso-level 3 \
-            -full-iso9660-filenames \
-            -volid "config-2" \
-            --grub2-boot-info \
-            --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
-            -eltorito-boot boot/grub/bios.img \
-            -no-emul-boot \
-            -boot-load-size 4 \
-            -boot-info-table \
-            --eltorito-catalog boot/grub/boot.cat \
-            -output {{ img_output_dir }}/{{ img_name }} \
-            -graft-points \
-            {{ root_image }}
+          -as mkisofs \
+          -iso-level 3 \
+          -full-iso9660-filenames \
+          -volid "config-2" \
+          -eltorito-boot boot/grub/bios.img \
+          -no-emul-boot \
+          -boot-load-size 4 \
+          -boot-info-table \
+          --eltorito-catalog boot/grub/boot.cat \
+          --grub2-boot-info \
+          --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
+          -eltorito-alt-boot \
+          -e EFI/efiboot.img \
+          -no-emul-boot \
+          -append_partition 2 0xef {{ root_image }}/boot/grub/efiboot.img \
+          -output {{ img_output_dir }}/{{ img_name }} \
+          -graft-points \
+              {{ root_image }} \
+              /boot/grub/bios.img={{ root_image }}/boot/grub/bios.img \
+              /EFI/efiboot.img={{ root_image }}/boot/grub/efiboot.img

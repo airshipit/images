@@ -58,6 +58,7 @@ if [[ $build_type = iso ]]; then
    --env NO_PROXY=$noproxy \
    ${image}
   disk1="--disk path=${workdir}/ephemeral.iso,device=cdrom"
+  uefi_boot_arg='--boot uefi'
 elif [[ $build_type == qcow ]]; then
   sudo -E modprobe nbd
   sudo -E docker run -t --rm \
