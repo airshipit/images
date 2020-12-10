@@ -35,7 +35,28 @@
   template:
       src: grub-livecd.cfg.j2
       dest: "{{ bootimg_builddir.path }}/grub.cfg"
-- name: "making standalone grub"
+
+- name: "making standalone grub - efi"
+  shell:
+    cmd: |
+        grub-mkstandalone \
+        --format=x86_64-efi \
+        --output="{{ bootimg_builddir.path }}/bootx64.efi" \
+        --locales="" \
+        --fonts="" \
+        boot/grub/grub.cfg="{{ bootimg_builddir.path }}/grub.cfg"
+
+- name: "setup efi filesystem"
+  shell:
+    cmd: |
+        set -e
+        cd {{ bootimg_builddir.path }}
+        dd if=/dev/zero of=efiboot.img bs=1M count=10
+        mkfs.vfat efiboot.img
+        LC_CTYPE=C mmd -i efiboot.img efi efi/boot
+        LC_CTYPE=C mcopy -i efiboot.img ./bootx64.efi ::efi/boot/
+
+- name: "making standalone grub - legacy"
   shell:
     cmd: |
         grub-mkstandalone \
@@ -47,7 +68,6 @@
           --fonts="" \
           boot/grub/grub.cfg="{{ bootimg_builddir.path }}/grub.cfg"
 
-
 - name: "ensuring directory {{ root_image }}/boot/grub exists"
   file:
       path: "{{ root_image }}/boot/grub"
@@ -55,5 +75,6 @@
       mode: '0755'
 - name: "assembling boot img"
   shell:
-    cmd: cat /usr/lib/grub/i386-pc/cdboot.img {{ bootimg_builddir.path }}/core.img > {{ root_image }}/boot/grub/bios.img
-
+    cmd: |
+        cat /usr/lib/grub/i386-pc/cdboot.img {{ bootimg_builddir.path }}/core.img > {{ root_image }}/boot/grub/bios.img
+        cp {{ bootimg_builddir.path }}/efiboot.img {{ root_image }}/boot/grub/

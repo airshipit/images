@@ -24,7 +24,7 @@ PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 IMAGE_ALIAS	?= $(DOCKER_REGISTRY)-$(IMAGE_NAME)-$(IMAGE_TAG)-${DISTRO}-${IMAGE_TYPE}
-UEFI_BOOT	?=
+UEFI_BOOT	?= true
 PROXY           ?=
 NO_PROXY        ?= localhost,127.0.0.1
 

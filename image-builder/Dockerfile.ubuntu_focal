@@ -56,6 +56,8 @@ ENV boot_src="/opt/grub"
 
 RUN apt-get update ;\
     apt-get install -y --no-install-recommends  \
+        dosfstools \
+        mtools \
         squashfs-tools \
         grub-common \
         grub2-common \
