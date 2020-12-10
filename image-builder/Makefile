@@ -51,7 +51,7 @@ endif
 
 build:
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY)
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
@@ -86,7 +86,7 @@ endif
 
 cut_image: install_prereqs
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY)
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
