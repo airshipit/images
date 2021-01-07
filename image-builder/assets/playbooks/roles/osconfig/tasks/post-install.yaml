@@ -85,8 +85,8 @@
         set -e
         blkid -s UUID -o value $(df -h | grep /boot$ | awk "{print \$1}") > /tmp/boot_uuid
         echo "search.fs_uuid $(cat /tmp/boot_uuid) root hd0,gpt2" > /boot/efi/EFI/ubuntu/grub.cfg
-        echo 'set prefix=(\$root)'\''/grub'\''' >> /boot/efi/EFI/ubuntu/grub.cfg
-        echo 'configfile \$prefix/grub.cfg' >> /boot/efi/EFI/ubuntu/grub.cfg
+        echo "set prefix=(\$root)'/grub'" >> /boot/efi/EFI/ubuntu/grub.cfg
+        echo "configfile \$prefix/grub.cfg" >> /boot/efi/EFI/ubuntu/grub.cfg
         rm /tmp/boot_uuid
   when: uefi is defined
 
