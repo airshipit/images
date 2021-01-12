@@ -135,6 +135,36 @@ sysctl:
     - name: net.bridge.bridge-nf-call-iptables
       value: '1'
 
+directories:
+    - name: /testdir
+      permissions: '0755'
+      owner: root
+      group: root
+
+files:
+    - name: /testdir/test.sh
+      file_content: |
+          #!/bin/bash
+          echo hello world
+      permissions: '0755'
+      owner: root
+      group: root
+
+systemd:
+    - name: sample.service
+      file_content: |
+          [Unit]
+          Description=sample service
+          After=network.target
+
+          [Service]
+          ExecStart=/bin/sleep infinity
+
+          [Install]
+          WantedBy=multi-user.target
+      enabled: yes
+      force: no
+
 post_install_package_list:
     - kdump-tools
     - apparmor
@@ -142,3 +172,14 @@ post_install_package_list:
     - rsyslog
     - logrotate
 
+post_install_scripts:
+    - file_content: |
+          #!/bin/bash
+          echo "custom post-install script"
+
+file_permissions:
+      # Full path to file to create
+    - name: /testdir/test.sh
+      permissions: '0700'
+      owner: root
+      group: root

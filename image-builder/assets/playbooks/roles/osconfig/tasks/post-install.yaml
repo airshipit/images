@@ -59,6 +59,8 @@
 - name: "POST-INSTALL | grub-install UEFI"
   shell: |
         set -e
+        grub-install --target=i386-pc --uefi-secure-boot --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=i386-pc --uefi-secure-boot --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
         grub-install --target=x86_64-efi --uefi-secure-boot --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
         grub-install --target=x86_64-efi --uefi-secure-boot --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
   when: uefi is defined
@@ -89,6 +91,10 @@
         echo "configfile \$prefix/grub.cfg" >> /boot/efi/EFI/ubuntu/grub.cfg
         rm /tmp/boot_uuid
   when: uefi is defined
+
+- name: "POST-INSTALL | running user-defined post-scripts"
+  shell: "{{ item.file_content }}"
+  with_items: "{{ post_install_scripts }}"
 
 - name: "POST-INSTALL | cleanup deb cache"
   shell: |

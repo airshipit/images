@@ -3,7 +3,19 @@ nbd_build_dir: /tmp/nbd_build_dir
 dns: 8.8.8.8
 qcow_capacity: 412G
 partitions:
-    # Ubuntu default is for a separate vfat partition for efi
+    # Partition numbering is according to list ordering.
+    # Ironic default cloud-init configdrive injection requires
+    # root partition to be the first numbered partition.
+    - mount: /
+      mount_order: 0
+      part_start: 1284MiB
+      part_end: 32GiB
+      filesystem:
+        type: ext4
+        fstab:
+          options: "defaults,errors=remount-ro,noatime"
+          dump: 0
+          fsck: 1
     - mount: none
       mount_order: 99
       part_start: 1MiB
@@ -32,16 +44,6 @@ partitions:
           options: "defaults,errors=remount-ro,noatime"
           dump: 0
           fsck: 2
-    - mount: /
-      mount_order: 0
-      part_start: 1284MiB
-      part_end: 32GiB
-      filesystem:
-        type: ext4
-        fstab:
-          options: "defaults,errors=remount-ro,noatime"
-          dump: 0
-          fsck: 1
     - mount: /var
       mount_order: 3
       part_start: 32GiB

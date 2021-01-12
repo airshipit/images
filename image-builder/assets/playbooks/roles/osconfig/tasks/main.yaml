@@ -16,8 +16,6 @@
     include_tasks: sysctl.yaml
   - name: "configure grub"
     include_tasks: grub.yaml
-  - name: "install and configure cni binaries"
-    include_tasks: cni.yaml
   - name: "configure kubernetes"
     include_tasks: kubernetes.yaml
   - name: "configure locale"

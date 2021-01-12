@@ -1,3 +1,8 @@
+- name: "Kubernetes | write out kubelet unit file"
+  template:
+    src: kubelet.service.j2
+    dest: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+    mode: 0644
 - name: "Kubernetes | Ensuring systemd preset directory exists"
   file:
     path: "/etc/systemd/system-preset"

@@ -57,7 +57,7 @@ sysctl:
 # Any directories to create on disk can be defined here
 directories:
       # Full path to file to create
-    - name: /tmp/testdir
+    - name: /testdir
       permissions: '0755'
       owner: root
       group: root
@@ -65,7 +65,7 @@ directories:
 # Any files to write to disk can be defined here
 files:
       # Full path to file to create
-    - name: /tmp/testdir/test.sh
+    - name: /testdir/test.sh
       file_content: |
           #!/bin/bash
           echo hello world
@@ -106,10 +106,17 @@ post_install_package_list:
     - rsyslog
     - logrotate
 
+# If any other custom shell scripts are needed for bare-metal provisioning, they can be
+# added here.
+post_install_scripts:
+    - file_content: |
+          #!/bin/bash
+          echo "custom post-install script"
+
 # Any other adjustments to file or directory permissions, for files that already exist.
 file_permissions:
       # Full path to file to create
-    - name: /tmp/testdir/test.sh
+    - name: /testdir/test.sh
       permissions: '0700'
       owner: root
       group: root

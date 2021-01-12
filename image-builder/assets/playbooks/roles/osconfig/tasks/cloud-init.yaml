@@ -4,8 +4,8 @@
       # prefer to render via netplan instead of /etc/network/interfaces even if ifupdown is present
       system_info:
         network:
-            renderers: ['netplan', 'eni', 'sysconfig']
-    dest: "/etc/cloud/cloud.cfg.d/90-override-renderer.cfg"
+          renderers: ['netplan', 'eni', 'sysconfig']
+    dest: "/etc/cloud/cloud.cfg.d/90_override_renderer.cfg"
 - name: "Cloud-Init | Mask ssh.socket allowing cloud-init to configure without failures"
   systemd:
     masked: yes
