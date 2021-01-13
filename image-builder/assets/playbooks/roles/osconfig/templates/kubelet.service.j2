@@ -14,6 +14,7 @@ EnvironmentFile=-/etc/default/kubelet
 {% for arg in kubelet.extra_systemd_args %}
 {% set ns.content = ns.content + ' --' + arg.name + '=' + arg.value %}
 {% endfor %}
+ExecStart=
 ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS {{ ns.content }}
 CPUAffinity=
 Restart=always
