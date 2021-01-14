@@ -6,5 +6,5 @@
 - name: "Kubernetes | configuring kubelet systemd unit"
   systemd:
     name: "kubelet.service"
-    enabled: no
+    enabled: yes
     force: no
