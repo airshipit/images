@@ -136,10 +136,13 @@ func prepareAKSCluster(azConfig *AzureConfig, isCreate bool) error {
 		kubeconfig := dstMount + "/" + kubeconfigFile
 
 		// Delete existing Kubeconfig file, if any
-		err = os.Remove(kubeconfig)
-		if err != nil {
-			log.Printf("Failed to remove existing kubeconfig file %s.\n", kubeconfig)
-			return err
+		_, err = os.Stat(kubeconfig)
+		if err == nil {
+			err = os.Remove(kubeconfig)
+			if err != nil {
+				log.Printf("Failed to remove existing kubeconfig file %s.\n", kubeconfig)
+				return err
+			}
 		}
 
 		// Retrieving the Kubeconfig file for the cluster
