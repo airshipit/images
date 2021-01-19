@@ -35,7 +35,7 @@ kubelet:
         #  value: '0-3'
 
 grub:
-    GRUB_TIMEOUT: 5
+    GRUB_TIMEOUT: 10
     GRUB_CMDLINE_LINUX_DEFAULT:
        - name: console
          value: 'ttyS0,115200n8'
@@ -53,6 +53,17 @@ grub:
          value: '4096,4096'
        - name: rcu_nocb_poll
          value: 'true'
+    GRUB_SERIAL_COMMAND:
+       - name: speed
+         value: 'ttyS0,115200n8'
+       - name: unit
+         value: '0'
+       - name: word
+         value: '8'
+       - name: parity
+         value: 'no'
+       - name: stop
+         value: '1'
 
 kdump_tools:
     crashkernel: '768M'
