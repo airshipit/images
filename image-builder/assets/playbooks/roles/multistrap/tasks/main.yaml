@@ -3,6 +3,16 @@
     file: main.yaml
     name: user-vars
 
+- name: "Append any user-defined repos to multistrap list"
+  set_fact:
+    repos: "{{ repos + repos_append }}"
+  when: repos_append is defined
+
+- name: "Append any user-defined pkgs to be installed from default Ubuntu mirrors"
+  set_fact:
+    ubuntu_packages: "{{ ubuntu_packages + ubuntu_packages_append }}"
+  when: ubuntu_packages_append is defined
+
 - name: "ensuring directory {{ rootfs_root }} exists for rootfs"
   file:
     path: "{{ rootfs_root }}"

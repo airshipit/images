@@ -1,3 +1,8 @@
+- name: "POST-INSTALL | Append any user-defined post-install pkgs to install list"
+  set_fact:
+    post_install_package_list: "{{ post_install_package_list + post_install_package_list_append }}"
+  when: post_install_package_list_append is defined
+
 - name: "POST-INSTALL | DNS sanity check"
   shell:
     executable: /bin/bash
