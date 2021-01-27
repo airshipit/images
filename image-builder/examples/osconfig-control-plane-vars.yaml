@@ -76,22 +76,22 @@ grub:
          value: 'true'
 
 sysctl:
+    - name: net.bridge.bridge-nf-call-ip6tables
+      value: '1'
+    - name: net.bridge.bridge-nf-call-iptables
+      value: '1'
     - name: net.nf_conntrack_max
       value: '1048576'
     - name: kernel.panic
-      value: '60'
+      value: '3'
     - name: kernel.pid_max
       value: '4194303'
-    - name: kernel.randomize_va_space
-      value: '2'
     - name: net.ipv4.conf.default.arp_accept
       value: '1'
     - name: net.ipv4.conf.all.arp_accept
       value: '1'
-    - name: net.core.netdev_max_backlog
-      value: '261144'
     - name: net.ipv4.tcp_keepalive_intvl
-      value: '3'
+      value: '15'
     - name: net.ipv4.tcp_keepalive_time
       value: '30'
     - name: net.ipv4.tcp_keepalive_probes
@@ -100,20 +100,14 @@ sysctl:
       value: '5'
     - name: net.ipv4.neigh.default.gc_thresh1
       value: '4096'
-    - name: net.ipv4.neigh.default.gc_thresh2
-      value: '8192'
     - name: net.ipv4.neigh.default.gc_thresh3
       value: '16384'
     - name: net.ipv4.conf.default.rp_filter
-      value: '0'
+      value: '2'
     - name: net.ipv6.conf.all.accept_ra
       value: '0'
-    - name: net.ipv6.conf.all.disable_ipv6
-      value: '1'
     - name: net.ipv6.conf.default.accept_ra
       value: '0'
-    - name: net.ipv6.conf.default.disable_ipv6
-      value: '1'
     - name: net.ipv6.conf.lo.accept_ra
       value: '0'
     - name: net.ipv6.conf.lo.disable_ipv6
@@ -121,7 +115,7 @@ sysctl:
     - name: net.netfilter.nf_conntrack_acct
       value: '1'
     - name: fs.suid_dumpable
-      value: '0'
+      value: '2'
     - name: fs.inotify.max_user_watches
       value: '1048576'
     - name: fs.protected_hardlinks
@@ -129,11 +123,7 @@ sysctl:
     - name: fs.protected_symlinks
       value: '1'
     - name: kernel.sysrq
-      value: '1'
-    - name: net.bridge.bridge-nf-call-ip6tables
-      value: '1'
-    - name: net.bridge.bridge-nf-call-iptables
-      value: '1'
+      value: '8'
 
 directories:
     - name: /testdir
