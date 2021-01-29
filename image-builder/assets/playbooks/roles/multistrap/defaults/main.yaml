@@ -1,64 +1,66 @@
 rootfs_root: /mnt/rootfs
 rootfs_arch: amd64
+k8s_version: 1.18.6-00
+ubuntu_packages:
+    - apt-file
+    - apt-utils
+    - apt-transport-https
+    - arptables
+    - bash-completion
+    - bc
+    - bridge-utils
+    - chrony
+    - cloud-init
+    - conntrack
+    - curl
+    - dnsutils
+    - dosfstools
+    - e2fsprogs
+    - ebtables
+    - ethtool
+    - file
+    - gettext-base
+    - gnupg2
+    #- grub2 # cannot install until after boot partition is available
+    - ifenslave
+    - isc-dhcp-client
+    - iproute2
+    - iptables
+    - iputils-arping
+    - iputils-ping
+    - iputils-tracepath
+    - ipvsadm
+    - less
+    - linux-image-generic # this will be reinstalled later when the boot partition is available
+    - live-boot
+    - locales
+    - locales-all
+    - lsb-release
+    - lsof
+    - man-db
+    - mbr
+    - netplan.io
+    - net-tools
+    - networkd-dispatcher # required for netplan post-up scripts
+    - openssh-server
+    - passwd
+    - python3
+    - python3-apt
+    - socat
+    - systemd
+    - systemd-sysv
+    - strace
+    - sudo
+    - tcpdump
+    - traceroute
+    - vim
+    - vlan
+    - xfsprogs
+    - xz-utils
 repos:
     - register_repo_with_rootfs: true
       name: Ubuntu
-      packages:
-        - apt-file
-        - apt-utils
-        - apt-transport-https
-        - arptables
-        - bash-completion
-        - bc
-        - bridge-utils
-        - chrony
-        - cloud-init
-        - conntrack
-        - curl
-        - dnsutils
-        - dosfstools
-        - e2fsprogs
-        - ebtables
-        - ethtool
-        - file
-        - gettext-base
-        - gnupg2
-        #- grub2 # cannot install until after boot partition is available
-        - ifenslave
-        - isc-dhcp-client
-        - iproute2
-        - iptables
-        - iputils-arping
-        - iputils-ping
-        - iputils-tracepath
-        - ipvsadm
-        - less
-        - linux-image-generic # this will be reinstalled later when the boot partition is available
-        - live-boot
-        - locales
-        - locales-all
-        - lsb-release
-        - lsof
-        - man-db
-        - mbr
-        - netplan.io
-        - net-tools
-        - networkd-dispatcher # required for netplan post-up scripts
-        - openssh-server
-        - passwd
-        - python3
-        - python3-apt
-        - socat
-        - systemd
-        - systemd-sysv
-        - strace
-        - sudo
-        - tcpdump
-        - traceroute
-        - vim
-        - vlan
-        - xfsprogs
-        - xz-utils
+      packages: "{{ ubuntu_packages }}"
       source: http://archive.ubuntu.com/ubuntu/
       keyring_pkg: ubuntu-keyring
       suite: focal
@@ -95,9 +97,9 @@ repos:
     - register_repo_with_rootfs: true
       name: Kubernetes
       packages:
-        - kubelet=1.18.6-00
-        - kubeadm=1.18.6-00
-        - kubectl=1.18.6-00
+        - kubelet={{ k8s_version }}
+        - kubeadm={{ k8s_version }}
+        - kubectl={{ k8s_version }}
       source: https://apt.kubernetes.io
       keyring_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
       suite: kubernetes-xenial
