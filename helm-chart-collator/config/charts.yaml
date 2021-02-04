@@ -1,0 +1,21 @@
+git_repos:
+  - name: dex-aio
+    url: https://review.opendev.org/airship/charts
+    path: charts/dex-aio
+    refspec: refs/heads/master
+    chart_version: 1.0.0
+  - name: jarvis-project
+    url: https://review.opendev.org/airship/charts
+    path: charts/jarvis-project
+    refspec: refs/heads/master
+    chart_version: 1.0.0
+  - name: jarvis-system
+    url: https://review.opendev.org/airship/charts
+    path: charts/jarvis-system
+    refspec: refs/heads/master
+    chart_version: 1.0.0
+  - name: harbor
+    url: https://review.opendev.org/airship/charts
+    path: charts/harbor
+    refspec: refs/heads/master
+    chart_version: 1.0.0
