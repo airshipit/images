@@ -1,0 +1,38 @@
+##########################################
+# configure storage                #
+##########################################
+
+- name: create storage
+  include_tasks: create-storage.yaml
+  loop: "{{ libvirtStorage }}"
+
+##########################################
+# configure networks                     #
+##########################################
+
+- name: create network
+  include_tasks: create-network.yaml
+  loop: "{{ libvirtNetworks }}"
+
+##########################################
+# configure domains                      #
+##########################################
+
+- name: allocate domain cores
+  core_allocation:
+    nodes: "{{ nodes }}"
+    exclude_cpu: "{{ configuration.cpuExclude }}"
+  register: node_core_map
+  when: nodes
+
+- name: debug print node_core_map
+  debug:
+    msg: "node_core_map = {{ node_core_map }}"
+
+- name: define domain outer loop
+  include_tasks: create-domain.yaml
+  loop: "{{ nodes }}"
+  loop_control:
+    loop_var: node
+
+
