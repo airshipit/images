@@ -1,4 +1,8 @@
 #!/bin/bash
+# NOTE: These functions are deprecated. It is only left here
+# for backwards compatibility until airshipctl is migrated
+# away from using it.
+set -x
 
 # Defaults
 OUTPUT_METADATA_FILE_NAME_DEFAULT='output-metadata.yaml'

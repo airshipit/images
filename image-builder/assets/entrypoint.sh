@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -11,7 +11,11 @@ BASEDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 cd "$BASEDIR"
 
 BASEDIR="$(dirname "$(realpath "$0")")"
-source "${BASEDIR}/functions.sh"
+if [ "${VERSION}" = "v2" ]; then
+  source "${BASEDIR}/functions_v2.sh"
+else
+  source "${BASEDIR}/functions.sh"
+fi
 
 export http_proxy
 export https_proxy
@@ -56,9 +60,6 @@ else
   echo "\${IMAGE_TYPE} value '${IMAGE_TYPE}' does not match an expected value: [ 'iso', 'qcow' ]"
   exit 1
 fi
-
-# Write metadata output file containing host path to image and md5sum
-_make_metadata "${IMG_NAME}"
 
 echo "All Ansible plays completed successfully"
 

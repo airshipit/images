@@ -57,22 +57,35 @@ fi
 workdir="$(realpath ${host_mount_directory})"
 
 if [[ $build_type = iso ]]; then
-  sudo -E docker run -t --rm \
+  iso_config=/tmp/iso_config
+  echo "user_data:
+$(cat $host_mount_directory/user_data | sed 's/^/    /g')
+network_config:
+$(cat $host_mount_directory/network_data.json | sed 's/^/    /g')
+outputFileName: ephemeral.iso" > ${iso_config}
+  sudo -E docker run -i --rm \
    --volume $workdir:/config \
    --env BUILDER_CONFIG=/config/${build_type}.yaml \
    --env IMAGE_TYPE="iso" \
+   --env VERSION="v2" \
    --env http_proxy=$proxy \
    --env https_proxy=$proxy \
    --env HTTP_PROXY=$proxy \
    --env HTTPS_PROXY=$proxy \
    --env no_proxy=$noproxy \
    --env NO_PROXY=$noproxy \
-   ${image}
+   ${image} < ${iso_config}
   disk1="--disk path=${workdir}/ephemeral.iso,device=cdrom"
 elif [[ $build_type == qcow ]]; then
   sudo -E modprobe nbd
+  qcow_config=/tmp/qcow_config
+  echo "osconfig:
+$(cat $host_mount_directory/osconfig-control-plane-vars.yaml | sed 's/^/    /g')
+qcow:
+$(cat $host_mount_directory/qcow-control-plane-vars.yaml | sed 's/^/    /g')
+outputFileName: control-plane.qcow2" > ${qcow_config}
   echo "Note: This step can be slow if you don't have an SSD."
-  sudo -E docker run -t --rm \
+  sudo -E docker run -i --rm \
    --privileged \
    --volume /dev:/dev:rw  \
    --volume /dev/pts:/dev/pts:rw \
@@ -83,13 +96,14 @@ elif [[ $build_type == qcow ]]; then
    ${uefi_mount} \
    --env BUILDER_CONFIG=/config/${build_type}.yaml \
    --env IMAGE_TYPE="qcow" \
+   --env VERSION="v2" \
    --env http_proxy=$proxy \
    --env https_proxy=$proxy \
    --env HTTP_PROXY=$proxy \
    --env HTTPS_PROXY=$proxy \
    --env no_proxy=$noproxy \
    --env NO_PROXY=$noproxy \
-   ${image}
+   ${image} < ${qcow_config}
   cloud_init_config_dir='assets/tests/qcow/cloud-init'
   sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/airship-ubuntu_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
   disk1="--disk path=${workdir}/control-plane.qcow2"

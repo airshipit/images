@@ -6,3 +6,9 @@
 - name: "QCOW | Compressing QCoW and writing out to {{ img_output_dir }}/{{ img_name }}"
   shell: |
         qemu-img convert -p -O qcow2 -c {{ nbd_build_dir }}/{{ img_name }} {{ img_output_dir }}/{{ img_name }}
+  when: qcow_compress
+
+- name: "QCOW | Writing QCoW to {{ img_output_dir }}/{{ img_name }}"
+  shell: |
+        qemu-img convert -p -O qcow2 {{ nbd_build_dir }}/{{ img_name }} {{ img_output_dir }}/{{ img_name }}
+  when: not qcow_compress

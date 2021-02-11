@@ -68,6 +68,7 @@ ubuntu_packages:
     - traceroute
     - vim
     - vlan
+    - wget
     - xfsprogs
     - xz-utils
 repos:

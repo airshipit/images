@@ -42,7 +42,7 @@
 
 - job:
     name: airship-images-build
-    nodeset: airship-images-single-node
+    nodeset: airship-images-single-node-32GB
     timeout: 7200
     post-timeout: 7200
     pre-run: playbooks/airship-images-deploy-docker.yaml
@@ -51,7 +51,7 @@
 
 - job:
     name: airship-images-publish
-    nodeset: airship-images-single-node
+    nodeset: airship-images-single-node-32GB
     timeout: 7200
     post-timeout: 7200
     pre-run: playbooks/airship-images-deploy-docker.yaml
@@ -73,6 +73,12 @@
 
 - nodeset:
     name: airship-images-single-node
+    nodes:
+      - name: primary
+        label: ubuntu-bionic
+
+- nodeset:
+    name: airship-images-single-node-32GB
     nodes:
       - name: primary
         label: ubuntu-bionic-32GB
