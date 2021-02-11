@@ -1,8 +1,8 @@
-root_chroot: /mnt/rootfs
+src: /build
+dst: /chroot
 nbd_build_dir: /tmp/nbd_build_dir
 img_output_dir: /config
 img_name: airship-ubuntu.qcow2
-dns: 8.8.8.8
 qcow_capacity: 5G
 partitions:
     # Partition numbering is according to list ordering.
@@ -46,3 +46,12 @@ partitions:
           options: "defaults,errors=remount-ro,noatime"
           dump: 0
           fsck: 2
+# If any custom post-install shell scripts are needed for qcow building,
+# they can be added here. This should only be used if
+# osconfig_container_buildtime_scripts does not work in osconfig playbook.
+qcow_container_runtime_scripts:
+    - file_content: |
+          #!/bin/bash
+          echo "custom qcow post-install script"
+# This is only needed if you want DNS working when running qcow scripts above
+qcow_container_runtime_scripts_dns: 8.8.8.8

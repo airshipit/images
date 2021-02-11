@@ -1,5 +1,5 @@
 ---
-- hosts: /mnt/rootfs
+- hosts: build
   gather_facts: false
   roles:
      - osconfig

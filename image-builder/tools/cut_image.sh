@@ -18,14 +18,10 @@ image="${3:-port/image-builder:latest-ubuntu_focal}"
 # Libvirt instance name to use for a new libvirt XML definition that
 # will be created to reference the newly created ISO or QCOW2 image.
 img_alias="${4:-port-image-builder-latest-ubuntu_focal-$build_type}"
-# Whether or not to build the image with UEFI support.
-# NOTE: Machines that are not booted with UEFI will be unable to create
-# UEFI images.
-uefi_boot="$5"
 # proxy to use, if applicable
-proxy="$6"
+proxy="$5"
 # noproxy to use, if applicable
-noproxy="$7"
+noproxy="$6"
 
 if [ -n "$proxy" ]; then
   export http_proxy=$proxy
@@ -39,8 +35,23 @@ if [ -n "$noproxy" ]; then
   export NO_PROXY=$noproxy
 fi
 
-if [ -n "$uefi_boot" ]; then
+# Install pre-requisites
+install_pkg(){
+  dpkg -l $1 2> /dev/null | grep ^ii > /dev/null || sudo -E apt-get -y install $1
+}
+
+sudo -E apt -y update
+
+install_pkg qemu-kvm
+install_pkg virtinst
+install_pkg libvirt-bin
+install_pkg cloud-image-utils
+install_pkg ovmf
+type docker >& /dev/null || install_pkg docker.io
+
+if [ -d /sys/firmware/efi ]; then
   uefi_mount='--volume /sys/firmware/efi:/sys/firmware/efi:rw'
+  uefi_boot_arg='--boot uefi'
 fi
 
 workdir="$(realpath ${host_mount_directory})"
@@ -58,9 +69,9 @@ if [[ $build_type = iso ]]; then
    --env NO_PROXY=$noproxy \
    ${image}
   disk1="--disk path=${workdir}/ephemeral.iso,device=cdrom"
-  uefi_boot_arg='--boot uefi'
 elif [[ $build_type == qcow ]]; then
   sudo -E modprobe nbd
+  echo "Note: This step can be slow if you don't have an SSD."
   sudo -E docker run -t --rm \
    --privileged \
    --volume /dev:/dev:rw  \
@@ -78,15 +89,11 @@ elif [[ $build_type == qcow ]]; then
    --env HTTPS_PROXY=$proxy \
    --env no_proxy=$noproxy \
    --env NO_PROXY=$noproxy \
-   --env uefi_boot=$uefi_boot \
    ${image}
   cloud_init_config_dir='assets/tests/qcow/cloud-init'
   sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/airship-ubuntu_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
   disk1="--disk path=${workdir}/control-plane.qcow2"
   disk2="--disk path=${workdir}/airship-ubuntu_config.iso,device=cdrom"
-  if [ -n "$uefi_boot" ]; then
-    uefi_boot_arg='--boot uefi'
-  fi
 else
   echo Unknown build type: $build_type, exiting.
   exit 1

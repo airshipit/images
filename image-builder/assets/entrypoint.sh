@@ -13,18 +13,16 @@ cd "$BASEDIR"
 BASEDIR="$(dirname "$(realpath "$0")")"
 source "${BASEDIR}/functions.sh"
 
-: "${uefi_boot:=}"
-
-if [[ -n $uefi_boot ]]; then
-  extra_vars="uefi=$uefi_boot"
-fi
-
 export http_proxy
 export https_proxy
 export HTTP_PROXY
 export HTTPS_PROXY
 export no_proxy
 export NO_PROXY
+
+if [ ! -e build ]; then
+  ln -s /chroot build
+fi
 
 # Instruct ansible to output the image artifact to the container's host mount
 extra_vars="$extra_vars img_output_dir=${VOLUME}"
@@ -37,7 +35,7 @@ if [[ "${IMAGE_TYPE}" == "iso" ]]; then
   extra_vars="$extra_vars img_name=${IMG_NAME}"
 
   echo "Executing Step 1"
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/iso.yaml --extra-vars "$extra_vars" -vvvv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/iso.yaml --extra-vars "$extra_vars" -vv
 elif [[ "${IMAGE_TYPE}" == "qcow" ]]; then
   _process_input_data_set_vars_qcow
   _process_input_data_set_vars_osconfig
@@ -46,13 +44,14 @@ elif [[ "${IMAGE_TYPE}" == "qcow" ]]; then
   extra_vars="$extra_vars img_name=${IMG_NAME}"
 
   echo "Executing Step 1: Create qcow2 partitions and filesystems"
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "prep_img" -vvvv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "prep_img" -vv
 
   echo "Executing Step 2: Applying changes from base-osconfig playbook"
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" -vvvv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" --tags "runtime_and_buildtime" -vv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" --tags "runtime_only" -vv
 
   echo "Executing Step 3: Close image and write qcow2"
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "close_img" -vvvv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "close_img" -vv
 else
   echo "\${IMAGE_TYPE} value '${IMAGE_TYPE}' does not match an expected value: [ 'iso', 'qcow' ]"
   exit 1

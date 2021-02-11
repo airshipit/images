@@ -1,4 +1,3 @@
-dns: 8.8.8.8
 qcow_capacity: 5G
 partitions:
     # Partition numbering is according to list ordering.

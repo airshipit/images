@@ -1,6 +1,6 @@
 img_output_dir: /config
 img_name: ephemeral.iso
-root_image: /mnt/image
+root_image: /build
 
 meta_data_file: /config/meta_data.json
 user_data_file: /config/user_data

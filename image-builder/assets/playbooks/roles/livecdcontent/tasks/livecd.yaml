@@ -1,29 +1,7 @@
-- name: ansible copy file locally - vmlinuz.
-  copy:
-    src: "{{ item }}"
-    dest: "{{ root_image }}/vmlinuz"
-    remote_src: yes
-  with_fileglob: "{{ root_chroot }}/boot/vmlinuz-*"
-
-- name: ansible copy file locally - initrd.
-  copy:
-    src: "{{ item }}"
-    dest: "{{ root_image }}/initrd"
-    remote_src: yes
-  with_fileglob: "{{ root_chroot }}/boot/initrd.img-*"
-
-- name: ansible copy file locally - config.
-  copy:
-    src: "{{ item }}"
-    dest: "{{ root_image }}/config"
-    remote_src: yes
-  with_fileglob: "{{ root_chroot }}/boot/config-*"
-
 - name: "Stamp out a marker file for grub to use when identifying the desired boot volume"
   copy:
-    #TODO: populate this with meaningful content
     content: "{{ ansible_date_time.date }}"
-    dest: "{{ root_image }}/AIRSHIP_EPHEMERAL"
+    dest: "{{ root_image }}/AIRSHIP"
 
 - name: "create directory for boot image assembly"
   tempfile:
@@ -77,4 +55,4 @@
   shell:
     cmd: |
         cat /usr/lib/grub/i386-pc/cdboot.img {{ bootimg_builddir.path }}/core.img > {{ root_image }}/boot/grub/bios.img
-        cp {{ bootimg_builddir.path }}/efiboot.img {{ root_image }}/boot/grub/
+        cp {{ bootimg_builddir.path }}/efiboot.img {{ root_image }}/boot/grub/efiboot.img

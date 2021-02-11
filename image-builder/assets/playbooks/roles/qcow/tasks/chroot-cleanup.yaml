@@ -1,16 +1,18 @@
 - name: "QCOW | copy ansible playbooks to target image"
   shell: |
         set -e
-        cp -r /opt/assets "{{ root_chroot }}"/opt
+        cp -r /opt/assets "{{ dst }}"/opt
 
 - name: "QCOW | unmount target"
   shell: |
         set -e
         # restore resolv.conf
-        chroot "{{ root_chroot }}" /bin/bash -c 'rm /etc/resolv.conf; cd /etc; ln -s ../run/systemd/resolve/stub-resolv.conf resolv.conf'
-        cd "{{ root_chroot }}"
+        chroot "{{ dst }}" /bin/bash -c 'rm /etc/resolv.conf; cd /etc; ln -s ../run/systemd/resolve/stub-resolv.conf resolv.conf'
+        cd "{{ dst }}"
         mountpoint dev/pts > /dev/null && umount dev/pts
         mountpoint dev > /dev/null && umount dev
-        mountpoint sys/firmware/efi > /dev/null && umount sys/firmware/efi
+        if [ -d /sys/firmware/efi ]; then
+          mountpoint sys/firmware/efi > /dev/null && umount sys/firmware/efi
+        fi
         mountpoint sys > /dev/null && umount sys
         mountpoint proc > /dev/null && umount proc

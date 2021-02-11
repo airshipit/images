@@ -4,6 +4,11 @@
     state: directory
     mode: '0755'
 
+- name: "ensure no previous squashfs file"
+  file:
+    path: "{{ root_image }}/live/filesystem.squashfs"
+    state: absent
+
 - name: "Building squashfs"
   shell:
     cmd: |

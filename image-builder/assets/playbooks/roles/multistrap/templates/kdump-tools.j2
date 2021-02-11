@@ -1,0 +1,75 @@
+#!/bin/sh -e
+
+version="$1"
+kdumpdir="/var/lib/kdump"
+
+[ -x /usr/sbin/mkinitramfs ] || exit 0
+
+# passing the kernel version is required
+if [ -z "${version}" ]; then
+	echo >&2 "W: kdump-tools: ${DPKG_MAINTSCRIPT_PACKAGE:-kdump-tools package} did not pass a version number"
+	exit 2
+fi
+
+if ! linux-version list | grep "${version}" > /dev/null ; then
+	exit 0
+fi
+
+# exit if kernel does not need an initramfs
+if [ "$INITRD" = 'No' ]; then
+	exit 0
+fi
+
+# avoid running multiple times
+if [ -n "$DEB_MAINT_PARAMS" ]; then
+	eval set -- "$DEB_MAINT_PARAMS"
+	if [ -z "$1" ] || [ "$1" != "configure" ]; then
+		exit 0
+	fi
+fi
+
+# We need a modified copy of initramfs-tools directory
+# with MODULES=dep in initramfs.conf
+if [ ! -d "$kdumpdir" ];then
+	mkdir "$kdumpdir" || true
+fi
+# Force re-creation of $kdumpdir/initramfs-tools
+# in case the source has changed since last time
+# we ran
+if [ -d "$kdumpdir/initramfs-tools" ];then
+	rm -Rf $kdumpdir/initramfs-tools || true
+fi
+cp -pr /etc/initramfs-tools "$kdumpdir" || true
+
+initramfsdir="$kdumpdir/initramfs-tools"
+
+# Add scsi_dh_* modules if in use otherwise
+# kexec reboot on multipath will fail
+# (LP: #1635597)
+for I in $(lsmod | grep scsi_dh | cut -d" " -f1);do
+	echo "${I}" >> $initramfsdir/modules
+done
+
+# canderson: This line needs to be commented out for kdump-tools to install with multistrap
+#sed -e 's/MODULES=.*/MODULES=dep/' /etc/initramfs-tools/initramfs.conf > "$initramfsdir/initramfs.conf" || true
+if ! [ -e "$initramfsdir/initramfs.conf" ];then
+	echo >&2 "W: kdump-tools: Unable to create $initramfsdir/initramfs.conf"
+	exit 2
+fi
+
+# Cleaning up existing initramfs with same version
+# as mkinitramfs do not have a force option
+if [ -e "$kdumpdir/initrd.img-${version}" ];then
+	rm -f "$kdumpdir/initrd.img-${version}" || true
+fi
+
+# we're good - create initramfs.
+echo "kdump-tools: Generating $kdumpdir/initrd.img-${version}"
+if mkinitramfs -d "$initramfsdir" -o "$kdumpdir/initrd.img-${version}.new" "${version}";then
+	mv "$kdumpdir/initrd.img-${version}.new" "$kdumpdir/initrd.img-${version}"
+else
+	mkinitramfs_return="$?"
+	rm -f "${initramfs}.new"
+	echo "update-initramfs: failed for ${initramfs} with $mkinitramfs_return." >&2
+        exit $mkinitramfs_return
+fi

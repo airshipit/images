@@ -1,0 +1,34 @@
+- name: "POST-INSTALL | generate locales"
+  shell: |
+        set -e
+        locale-gen en_US.UTF-8
+
+- name: "POST-INSTALL | grub-install"
+  shell: |
+        set -e
+        grub-install --target=i386-pc --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=i386-pc --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=x86_64-efi --skip-fs-probe --force "{{ lookup('file', '/tmp/nbd') }}"
+        grub-install --target=x86_64-efi --skip-fs-probe --force --recheck "{{ lookup('file', '/tmp/nbd') }}"
+
+- name: "POST-INSTALL | generate grub cfg file"
+  shell: |
+        set -e
+        update-grub
+
+- name: "POST-INSTALL | write root partition UUID to grub.cfg"
+  shell: |
+        set -e
+        cp -r /usr/lib/grub/* /boot/grub
+        blkid -s UUID -o value $(df -h | grep /$ | awk "{print \$1}") > /tmp/root_uuid
+        sed -i "s@root=/dev/nbd[0-9]p[0-9]@root=UUID=$(cat /tmp/root_uuid)@g" /boot/grub/grub.cfg
+        rm /tmp/root_uuid
+
+- name: "POST-INSTALL | write boot partition UUID to UEFI grub.cfg"
+  shell: |
+        set -e
+        blkid -s UUID -o value $(df -h | grep /boot$ | awk "{print \$1}") > /tmp/boot_uuid
+        echo "search.fs_uuid $(cat /tmp/boot_uuid) root hd0,gpt2" > /boot/efi/EFI/ubuntu/grub.cfg
+        echo "set prefix=(\$root)'/grub'" >> /boot/efi/EFI/ubuntu/grub.cfg
+        echo "configfile \$prefix/grub.cfg" >> /boot/efi/EFI/ubuntu/grub.cfg
+        rm /tmp/boot_uuid

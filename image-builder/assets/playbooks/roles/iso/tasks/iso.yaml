@@ -1,3 +1,28 @@
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/lib"
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/usr"
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/bin"
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/sbin"
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/var"
+- name: "ISO | Reduce image size"
+  file:
+    state: absent
+    path: "{{ root_image }}/opt"
+
 - name: "ISO | Ensure any old iso image at target location is removed"
   file:
     state: absent

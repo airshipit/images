@@ -10,92 +10,21 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
 SHELL ["bash", "-exc"]
 ENV DEBIAN_FRONTEND noninteractive
 
-# Update distro and install ansible
-RUN apt-get update ;\
-    apt-get dist-upgrade -y ;\
-    apt-get install -y --no-install-recommends \
-        python3-minimal \
-        python3-pip \
-        python3-apt \
-        python3-setuptools ;\
-    pip3 install --upgrade wheel ;\
-    pip3 install --upgrade ansible ;\
-    rm -rf /var/lib/apt/lists/*
 
-
-
-FROM base-image as rootfs-builder
-# install requirements for building chroot
 RUN apt-get update ;\
     apt-get install -y --no-install-recommends  \
+        ca-certificates \
         multistrap \
         equivs \
-        curl \
-        ca-certificates \
         build-essential \
         gnupg2 \
-        dosfstools;\
-    rm -rf /var/lib/apt/lists/*
-
-COPY assets/playbooks/inventory.yaml /opt/assets/playbooks/inventory.yaml
-
-COPY assets/playbooks/base-chroot.yaml /opt/assets/playbooks/base-chroot.yaml
-COPY assets/playbooks/roles/multistrap /opt/assets/playbooks/roles/multistrap
-RUN ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-chroot.yaml
-
-COPY assets/playbooks/base-osconfig.yaml /opt/assets/playbooks/base-osconfig.yaml
-COPY assets/playbooks/roles/osconfig /opt/assets/playbooks/roles/osconfig
-RUN ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --tags "pre_install"
-
-
-
-FROM base-image as squashfs-builder
-ENV root_chroot /mnt/rootfs
-ENV root_image /mnt/image
-ENV boot_src="/opt/grub"
-
-RUN apt-get update ;\
-    apt-get install -y --no-install-recommends  \
-        dosfstools \
-        mtools \
-        squashfs-tools \
-        grub-common \
-        grub2-common \
-        grub-pc-bin \
-        grub-efi-amd64-signed;\
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=rootfs-builder ${root_chroot} ${root_chroot}
-
-COPY assets/playbooks/inventory.yaml /opt/assets/playbooks/inventory.yaml
-COPY assets/playbooks/base-livecdcontent.yaml /opt/assets/playbooks/base-livecdcontent.yaml
-COPY assets/playbooks/roles/livecdcontent /opt/assets/playbooks/roles/livecdcontent
-RUN ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-livecdcontent.yaml
-
-
-
-FROM base-image as image-builder
-ENV boot_src="/opt/grub"
-ENV root_image /mnt/image
-
-RUN apt-get update ;\
-    apt-get install -y --no-install-recommends  \
         xorriso \
-        grub-pc-bin \
         python3-minimal \
-        python3-yaml ;\
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=squashfs-builder ${root_image} ${root_image}
-
-COPY assets/playbooks/inventory.yaml /opt/assets/playbooks/inventory.yaml
-COPY assets/playbooks/iso.yaml /opt/assets/playbooks/iso.yaml
-COPY assets/playbooks/roles/iso /opt/assets/playbooks/roles/iso
-
-
-
-RUN apt-get update ;\
-    apt-get install -y --no-install-recommends  \
+        python3-yaml \
+        python3-pip \
+        python3-setuptools \
+        python3-apt \
+        grub-pc-bin \
         coreutils \
         curl \
         qemu-utils \
@@ -107,18 +36,29 @@ RUN apt-get update ;\
         vim \
         kmod \
         efivar \
+        rsync \
         dosfstools ;\
+    pip3 install --upgrade pip ;\
+    pip3 install --upgrade wheel ;\
+    pip3 install --upgrade ansible ;\
     rm -rf /var/lib/apt/lists/*
-
-
-COPY assets/playbooks/base-osconfig.yaml /opt/assets/playbooks/base-osconfig.yaml
-COPY assets/playbooks/roles/osconfig /opt/assets/playbooks/roles/osconfig
-
-COPY assets/playbooks/qcow.yaml /opt/assets/playbooks/qcow.yaml
-COPY assets/playbooks/roles/qcow /opt/assets/playbooks/roles/qcow
 
 RUN curl -L https://github.com/mikefarah/yq/releases/download/2.4.0/yq_linux_amd64 -o /bin/yq \
     && chmod +x /bin/yq
+
+COPY assets/playbooks/inventory.yaml /opt/assets/playbooks/inventory.yaml
+COPY assets/playbooks/base-chroot.yaml /opt/assets/playbooks/base-chroot.yaml
+COPY assets/playbooks/roles/multistrap /opt/assets/playbooks/roles/multistrap
+COPY assets/playbooks/base-osconfig.yaml /opt/assets/playbooks/base-osconfig.yaml
+COPY assets/playbooks/roles/osconfig /opt/assets/playbooks/roles/osconfig
+COPY assets/playbooks/base-livecdcontent.yaml /opt/assets/playbooks/base-livecdcontent.yaml
+COPY assets/playbooks/roles/livecdcontent /opt/assets/playbooks/roles/livecdcontent
+COPY assets/playbooks/iso.yaml /opt/assets/playbooks/iso.yaml
+COPY assets/playbooks/roles/iso /opt/assets/playbooks/roles/iso
+COPY assets/playbooks/qcow.yaml /opt/assets/playbooks/qcow.yaml
+COPY assets/playbooks/roles/qcow /opt/assets/playbooks/roles/qcow
+
+COPY assets/playbooks/build /build
 
 COPY assets/*.sh /usr/bin/local/
 COPY assets/*.json /usr/bin/local/

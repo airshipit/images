@@ -1,11 +1,4 @@
-rootfs_root: /mnt/rootfs
-
-cni_version: v0.8.2
-k8s_version: v1.18.6
-
 kernel:
-    base_pkg: linux-image-generic
-    headers_pkg: linux-headers-generic
     modules:
         load:
             - name: 8021q
@@ -165,17 +158,10 @@ systemd:
       enabled: yes
       force: no
 
-post_install_package_list:
-    - kdump-tools
-    - apparmor
-    - dbus
-    - rsyslog
-    - logrotate
-
-post_install_scripts:
+buildtime_user_scripts:
     - file_content: |
           #!/bin/bash
-          echo "custom post-install script"
+          echo "custom container buildtime script"
 
 file_permissions:
       # Full path to file to create

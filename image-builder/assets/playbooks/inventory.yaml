@@ -5,6 +5,6 @@ all:
             ansible_python_interpreter: /usr/bin/python3
 chroots:
     hosts:
-        /mnt/rootfs:
+        build:
             ansible_connection: chroot
             ansible_python_interpreter: /usr/bin/python3
