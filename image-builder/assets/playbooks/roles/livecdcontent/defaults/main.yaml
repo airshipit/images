@@ -1,3 +1,2 @@
-root_chroot: /mnt/rootfs
-root_image: /mnt/image
-boot_src: /opt/grub
+root_chroot: build
+root_image: build

@@ -19,9 +19,13 @@
       file: mount-helper.yaml
     with_items: "{{ partitions | sort( case_sensitive=True, attribute='mount_order' ) }}"
     vars:
-      mount_offset: "{{ root_chroot }}"
+      mount_offset: "{{ dst }}"
       state: mounted
       fstab: /tmp/junkfstab
+
+  - name: "QCOW | Copy files to partition"
+    include_tasks:
+      file: copy-files.yaml
 
   - name: "QCOW | Writing image content"
     include_tasks:
@@ -44,7 +48,7 @@
       file: mount-helper.yaml
     with_items: "{{ partitions | sort( reverse=True, case_sensitive=True, attribute='mount' ) }}"
     vars:
-      mount_offset: "{{ root_chroot }}"
+      mount_offset: "{{ dst }}"
       state: unmounted
       fstab: /tmp/junkfstab
 

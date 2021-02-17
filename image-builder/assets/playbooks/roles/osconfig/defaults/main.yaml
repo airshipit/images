@@ -1,11 +1,6 @@
-rootfs_root: /mnt/rootfs
-
-cni_version: v0.8.2
-k8s_version: v1.18.6
+rootfs_root: build
 
 kernel:
-    base_pkg: linux-image-generic
-    headers_pkg: linux-headers-generic
     modules:
         load:
             - name: 8021q
@@ -136,26 +131,19 @@ systemd:
       # Use only if you are intenting to overwrite an existing systemd unit
       force: no
 
-# Note: You are encouraged to build your own image-builder container, where your desired
-# package list can be supplied to multistrap during the container build. However, this
-# option will allow you to layer additional packages (installed during container runtime,
-# instead of during the container build) where a customized container build is not possible
-# or not desired.
-# This is also needed for a specific subset of packages that fail to install successfully
-# with multistrap (e.g., kdump-tools).
-post_install_package_list:
-    - kdump-tools
-    - apparmor
-    - dbus
-    - rsyslog
-    - logrotate
-
-# If any other custom shell scripts are needed for bare-metal provisioning, they can be
-# added here.
-post_install_scripts:
+# If any custom shell scripts are needed for qcow building for image building,
+# they can be added here.
+buildtime_user_scripts:
     - file_content: |
           #!/bin/bash
-          echo "custom post-install script"
+          echo "custom container buildtime script"
+
+# Custom user shell scripts to be run during container execution, right before
+# final QCOW image is created.
+runtime_user_scripts:
+    - file_content: |
+          #!/bin/bash
+          echo "custom container buildtime script"
 
 # Any other adjustments to file or directory permissions, for files that already exist.
 file_permissions:

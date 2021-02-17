@@ -1,6 +1,3 @@
-root_chroot: /mnt/rootfs
-nbd_build_dir: /tmp/nbd_build_dir
-dns: 8.8.8.8
 qcow_capacity: 412G
 partitions:
     # Partition numbering is according to list ordering.

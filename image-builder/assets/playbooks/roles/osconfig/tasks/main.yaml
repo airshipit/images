@@ -34,8 +34,14 @@
     include_tasks: file-permissions.yaml
   - name: "finalise rootfs"
     include_tasks: finalise-rootfs.yaml
-  tags: pre_install
+  tags: runtime_and_buildtime
 - block:
-  - name: "POST-INSTALL | Starting post-install"
-    include_tasks: post-install.yaml
-  tags: post_install
+  - name: "run user-defined scripts"
+    include_tasks: buildtime-user-scripts.yaml
+  tags: buildtime_only
+- block:
+  - name: "run system-defined scripts"
+    include_tasks: runtime-system-scripts.yaml
+  - name: "run user-defined scripts"
+    include_tasks: runtime-user-scripts.yaml
+  tags: runtime_only

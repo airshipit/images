@@ -1,4 +1,4 @@
-search --set=root --file /AIRSHIP_EPHEMERAL
+search --set=root --file /AIRSHIP
 
 insmod all_video
 
@@ -6,6 +6,6 @@ set default="0"
 set timeout=1
 
 menuentry "Airship Ephemeral" {
-    linux /vmlinuz boot=live quiet nomodeset overlay-size=70% systemd.unified_cgroup_hierarchy=0 ds=ConfigDrive
-    initrd /initrd
+    linux /boot/vmlinuz boot=live quiet nomodeset overlay-size=70% systemd.unified_cgroup_hierarchy=0 ds=ConfigDrive
+    initrd /boot/initrd.img
 }

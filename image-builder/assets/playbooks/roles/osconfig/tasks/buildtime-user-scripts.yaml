@@ -1,0 +1,3 @@
+- name: "user-scripts | running user-defined scripts"
+  shell: "{{ item.file_content }}"
+  with_items: "{{ buildtime_user_scripts }}"

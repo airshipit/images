@@ -35,30 +35,36 @@
   include_tasks: apt-key-install.yaml
   loop: "{{ repos }}"
 
-- name: "ensuring directory {{ rootfs_root }}/dev exists for chroot"
-  file:
-    path: "{{ rootfs_root }}/dev"
-    state: directory
-    mode: '0755'
-
-- name: "Setting up devices for chroot"
+# kdump-tools does not install properly in multistrap environment. This fix allows kdump-tools
+# installation to succeed.
+- name: "kdump-tools fix - create directory"
   shell: |
-    mknod "{{ rootfs_root }}/dev/random" c 1 8
-    chmod 640 "{{ rootfs_root }}/dev/random"
-    chown 0:0 "{{ rootfs_root }}/dev/random"
-    mknod "{{ rootfs_root }}/dev/urandom" c 1 9
-    chmod 640 "{{ rootfs_root }}/dev/urandom"
-    chown 0:0 "{{ rootfs_root }}/dev/urandom"
-    mknod "{{ rootfs_root }}/dev/null" c 1 3
-    chmod 666 "{{ rootfs_root }}/dev/null"
-    chown 0:0 "{{ rootfs_root }}/dev/null"
+        set -e
+        mkdir -p "{{ rootfs_root }}/etc/kernel/postinst.d"
+- name: "kdump-tools fix - deploy build script"
+  template:
+    src: kdump-tools.j2
+    dest: "{{ rootfs_root }}/etc/kernel/postinst.d/kdump-tools"
+    mode: '0755'
+# kdump-tools deb package will overwrite script without write protection enabled
+- name: "kdump-tools fix - lock build script"
+  shell: |
+        set -e
+        chattr +i "{{ rootfs_root }}/etc/kernel/postinst.d/kdump-tools"
 
 - name: "Running multistrap"
   shell:
       cmd: "multistrap -f {{ multistrap_tempdir.path }}/multistrap.conf"
 
+#- name: "create grub.cfg"
+#  shell:
+#    cmd: |
+#        chroot {{ rootfs_root }} update-grub
+
 - name: "Lock sources.list to prevent conflict and duplicates with multistrap repo list"
   shell: |
         set -e
-        if [ -f {{ rootfs_root }}/etc/apt/sources.list ]; then rm {{ rootfs_root }}/etc/apt/sources.list; fi
-        ln -s /dev/null {{ rootfs_root }}/etc/apt/sources.list
+        if [ -f {{ rootfs_root }}/etc/apt/sources.list ] && [ ! -h {{ rootfs_root }}/etc/apt/sources.list ]; then
+          rm {{ rootfs_root }}/etc/apt/sources.list
+          ln -s /dev/null {{ rootfs_root }}/etc/apt/sources.list
+        fi

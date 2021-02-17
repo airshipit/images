@@ -43,7 +43,8 @@
 - job:
     name: airship-images-build
     nodeset: airship-images-single-node
-    timeout: 3600
+    timeout: 7200
+    post-timeout: 7200
     pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-build.yaml
     post-run: playbooks/airship-collect-logs.yaml
@@ -74,7 +75,7 @@
     name: airship-images-single-node
     nodes:
       - name: primary
-        label: ubuntu-bionic
+        label: ubuntu-bionic-32GB
 
 - secret:
     name: images_airshipit_github_secret
