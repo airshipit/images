@@ -71,6 +71,8 @@ ubuntu_packages:
     - wget
     - xfsprogs
     - xz-utils
+unapproved_packages: # provide the exact name of the packages that need to be blocked
+    - unattended-upgrades
 repos:
     - register_repo_with_rootfs: true
       name: Ubuntu

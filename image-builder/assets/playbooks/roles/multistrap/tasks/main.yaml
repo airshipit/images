@@ -25,6 +25,11 @@
     suffix: multistrap
   register: multistrap_tempdir
 
+- name: "Configure apt with unapproved packages"
+  template:
+    src: unapproved-packages.j2
+    dest: "{{ multistrap_tempdir.path }}/pref.conf"
+
 - name: "write out multistrap config"
   template:
     src: multistrap.conf.j2
@@ -60,6 +65,18 @@
 #  shell:
 #    cmd: |
 #        chroot {{ rootfs_root }} update-grub
+
+- name: "Configure apt with unapproved packages"
+  template:
+    src: unapproved-packages.j2
+    dest: "{{ rootfs_root }}/etc/apt/preferences.d/unapproved-packages.pref"
+
+- name: "Configure apt to remove unapproved packages from update"
+  ansible.builtin.lineinfile:
+    path: "{{ rootfs_root }}/etc/apt/apt.conf.d/01autoremove"
+    insertafter: "multiverse/metapackages"
+    line: '        "{{ item }}";'
+  with_items: "{{ unapproved_packages }}"
 
 - name: "Lock sources.list to prevent conflict and duplicates with multistrap repo list"
   shell: |
