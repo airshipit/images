@@ -16,18 +16,20 @@ SHELL		:= /bin/bash
 COMMIT		?= $(shell git rev-parse HEAD)
 LABEL		?= org.airshipit.build=community
 IMAGE_NAME	?= image-builder
+QCOW_IMAGE_NAME ?= qcow-bundle
 DOCKER_REGISTRY	?= quay.io
 IMAGE_PREFIX	?= airshipit
 IMAGE_TAG	?= latest
 IMAGE_TYPE	?= iso # iso | qcow
 PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
+WORKDIR         ?= ./config
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
-IMAGE_ALIAS	?= $(DOCKER_REGISTRY)-$(IMAGE_NAME)-$(IMAGE_TAG)-${DISTRO}-${IMAGE_TYPE}
+QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 PROXY           ?=
 NO_PROXY        ?= localhost,127.0.0.1
 
-.PHONY: help build images cut_image run clean
+.PHONY: help build images cut_image package_qcow run clean
 
 .ONESHELL:
 
@@ -35,7 +37,7 @@ help: ## This help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 # Make target name that zuul expects for each project in this repo
-images: build
+images: build generate_iso package_qcow
 
 build:
 ifneq ($(PROXY), )
@@ -82,10 +84,31 @@ ifneq ($(PROXY), )
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
 endif
-	sudo -E tools/cut_image.sh $(IMAGE_TYPE) ./examples $(IMAGE) $(IMAGE_ALIAS) "$(PROXY)" "$(NO_PROXY)"
+	# Assemble all qcows based on configs defined in each $(IMAGE_TYPE)* subdirectory
+	for subdir in `find $(WORKDIR) -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`; do
+	    export osconfig_params=$(WORKDIR)/$$subdir/osconfig-*-vars.yaml
+	    export qcow_params=$(WORKDIR)/$$subdir/qcow-*-vars.yaml
+	    export img_name=$$(cat $(WORKDIR)/$$subdir/img_name)
+	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR) $(IMAGE) "$(PROXY)" "$(NO_PROXY)" || exit 1
+	done
 
-run: ## Run the iso in kvm for testing
-	virsh start $(IMAGE_ALIAS)
+generate_iso:
+	export IMAGE_TYPE=iso
+	make cut_image
+
+package_qcow:
+	export IMAGE_TYPE=qcow
+	make cut_image
+	sudo -E docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) . \
+	--label $(LABEL) \
+	--label "org.opencontainers.image.revision=$(COMMIT)" \
+	--label "org.opencontainers.image.created=\
+	$(shell date --rfc-3339=seconds --utc)" \
+	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)" \
+	--build-arg WORKDIR=$(WORKDIR) || exit 1
+ifeq ($(PUSH_IMAGE), true)
+	sudo -E docker push $(QCOW_IMAGE)
+endif
 
 tests:
 	true

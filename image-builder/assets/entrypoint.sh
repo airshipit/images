@@ -61,5 +61,8 @@ else
   exit 1
 fi
 
+# Write md5sum
+_make_metadata "${IMG_NAME}"
+
 echo "All Ansible plays completed successfully"
 

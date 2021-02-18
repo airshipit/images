@@ -84,6 +84,14 @@ fi
 
 OUTPUT_FILE_NAME="$(yq r ${yaml_dir}/builder_config outputFileName)"
 
+_make_metadata(){
+  IMG_NAME="$1"
+  # Write and print md5sum
+  md5sum=$(md5sum "${VOLUME}/${IMG_NAME}" | awk '{print $1}')
+  echo "md5sum:"
+  echo "$md5sum" | tee -a "${VOLUME}/${IMG_NAME}.md5sum"
+}
+
 _process_input_data_set_vars_osconfig(){
   OSCONFIG_FILE="${yaml_dir}/${OSCONFIG_FILE}"
   # Optional user-supplied playbook vars

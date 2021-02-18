@@ -45,7 +45,7 @@ sudo make IMAGE_TYPE=qcow cut_image
 
 In the above example, set ``IMAGE_TYPE`` to ``iso`` or ``qcow`` as appropriate. This will be passed into the container to instruct it which type of image to build. Also include ``DOCKER_REGISTRY`` override if you wish to use a local docker image as described in the previous section.
 
-This makefile target uses config files provided in the images/image-builder/examples directory. Modify these files as needed in order to customize your iso and qcow generation.
+This makefile target uses config files provided in the images/image-builder/config directory. Modify these files as needed in order to customize your iso and qcow generation.
 
 # Building behind a proxy
 

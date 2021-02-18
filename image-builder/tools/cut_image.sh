@@ -12,16 +12,21 @@ BASEDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 # Whether to build an 'iso' or 'qcow'
 build_type="${1:-qcow}"
 # The host mount to use to exchange data with this container
-host_mount_directory="${2:-$BASEDIR/../examples}"
+host_mount_directory="${2:-$BASEDIR/../config}"
 # Docker image to use when launching this container
 image="${3:-port/image-builder:latest-ubuntu_focal}"
-# Libvirt instance name to use for a new libvirt XML definition that
-# will be created to reference the newly created ISO or QCOW2 image.
-img_alias="${4:-port-image-builder-latest-ubuntu_focal-$build_type}"
 # proxy to use, if applicable
-proxy="$5"
+proxy="$4"
 # noproxy to use, if applicable
-noproxy="$6"
+noproxy="$5"
+
+workdir="$(realpath ${host_mount_directory})"
+
+# Overrides
+: ${user_data:=$workdir/iso/user_data}
+: ${network_config:=$workdir/iso/network_data.json}
+: ${osconfig_params:=$workdir/control-plane/osconfig-control-plane-vars.yaml}
+: ${qcow_params:=$workdir/control-plane/qcow-control-plane-vars.yaml}
 
 if [ -n "$proxy" ]; then
   export http_proxy=$proxy
@@ -54,15 +59,14 @@ if [ -d /sys/firmware/efi ]; then
   uefi_boot_arg='--boot uefi'
 fi
 
-workdir="$(realpath ${host_mount_directory})"
-
 if [[ $build_type = iso ]]; then
-  iso_config=/tmp/iso_config
+  : ${img_name:=ephemeral.iso}
+  iso_config=/tmp/${img_name}_config
   echo "user_data:
-$(cat $host_mount_directory/user_data | sed 's/^/    /g')
+$(cat $user_data | sed 's/^/    /g')
 network_config:
-$(cat $host_mount_directory/network_data.json | sed 's/^/    /g')
-outputFileName: ephemeral.iso" > ${iso_config}
+$(cat $network_config | sed 's/^/    /g')
+outputFileName: $img_name" > ${iso_config}
   sudo -E docker run -i --rm \
    --volume $workdir:/config \
    --env BUILDER_CONFIG=/config/${build_type}.yaml \
@@ -75,15 +79,16 @@ outputFileName: ephemeral.iso" > ${iso_config}
    --env no_proxy=$noproxy \
    --env NO_PROXY=$noproxy \
    ${image} < ${iso_config}
-  disk1="--disk path=${workdir}/ephemeral.iso,device=cdrom"
+  disk1="--disk path=${workdir}/${img_name},device=cdrom"
 elif [[ $build_type == qcow ]]; then
+  : ${img_name:=airship-ubuntu.qcow2}
   sudo -E modprobe nbd
-  qcow_config=/tmp/qcow_config
+  qcow_config=/tmp/${img_name}_config
   echo "osconfig:
-$(cat $host_mount_directory/osconfig-control-plane-vars.yaml | sed 's/^/    /g')
+$(cat $osconfig_params | sed 's/^/    /g')
 qcow:
-$(cat $host_mount_directory/qcow-control-plane-vars.yaml | sed 's/^/    /g')
-outputFileName: control-plane.qcow2" > ${qcow_config}
+$(cat $qcow_params | sed 's/^/    /g')
+outputFileName: $img_name" > ${qcow_config}
   echo "Note: This step can be slow if you don't have an SSD."
   sudo -E docker run -i --rm \
    --privileged \
@@ -106,7 +111,7 @@ outputFileName: control-plane.qcow2" > ${qcow_config}
    ${image} < ${qcow_config}
   cloud_init_config_dir='assets/tests/qcow/cloud-init'
   sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/airship-ubuntu_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
-  disk1="--disk path=${workdir}/control-plane.qcow2"
+  disk1="--disk path=${workdir}/${img_name}"
   disk2="--disk path=${workdir}/airship-ubuntu_config.iso,device=cdrom"
 else
   echo Unknown build type: $build_type, exiting.
@@ -116,20 +121,20 @@ fi
 imagePath=$(echo $disk1 | cut -d'=' -f2 | cut -d',' -f1)
 echo Image successfully written to $imagePath
 
-sudo -E virsh destroy ${img_alias} 2> /dev/null || true
-sudo -E virsh undefine ${img_alias} --nvram 2> /dev/null || true
+sudo -E virsh destroy ${img_name} 2> /dev/null || true
+sudo -E virsh undefine ${img_name} --nvram 2> /dev/null || true
 
 cpu_type=''
 kvm-ok >& /dev/null && cpu_type='--cpu host-passthrough' || true
 
-network='--network network=default,mac=52:54:00:6c:99:85'
+network='--network network=default'
 if ! sudo -E virsh net-list | grep default | grep active > /dev/null; then
   network='--network none'
 fi
 
 xml=$(mktemp)
 sudo -E virt-install --connect qemu:///system \
- --name ${img_alias} \
+ --name ${img_name} \
  --memory 1536 \
  ${network} \
  ${cpu_type} \
