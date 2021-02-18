@@ -44,7 +44,10 @@ umount_chroot(){
 }
 
 # Install pre-requisites
-sudo -E apt -y update
+if [ ! -f /var/lib/apt/periodic/update-success-stamp ] || \
+     sudo find /var/lib/apt/periodic/update-success-stamp -mtime +1 | grep update-success-stamp; then
+     sudo -E apt -y update
+fi
 
 install_pkg efivar
 # required for building UEFI image
@@ -73,7 +76,9 @@ pip3 show ansible >& /dev/null || sudo -E pip3 install --upgrade ansible
 
 if [[ $1 = clean ]]; then
     umount_chroot
-    sudo chattr -i $build_dir/etc/kernel/postinst.d/kdump-tools
+    if [ -f $build_dir/etc/kernel/postinst.d/kdump-tools ]; then
+      sudo chattr -i $build_dir/etc/kernel/postinst.d/kdump-tools
+    fi
     if [[ -d $build_dir ]]; then
         sudo rm -rf $build_dir
     fi

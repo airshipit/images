@@ -42,6 +42,26 @@ limits:
       type: 'hard'
       item: 'core'
       value: 0
+    - name: nofile-root-soft
+      domain: 'root'
+      type: 'soft'
+      item: 'nofile'
+      value: '65536'
+    - name: nofile-root-hard
+      domain: 'root'
+      type: 'hard'
+      item: 'nofile'
+      value: '1048576'
+    - name: nofile-all-soft
+      domain: '*'
+      type: 'soft'
+      item: 'nofile'
+      value: '65536'
+    - name: nofile-all-hard
+      domain: '*'
+      type: 'hard'
+      item: 'nofile'
+      value: '1048576'
 
 sysctl:
     - name: net.bridge.bridge-nf-call-ip6tables

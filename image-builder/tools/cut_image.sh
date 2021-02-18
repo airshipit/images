@@ -45,7 +45,10 @@ install_pkg(){
   dpkg -l $1 2> /dev/null | grep ^ii > /dev/null || sudo -E apt-get -y install $1
 }
 
-sudo -E apt -y update
+if [ ! -f /var/lib/apt/periodic/update-success-stamp ] || \
+     sudo find /var/lib/apt/periodic/update-success-stamp -mtime +1 | grep update-success-stamp; then
+     sudo -E apt -y update
+fi
 
 install_pkg qemu-kvm
 install_pkg virtinst
@@ -110,9 +113,9 @@ outputFileName: $img_name" > ${qcow_config}
    --env NO_PROXY=$noproxy \
    ${image} < ${qcow_config}
   cloud_init_config_dir='assets/tests/qcow/cloud-init'
-  sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/airship-ubuntu_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
+  sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/${img_name}_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
   disk1="--disk path=${workdir}/${img_name}"
-  disk2="--disk path=${workdir}/airship-ubuntu_config.iso,device=cdrom"
+  disk2="--disk path=${workdir}/${img_name}_config.iso,device=cdrom"
 else
   echo Unknown build type: $build_type, exiting.
   exit 1

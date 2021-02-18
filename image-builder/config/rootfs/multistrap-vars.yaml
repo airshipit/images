@@ -1,9 +1,9 @@
-# Overrides to the playbook default variables may be defined in this file.
+# Overrides to the multistrap playbook defaults may be defined in this file.
 #
 # The following are examples that show you how to override variables.
 #
 # Example 1: The following usage will *overwrite* the list of repos & packages
-#            defined under defaults/main.yaml with the list here:
+#            defined under multistrap/defaults/main.yaml with the list here:
 #repos:
 #  - register_repo_with_rootfs: true
 #    name: Ubuntu
@@ -20,7 +20,7 @@
 # everything, including the package list(s) for each mirror.
 #
 # Example 2: The following usage will *append* to the list of default repos
-#            defined under defaults/main.yaml with the list here:
+#            defined under multistrap/defaults/main.yaml with the list here:
 #repos_append:
 #  - register_repo_with_rootfs: true
 #    name: DellUtilsRepo
@@ -38,7 +38,8 @@
 # the community Ubuntu mirrors.
 #
 # Example 3: The following usage will *append* to the list of default packages
-#            installed from the default Ubuntu mirror defined in defaults/main.yaml:
+#            installed from the default Ubuntu mirror defined in
+#            multistrap/defaults/main.yaml:
 #ubuntu_packages_append:
 #  - package1
 #  - package2
