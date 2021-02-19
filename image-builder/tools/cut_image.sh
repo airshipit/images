@@ -49,7 +49,8 @@ sudo -E apt -y update
 
 install_pkg qemu-kvm
 install_pkg virtinst
-install_pkg libvirt-bin
+install_pkg libvirt-daemon-system
+install_pkg libvirt-clients
 install_pkg cloud-image-utils
 install_pkg ovmf
 type docker >& /dev/null || install_pkg docker.io
