@@ -20,11 +20,18 @@
         pkg:
         - python-docker
         - python3-docker
+        - pass
         - python-requests
         - python3-requests
+        - python3-pip
+        - python3-setuptools
         state: present
       become: true
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    - name: Install docker pip module
+      pip:
+        name: docker
+        executable: pip3
     - name: Publish images
       block:
         - docker_login:

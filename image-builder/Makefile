@@ -44,14 +44,14 @@ build:
 	# Apply any user-defined overrides to multistrap playbook
 	cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY) || exit 1
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
 	export HTTP_PROXY=$(PROXY)
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
-	sudo -E ./tools/multistrap.sh
+	sudo -E ./tools/multistrap.sh || exit 1
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -65,7 +65,7 @@ ifneq ($(PROXY), )
 	--build-arg no_proxy=$(NO_PROXY) \
 	--build-arg NO_PROXY=$(NO_PROXY) || exit 1
 else
-	sudo -E ./tools/multistrap.sh
+	sudo -E ./tools/multistrap.sh || exit 1
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -74,12 +74,12 @@ else
 	--label "org.opencontainers.image.title=$(IMAGE_NAME)" || exit 1
 endif
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(IMAGE)
+	sudo -E docker push $(IMAGE) || exit 1
 endif
 
 cut_image:
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY) || exit 1
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
@@ -120,7 +120,7 @@ package_qcow:
 	$(shell date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)" || exit 1
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(QCOW_IMAGE)
+	sudo -E docker push $(QCOW_IMAGE) || exit 1
 endif
 
 tests:

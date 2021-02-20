@@ -19,8 +19,10 @@
       apt:
         pkg:
           - python-docker
-          - python3-requests
+          - python3-docker
           - pass
+          - python-requests
+          - python3-requests
           - python3-pip
           - python3-setuptools
         state: present
@@ -38,6 +40,12 @@
             params:
               COMMIT: "{{ zuul.newrev | default('') }}"
               PUSH_IMAGE: "false"
+              PROXY: "{{ proxy.http }}"
+              NO_PROXY: "{{ proxy.noproxy }}"
+              USE_PROXY: "{{ proxy.enabled | lower }}"
+              DOCKER_REGISTRY: "{{ docker_registry }}"
+              GCP_SDK: "{{ gcp_sdk }}"
+              AZ_SDK: "{{ az_sdk }}"
               WORKDIR: "{{ image_config_dir | default('config') }}"
               QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
       become: True
