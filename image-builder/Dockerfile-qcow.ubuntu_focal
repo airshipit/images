@@ -1,8 +1,6 @@
 ARG FROM=alpine
 FROM ${FROM}
 
-ARG WORKDIR
-
 LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc://#airshipit@freenode' \
       org.opencontainers.image.url='https://airshipit.org' \
       org.opencontainers.image.documentation='https://airship-images.readthedocs.org' \
@@ -10,4 +8,4 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
       org.opencontainers.image.vendor='The Airship Authors' \
       org.opencontainers.image.licenses='Apache-2.0'
 
-COPY $WORKDIR/*.qcow2 $WORKDIR/*.qcow2.md5sum /qcows/
+COPY *.qcow2 *.qcow2.md5sum /qcows/

@@ -25,8 +25,8 @@ workdir="$(realpath ${host_mount_directory})"
 # Overrides
 : ${user_data:=$workdir/iso/user_data}
 : ${network_config:=$workdir/iso/network_data.json}
-: ${osconfig_params:=$workdir/control-plane/osconfig-control-plane-vars.yaml}
-: ${qcow_params:=$workdir/control-plane/qcow-control-plane-vars.yaml}
+: ${osconfig_params:=$workdir/qcow-control-plane/osconfig-control-plane-vars.yaml}
+: ${qcow_params:=$workdir/qcow-control-plane/qcow-control-plane-vars.yaml}
 
 if [ -n "$proxy" ]; then
   export http_proxy=$proxy

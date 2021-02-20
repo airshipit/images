@@ -24,6 +24,7 @@ IMAGE_TYPE	?= iso # iso | qcow
 PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
 WORKDIR         ?= ./config
+QCOW_CONF_DIRS  ?=
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 PROXY           ?=
@@ -86,28 +87,38 @@ ifneq ($(PROXY), )
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
 endif
-	# Assemble all qcows based on configs defined in each $(IMAGE_TYPE)* subdirectory
-	for subdir in `find $(WORKDIR) -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`; do
+ifneq ($(EXPLICIT_DIRS), )
+	iterDirs="$(EXPLICIT_DIRS)"
+else
+	# Assemble all images based on configs defined in each $(IMAGE_TYPE)* subdirectory
+	iterDirs=`find $(WORKDIR) -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`
+endif
+	for subdir in $$iterDirs; do
+	    # ISO configs
+	    export user_data=$(WORKDIR)/$$subdir/user_data
+	    export network_config=$(WORKDIR)/$$subdir/network_data.json
+	    # QCOW configs
 	    export osconfig_params=$(WORKDIR)/$$subdir/osconfig-*-vars.yaml
 	    export qcow_params=$(WORKDIR)/$$subdir/qcow-*-vars.yaml
+	    # Shared configs
 	    export img_name=$$(cat $(WORKDIR)/$$subdir/img_name)
 	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR) $(IMAGE) "$(PROXY)" "$(NO_PROXY)" || exit 1
 	done
 
 generate_iso:
 	export IMAGE_TYPE=iso
-	make cut_image
+	sudo -E make cut_image
 
 package_qcow:
 	export IMAGE_TYPE=qcow
-	make cut_image
-	sudo -E docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) . \
+	export EXPLICIT_DIRS=$(QCOW_CONF_DIRS)
+	sudo -E make cut_image
+	sudo -E docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) $(WORKDIR) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)" \
-	--build-arg WORKDIR=$(WORKDIR) || exit 1
+	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)" || exit 1
 ifeq ($(PUSH_IMAGE), true)
 	sudo -E docker push $(QCOW_IMAGE)
 endif
@@ -117,3 +128,6 @@ tests:
 
 clean:
 	sudo -E tools/multistrap.sh clean
+	rm $(WORKDIR)/*.iso
+	rm $(WORKDIR)/*.qcow2
+	rm $(WORKDIR)/*.md5sum

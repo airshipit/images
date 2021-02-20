@@ -3,7 +3,7 @@ dst: /chroot
 nbd_build_dir: /tmp/nbd_build_dir
 img_output_dir: /config
 img_name: airship-ubuntu.qcow2
-qcow_capacity: 5G
+qcow_capacity: 19G
 qcow_compress: true
 partitions:
     # Partition numbering is according to list ordering.

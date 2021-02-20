@@ -33,8 +33,22 @@ kubelet:
 grub:
     GRUB_TIMEOUT: 5
     GRUB_CMDLINE_LINUX_DEFAULT:
+       - name: console
+         value: 'ttyS0,115200n8'
+       - name: console
+         value: 'tty0'
+       - name: amd_iommu
+         value: 'on'
+       - name: intel_iommu
+         value: 'on'
+       - name: iommu
+         value: 'pt'
        - name: cgroup_disable
          value: 'hugetlb'
+       - name: dpdk-socket-mem
+         value: '4096,4096'
+       - name: rcu_nocb_poll
+         value: 'true'
 
 limits:
     - name: core_dump

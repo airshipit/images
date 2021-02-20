@@ -44,4 +44,5 @@
               GCP_SDK: "{{ gcp_sdk }}"
               AZ_SDK: "{{ az_sdk }}"
               WORKDIR: "{{ image_config_dir | default('config') }}"
+              QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
       become: True

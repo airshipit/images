@@ -137,9 +137,6 @@ _process_input_data_set_vars_qcow(){
   # Optional user-supplied playbook vars
   if [[ -f "${QCOW_CONFIG_FILE}" ]]; then
     cp "${QCOW_CONFIG_FILE}" /opt/assets/playbooks/roles/qcow/vars/main.yaml
-
-    # Extract the image output name in the ansible vars file provided
-    IMG_NAME="$(yq r "${QCOW_CONFIG_FILE}" img_name)"
   fi
 
   # Retrieve from playbook defaults if not provided in user input
