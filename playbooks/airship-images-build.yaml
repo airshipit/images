@@ -38,4 +38,5 @@
             params:
               COMMIT: "{{ zuul.newrev | default('') }}"
               PUSH_IMAGE: "false"
+              WORKDIR: "{{ image_config_dir | default('config') }}"
       become: True

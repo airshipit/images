@@ -40,6 +40,8 @@ help: ## This help.
 images: build generate_iso package_qcow
 
 build:
+	# Apply any user-defined overrides to multistrap playbook
+	cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
 ifneq ($(PROXY), )
 	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)

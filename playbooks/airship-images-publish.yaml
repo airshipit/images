@@ -43,4 +43,5 @@
               DOCKER_REGISTRY: "{{ docker_registry }}"
               GCP_SDK: "{{ gcp_sdk }}"
               AZ_SDK: "{{ az_sdk }}"
+              WORKDIR: "{{ image_config_dir | default('config') }}"
       become: True
