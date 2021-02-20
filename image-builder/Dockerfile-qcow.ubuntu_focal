@@ -1,4 +1,5 @@
-FROM alpine
+ARG FROM=alpine
+FROM ${FROM}
 
 ARG WORKDIR
 
@@ -9,8 +10,4 @@ LABEL org.opencontainers.image.authors='airship-discuss@lists.airshipit.org, irc
       org.opencontainers.image.vendor='The Airship Authors' \
       org.opencontainers.image.licenses='Apache-2.0'
 
-RUN apk update; apk add bash
-SHELL ["bash", "-exc"]
-
-COPY $WORKDIR/*.qcow2 /var/www/
-COPY $WORKDIR/*.qcow2.md5sum /var/www/
+COPY $WORKDIR/*.qcow2 $WORKDIR/*.qcow2.md5sum /qcows/
