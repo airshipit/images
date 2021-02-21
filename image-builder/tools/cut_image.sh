@@ -65,6 +65,9 @@ fi
 
 if [[ $build_type = iso ]]; then
   : ${img_name:=ephemeral.iso}
+  if sudo virsh list | grep ${img_name}; then
+    sudo virsh destroy ${img_name}
+  fi
   iso_config=/tmp/${img_name}_config
   echo "user_data:
 $(cat $user_data | sed 's/^/    /g')
@@ -84,8 +87,12 @@ outputFileName: $img_name" > ${iso_config}
    --env NO_PROXY=$noproxy \
    ${image} < ${iso_config}
   disk1="--disk path=${workdir}/${img_name},device=cdrom"
+  network='--network network=default,mac=52:54:00:6c:99:85'
 elif [[ $build_type == qcow ]]; then
   : ${img_name:=airship-ubuntu.qcow2}
+  if sudo virsh list | grep ${img_name}; then
+    sudo virsh destroy ${img_name}
+  fi
   sudo -E modprobe nbd
   qcow_config=/tmp/${img_name}_config
   echo "osconfig:
@@ -117,6 +124,7 @@ outputFileName: $img_name" > ${qcow_config}
   sudo -E cloud-localds -v --network-config="${cloud_init_config_dir}/network-config" "${workdir}/${img_name}_config.iso" "${cloud_init_config_dir}/user-data" "${cloud_init_config_dir}/meta-data"
   disk1="--disk path=${workdir}/${img_name}"
   disk2="--disk path=${workdir}/${img_name}_config.iso,device=cdrom"
+  network='--network network=default'
 else
   echo Unknown build type: $build_type, exiting.
   exit 1
@@ -131,7 +139,6 @@ sudo -E virsh undefine ${img_name} --nvram 2> /dev/null || true
 cpu_type=''
 kvm-ok >& /dev/null && cpu_type='--cpu host-passthrough' || true
 
-network='--network network=default'
 if ! sudo -E virsh net-list | grep default | grep active > /dev/null; then
   network='--network none'
 fi
