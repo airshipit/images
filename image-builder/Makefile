@@ -26,7 +26,7 @@ DISTRO          ?= ubuntu_focal
 WORKDIR         ?= ./config
 QCOW_CONF_DIRS  ?=
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
-QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
+QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${QCOW_IMAGE_NAME}
 PROXY           ?=
 NO_PROXY        ?= localhost,127.0.0.1
 
@@ -41,17 +41,18 @@ help: ## This help.
 images: build generate_iso package_qcow
 
 build:
+	set -ex
 	# Apply any user-defined overrides to multistrap playbook
 	cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY) || exit 1
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
 	export HTTP_PROXY=$(PROXY)
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
-	sudo -E ./tools/multistrap.sh || exit 1
+	sudo -E ./tools/multistrap.sh
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -63,23 +64,24 @@ ifneq ($(PROXY), )
 	--build-arg HTTP_PROXY=$(PROXY) \
 	--build-arg HTTPS_PROXY=$(PROXY) \
 	--build-arg no_proxy=$(NO_PROXY) \
-	--build-arg NO_PROXY=$(NO_PROXY) || exit 1
+	--build-arg NO_PROXY=$(NO_PROXY)
 else
-	sudo -E ./tools/multistrap.sh || exit 1
+	sudo -E ./tools/multistrap.sh
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(IMAGE_NAME)" || exit 1
+	--label "org.opencontainers.image.title=$(IMAGE_NAME)"
 endif
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(IMAGE) || exit 1
+	sudo -E docker push $(IMAGE)
 endif
 
 cut_image:
+	set -ex
 ifneq ($(PROXY), )
-	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY) || exit 1
+	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)
 	export https_proxy=$(PROXY)
 	export no_proxy=$(NO_PROXY)
@@ -102,14 +104,16 @@ endif
 	    export qcow_params=$(WORKDIR)/$$subdir/qcow-*-vars.yaml
 	    # Shared configs
 	    export img_name=$$(cat $(WORKDIR)/$$subdir/img_name)
-	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR) $(IMAGE) "$(PROXY)" "$(NO_PROXY)" || exit 1
+	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR) $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
 	done
 
 generate_iso:
+	set -ex
 	export IMAGE_TYPE=iso
 	sudo -E make cut_image
 
 package_qcow:
+	set -ex
 	export IMAGE_TYPE=qcow
 	export EXPLICIT_DIRS=$(QCOW_CONF_DIRS)
 	sudo -E make cut_image
@@ -118,15 +122,16 @@ package_qcow:
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)" || exit 1
+	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)"
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(QCOW_IMAGE) || exit 1
+	sudo -E docker push $(QCOW_IMAGE)
 endif
 
 tests:
 	true
 
 clean:
+	set -ex
 	sudo -E tools/multistrap.sh clean
 	rm $(WORKDIR)/*.iso
 	rm $(WORKDIR)/*.qcow2
