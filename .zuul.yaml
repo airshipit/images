@@ -20,6 +20,7 @@
         http: ""
         https: ""
         noproxy: ""
+      makefile_chdir: "{{ zuul.project.src_dir }}"
       image_config_dir: config
     check:
       jobs:

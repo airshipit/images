@@ -35,7 +35,7 @@
     - name: Publish images
       block:
         - make:
-            chdir: "{{ zuul.project.src_dir }}"
+            chdir: "{{ makefile_chdir }}"
             target: "images"
             params:
               COMMIT: "{{ zuul.newrev | default('') }}"

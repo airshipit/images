@@ -18,7 +18,7 @@
       block:
         - name: "make tests"
           make:
-            chdir: "{{ zuul.project.src_dir }}"
+            chdir: "{{ makefile_chdir }}"
             target: tests
     - name: install libvirt
       include_role:
