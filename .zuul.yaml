@@ -22,6 +22,9 @@
         noproxy: ""
       makefile_chdir: "{{ zuul.project.src_dir }}"
       image_config_dir: config
+      image_prefix: airshipit
+      image_label: org.airshipit.build=community
+      image_tag: latest
     check:
       jobs:
         - airship-images-functional

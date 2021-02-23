@@ -21,7 +21,9 @@ set -e
 : "${ironic_pip_packages:="pycrypto python-openstackclient sushy"}"
 : "${ironic_dist_packages:="ethtool lshw iproute2"}"
 # Image tag
-IMAGE_TAG="${OPENSTACK_VERSION#*/}-${DISTRO}"
+if [ -z "${IMAGE_TAG}" ]; then
+    IMAGE_TAG="${OPENSTACK_VERSION#*/}-${DISTRO}"
+fi
 
 echo "Build Pre-Requirement docker image"
 docker build ${base_extra_build_args} \

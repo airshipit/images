@@ -24,7 +24,10 @@ OPENSTACK_VERSION    ?= stable/ussuri
 DISTRO               ?= ubuntu_bionic
 OS_VER               =  $(word 2, $(subst /, ,$(OPENSTACK_VERSION)))
 IMAGE_NAME           ?= ironic
-IMAGE_TAG            ?= ${OS_VER}-${DISTRO}
+# Maintain support for legacy behavior
+ifeq ($(IMAGE_TAG), latest)
+IMAGE_TAG            := ${OS_VER}-${DISTRO}
+endif
 IMAGE_IRONIC         := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}
 IMAGE_REQUIREMENTS   := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/requirements:${IMAGE_TAG}
 IMAGE_LOCI_WHEELS    := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/loci_wheels:${IMAGE_TAG}
