@@ -1,8 +1,19 @@
 #!/bin/bash
 
 set -e
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+BASEDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
 build_dir=assets/playbooks/build
 osconfig_build_dir=$(basename $build_dir)
+host_mount_directory="${1:-$BASEDIR/../config}"
+workdir="$(realpath ${host_mount_directory})"
 
 install_pkg(){
     dpkg -l $1 2> /dev/null | grep ^ii > /dev/null || sudo -E apt-get -y install $1
@@ -102,18 +113,28 @@ cp assets/playbooks/inventory.yaml $build_dir/opt/assets/playbooks/inventory.yam
 cp assets/playbooks/base-chroot.yaml $build_dir/opt/assets/playbooks/base-chroot.yaml
 cp -r assets/playbooks/roles/multistrap $build_dir/opt/assets/playbooks/roles
 # Run multistrap
-sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-chroot.yaml -vv
+if [ -z $OSCONFIG_TEST ]; then
+  sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-chroot.yaml -vv
+fi
 
 cp assets/playbooks/base-osconfig.yaml $build_dir/opt/assets/playbooks/base-osconfig.yaml
 cp -r assets/playbooks/roles/osconfig $build_dir/opt/assets/playbooks/roles
-sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --tags "runtime_and_buildtime" -vv
-sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --tags "buildtime_only" -vv
+if [ -d $build_dir/config ]; then
+  sudo rm -r $build_dir/config
+  mkdir -p $build_dir/config
+else
+  mkdir -p $build_dir/config
+fi
+cp -r $workdir/scripts $build_dir/config/
+sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --extra-vars "run_context=common" -vv
 
 umount_chroot
 
 cp assets/playbooks/base-livecdcontent.yaml $build_dir/opt/assets/playbooks/base-livecdcontent.yaml
 cp -r assets/playbooks/roles/livecdcontent $build_dir/opt/assets/playbooks/roles
-sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-livecdcontent.yaml -vv
+if [ -z $OSCONFIG_TEST ]; then
+  sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-livecdcontent.yaml -vv
+fi
 
 cp assets/playbooks/iso.yaml $build_dir/opt/assets/playbooks/iso.yaml
 cp -r assets/playbooks/roles/iso $build_dir/opt/assets/playbooks/roles

@@ -45,14 +45,13 @@ elif [[ "${IMAGE_TYPE}" == "qcow" ]]; then
   _process_input_data_set_vars_osconfig
 
   # Instruct ansible how to name image output artifact
-  extra_vars="$extra_vars img_name=${IMG_NAME}"
+  extra_vars="$extra_vars img_name=${IMG_NAME} run_context=qcow"
 
   echo "Executing Step 1: Create qcow2 partitions and filesystems"
   ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "prep_img" -vv
 
   echo "Executing Step 2: Applying changes from base-osconfig playbook"
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" --tags "runtime_and_buildtime" -vv
-  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" --tags "runtime_only" -vv
+  ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/base-osconfig.yaml --extra-vars "$extra_vars" -vv
 
   echo "Executing Step 3: Close image and write qcow2"
   ansible-playbook -i /opt/assets/playbooks/inventory.yaml /opt/assets/playbooks/qcow.yaml --extra-vars "$extra_vars" --tags "close_img" -vv

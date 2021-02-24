@@ -3,4 +3,4 @@
     value: "{{ item.value }}"
     state: present
     reload: no
-  with_items: "{{ sysctl }}"
+  loop: "{{ sysctl }}"

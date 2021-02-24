@@ -3,10 +3,10 @@
     src: kernelmodules.j2
     dest: "/etc/modules-load.d/99-{{ item.name }}.conf"
     mode: 0644
-  with_items: "{{ kernel.modules.load }}"
+  loop: "{{ kernel.modules.load }}"
 
 - name: "Modules | Defining modules to blacklist"
   kernel_blacklist:
     name: "{{ item.name }}"
     state: present
-  with_items: "{{ kernel.modules.blacklist }}"
+  loop: "{{ kernel.modules.blacklist }}"

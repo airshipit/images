@@ -17,7 +17,7 @@
   - name: "QCOW | Mounting filesystems"
     include_tasks:
       file: mount-helper.yaml
-    with_items: "{{ partitions | sort( case_sensitive=True, attribute='mount_order' ) }}"
+    loop: "{{ partitions | sort( case_sensitive=True, attribute='mount_order' ) }}"
     vars:
       mount_offset: "{{ dst }}"
       state: mounted
@@ -46,7 +46,7 @@
   - name: "QCOW | Unmounting filesystems"
     include_tasks:
       file: mount-helper.yaml
-    with_items: "{{ partitions | sort( reverse=True, case_sensitive=True, attribute='mount' ) }}"
+    loop: "{{ partitions | sort( reverse=True, case_sensitive=True, attribute='mount' ) }}"
     vars:
       mount_offset: "{{ dst }}"
       state: unmounted

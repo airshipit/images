@@ -3,45 +3,54 @@
     file: main.yaml
     name: user-vars
 
-- block:
-  - name: "write user-provided files"
-    include_tasks: write-user-files.yaml
-  - name: "configure cloud-init"
-    include_tasks: cloud-init.yaml
-  - name: "configure modules"
-    include_tasks: modules.yaml
-  - name: "configure limits"
-    include_tasks: limits.yaml
-  - name: "configure sysctl"
-    include_tasks: sysctl.yaml
-  - name: "configure grub"
-    include_tasks: grub.yaml
-  - name: "configure kubernetes"
-    include_tasks: kubernetes.yaml
-  - name: "configure locale"
-    include_tasks: locale.yaml
-  - name: "configure hostname and hosts"
-    include_tasks: hostname-hosts.yaml
-  - name: "configure banners"
-    include_tasks: banners.yaml
-  - name: "unattended upgrades"
-    include_tasks: unattended-upgrades.yaml
-  - name: "configure base systemd"
-    include_tasks: systemd.yaml
-  - name: "configure user-defined systemd"
-    include_tasks: systemd-user.yaml
-  - name: "configure file permissions"
-    include_tasks: file-permissions.yaml
-  - name: "finalise rootfs"
-    include_tasks: finalise-rootfs.yaml
-  tags: runtime_and_buildtime
-- block:
-  - name: "run user-defined scripts"
-    include_tasks: buildtime-user-scripts.yaml
-  tags: buildtime_only
-- block:
-  - name: "run system-defined scripts"
-    include_tasks: runtime-system-scripts.yaml
-  - name: "run user-defined scripts"
-    include_tasks: runtime-user-scripts.yaml
-  tags: runtime_only
+# Tasks run when building image-builder container
+- name: "configure cloud-init"
+  include_tasks: cloud-init.yaml
+  when: run_context == default_run_context
+- name: "configure modules"
+  include_tasks: modules.yaml
+  when: run_context == default_run_context
+- name: "configure limits"
+  include_tasks: limits.yaml
+  when: run_context == default_run_context
+- name: "configure sysctl"
+  include_tasks: sysctl.yaml
+  when: run_context == default_run_context
+- name: "configure grub"
+  include_tasks: grub.yaml
+  when: run_context == default_run_context
+- name: "configure kubernetes"
+  include_tasks: kubernetes.yaml
+  when: run_context == default_run_context
+- name: "configure locale"
+  include_tasks: locale.yaml
+  when: run_context == default_run_context
+- name: "configure hostname and hosts"
+  include_tasks: hostname-hosts.yaml
+  when: run_context == default_run_context
+- name: "configure banners"
+  include_tasks: banners.yaml
+  when: run_context == default_run_context
+- name: "unattended upgrades"
+  include_tasks: unattended-upgrades.yaml
+  when: run_context == default_run_context
+- name: "configure base systemd"
+  include_tasks: systemd.yaml
+  when: run_context == default_run_context
+
+# Context-dependent tasks
+- name: "write user-provided files"
+  include_tasks: write-user-files.yaml
+- name: "configure user-defined systemd"
+  include_tasks: systemd-user.yaml
+- name: "run system-defined scripts for qcow"
+  include_tasks: runtime-system-scripts.yaml
+  when: run_context == qcow_run_context
+- name: "run user-defined scripts"
+  include_tasks: user-scripts.yaml
+- name: "configure file permissions"
+  include_tasks: file-permissions.yaml
+
+# Context-independent cleanup tasks
+- name: "finalise rootfs"
+  include_tasks: finalise-rootfs.yaml

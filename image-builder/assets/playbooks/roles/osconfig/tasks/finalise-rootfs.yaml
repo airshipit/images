@@ -2,4 +2,4 @@
   shell:
     cmd: |
         find "/usr/" "/var/" \( -name "*.pyc" -o -name "__pycache__" \) -delete
-
+        apt -y clean

@@ -1,0 +1,25 @@
+# Execute scripts defined in the playbook
+- name: "user-scripts | running user-defined scripts"
+  shell: "{{ item.file_content }}"
+  loop: "{{ user_scripts }}"
+  when: run_context in item.run_contexts
+
+- name: "user-scripts | check for common scripts dir"
+  stat:
+    path: "{{ user_scripts_dir_default }}"
+  register: common_stat_result
+
+- name: "user-scripts | check for qcow scripts dir"
+  stat:
+    path: "{{ user_scripts_dir_qcow }}"
+  register: qcow_stat_result
+
+# Bulk-execute scripts in the scripts directory
+- name: "user-scripts | running additional user-defined scripts"
+  shell: for s in $(find "{{ user_scripts_dir_default }}" -maxdepth 1 -type f | grep -v README.md | sort); do chmod 755 $s; eval $s; done
+  when: run_context == default_run_context and common_stat_result.stat.exists
+
+# Bulk-execute scripts in the scripts directory
+- name: "user-scripts | running additional user-defined scripts"
+  shell: for s in $(find "{{ user_scripts_dir_qcow }}" -maxdepth 1 -type f | grep -v README.md | sort); do chmod 755 $s; eval $s; done
+  when: run_context == qcow_run_context and qcow_stat_result.stat.exists

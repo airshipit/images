@@ -89,7 +89,7 @@ outputFileName: $img_name" > ${iso_config}
   disk1="--disk path=${workdir}/${img_name},device=cdrom"
   network='--network network=default,mac=52:54:00:6c:99:85'
 elif [[ $build_type == qcow ]]; then
-  : ${img_name:=airship-ubuntu.qcow2}
+  : ${img_name:=$(cat $(dirname ${osconfig_params})/img_name)}
   if sudo virsh list | grep ${img_name}; then
     sudo virsh destroy ${img_name}
   fi

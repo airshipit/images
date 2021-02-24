@@ -5,4 +5,5 @@
     mode: "{{ item.permissions }}"
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
-  with_items: "{{ file_permissions }}"
+  loop: "{{ file_permissions }}"
+  when: run_context in item.run_contexts

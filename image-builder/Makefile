@@ -24,7 +24,12 @@ IMAGE_TYPE	?= iso # iso | qcow
 PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
 WORKDIR         ?= ./config
+# Specify if you want to specify qcow config directories manually instead of using default naming conventions
 QCOW_CONF_DIRS  ?=
+# Set to true if you want to skip multistrap build step for testing
+SKIP_MULTISTRAP ?=
+# Set to true if you want to skip the other playsbooks except osconfig for osconfig playbook testing
+OSCONFIG_TEST   ?=
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 PROXY           ?=
@@ -52,7 +57,9 @@ ifneq ($(PROXY), )
 	export HTTP_PROXY=$(PROXY)
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
-	sudo -E ./tools/multistrap.sh
+ifneq ($(SKIP_MULTISTRAP), true)
+	sudo -E ./tools/multistrap.sh $(WORKDIR)
+endif
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -66,7 +73,9 @@ ifneq ($(PROXY), )
 	--build-arg no_proxy=$(NO_PROXY) \
 	--build-arg NO_PROXY=$(NO_PROXY)
 else
-	sudo -E ./tools/multistrap.sh
+ifneq ($(SKIP_MULTISTRAP), true)
+	sudo -E ./tools/multistrap.sh $(WORKDIR)
+endif
 	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
@@ -93,7 +102,7 @@ ifneq ($(EXPLICIT_DIRS), )
 	iterDirs="$(EXPLICIT_DIRS)"
 else
 	# Assemble all images based on configs defined in each $(IMAGE_TYPE)* subdirectory
-	iterDirs=`find $(WORKDIR) -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`
+	iterDirs=`find $(WORKDIR) -maxdepth 1 -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`
 endif
 	for subdir in $$iterDirs; do
 	    # ISO configs
@@ -133,6 +142,6 @@ tests:
 clean:
 	set -ex
 	sudo -E tools/multistrap.sh clean
-	rm $(WORKDIR)/*.iso
-	rm $(WORKDIR)/*.qcow2
-	rm $(WORKDIR)/*.md5sum
+	if ls $(WORKDIR)/*.iso >& /dev/null; then sudo rm $(WORKDIR)/*.iso; fi
+	if ls $(WORKDIR)/*.qcow2 >& /dev/null; then sudo rm $(WORKDIR)/*.qcow2; fi
+	if ls $(WORKDIR)/*.md5sum >& /dev/null; then sudo rm $(WORKDIR)/*.md5sum; fi
