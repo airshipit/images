@@ -212,3 +212,10 @@ file_permissions:
       # combined with previous item)
       run_contexts:
           - "{{ default_run_context }}"
+# If any required resources need to be fetched from URL for image build customization, they can be added here.
+# Downloaded resources can be found in /tmp/url_resources directory.
+# Example:-
+# fetch_from_url:
+#     -  url: https://www.example.com/resource.tar.gz
+#        use_proxy: no
+fetch_from_url: []

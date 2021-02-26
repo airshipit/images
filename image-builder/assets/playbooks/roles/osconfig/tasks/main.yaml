@@ -37,6 +37,9 @@
 - name: "configure base systemd"
   include_tasks: systemd.yaml
   when: run_context == default_run_context
+- name: "fetch url resource"
+  include_tasks: fetch-from-url.yaml
+  when: run_context == default_run_context
 
 # Context-dependent tasks
 - name: "write user-provided files"

@@ -9,5 +9,6 @@
         mountpoint proc > /dev/null || mount -t proc /proc proc
         mountpoint dev > /dev/null || mount -o bind /dev dev
         mountpoint dev/pts > /dev/null || mount -t devpts /dev/pts dev/pts
-        # temporarily override resolv.conf to working dns
-        chroot "{{ dst }}" /bin/bash -c 'rm /etc/resolv.conf; echo "nameserver {{ qcow_container_runtime_scripts_dns }}" > /etc/resolv.conf'
+        if [ -d "/run/systemd/resolve" ]; then
+            mountpoint run/systemd/resolve > /dev/null || mount -o bind /run/systemd/resolve run/systemd/resolve
+        fi
