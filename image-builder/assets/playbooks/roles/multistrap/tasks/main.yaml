@@ -56,10 +56,11 @@
   shell:
       cmd: "multistrap -f {{ multistrap_tempdir.path }}/multistrap.conf"
 
-#- name: "create grub.cfg"
-#  shell:
-#    cmd: |
-#        chroot {{ rootfs_root }} update-grub
+- name: "Set systemd NIC naming"
+  template:
+    src: 99-default.link.j2
+    dest: "{{ rootfs_root }}/etc/systemd/network/99-default.link"
+    mode: '0644'
 
 - name: "Lock sources.list to prevent conflict and duplicates with multistrap repo list"
   shell: |

@@ -3,6 +3,8 @@ rootfs_arch: amd64
 k8s_version: 1.18.6-00
 kernel_base_pkg: linux-image-generic
 kernel_headers_pkg: linux-headers-generic
+systemd_nic_names_policy: keep kernel database onboard path slot
+systemd_nic_alternative_names_policy: database onboard path slot
 ubuntu_packages:
     - apparmor
     - apt-file
