@@ -43,3 +43,6 @@
     src: "{{ runtime_logs_dir }}"
     dest: "{{ zuul.executor.log_root }}/{{ inventory_hostname }}"
     mode: pull
+    verify_host: true
+    owner: no
+    group: no
