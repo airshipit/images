@@ -26,10 +26,14 @@ DISTRO          ?= ubuntu_focal
 WORKDIR         ?= ./config
 # Specify if you want to specify qcow config directories manually instead of using default naming conventions
 QCOW_CONF_DIRS  ?=
-# Set to true if you want to skip multistrap build step for testing
+# Set to true to skip multistrap.sh script. Useful for testing
 SKIP_MULTISTRAP ?=
-# Set to true if you want to skip the other playsbooks except osconfig for osconfig playbook testing
-OSCONFIG_TEST   ?=
+# Set to true to skip multistrap playbook. Useful for testing
+SKIP_MULTI_ROLE ?=
+# Set to true to skip osconfig playbook. Useful for testing
+SKIP_OSCONFIG_ROLE ?=
+# Set to true to skip livecdcontent playbook. Useful for testing
+SKIP_LIVECDCONTENT_ROLE ?=
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 PROXY           ?=
