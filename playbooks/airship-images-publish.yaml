@@ -47,7 +47,7 @@
               DOCKER_REGISTRY: "{{ docker_registry }}"
               GCP_SDK: "{{ gcp_sdk }}"
               IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
-              IMAGE_TAG: "{{ image_tag | default('latest') }}"
+              IMAGE_TAG: "{{ image_tag | default(zuul.image_tag) | default('latest') }}"
               LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
               NO_PROXY: "{{ proxy.noproxy }}"
               PUSH_IMAGE: "true"
