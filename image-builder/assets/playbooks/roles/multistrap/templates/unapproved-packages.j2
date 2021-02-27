@@ -1,0 +1,6 @@
+{% for package in unapproved_packages %}
+Package: {{ package }}
+Pin: origin *
+Pin-Priority: -1
+
+{% endfor %}
