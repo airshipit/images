@@ -32,6 +32,10 @@
       pip:
         name: docker
         executable: pip3
+    - name: Execute custom role
+      include_role:
+        name: "{{ pre_build_role }}"
+      when: pre_build_role is defined
     - name: Publish images
       block:
         - make:
@@ -43,7 +47,7 @@
               DOCKER_REGISTRY: "{{ docker_registry }}"
               GCP_SDK: "{{ gcp_sdk }}"
               IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
-              IMAGE_TAG: "{{ image_tag | default(zuul.image_tag) | default('latest') }}"
+              IMAGE_TAG: "{{ image_tag | default('latest') }}"
               LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
               NO_PROXY: "{{ proxy.noproxy }}"
               PUSH_IMAGE: "false"
