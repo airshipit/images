@@ -45,7 +45,7 @@ sudo make IMAGE_TYPE=qcow cut_image
 
 In the above example, set ``IMAGE_TYPE`` to ``iso`` or ``qcow`` as appropriate. This will be passed into the container to instruct it which type of image to build. Also include ``DOCKER_REGISTRY`` override if you wish to use a local docker image as described in the previous section.
 
-This makefile target uses config files provided in the images/image-builder/config directory. Modify these files as needed in order to customize your iso and qcow generation.
+This makefile target uses config files provided in the `images/image-builder/config` directory. **Modify these files as needed in order to customize your iso and qcow generation.** This provides a good place for adding and testing customizations to build parameters, without needing to modify the ansible playbooks themselves.
 
 # Building behind a proxy
 
@@ -62,6 +62,16 @@ sudo make DOCKER_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_T
 # Create qcow
 sudo make DOCKER_REGISTRY=mylocalreg PROXY=http://proxy.example.com:8080 IMAGE_TYPE=qcow cut_image
 ```
+
+# Useful testing flags
+
+The `SKIP_MULTI_ROLE` build flag is useful if you would like to test local updates to the `osconfig` playbook, or updates to custom configs for this playbook. This saves time since you do not need to rebuild the target filesystem. For example:
+
+```
+sudo make SKIP_MULTI_ROLE=true build
+```
+
+Similiarly, osconfig and livecdcontent roles can be skipped using `SKIP_OSCONFIG_ROLE` and `SKIP_LIVECDCONTENT_ROLE` respectively. `SKIP_LIVECDCONTENT_ROLE` may be useful in combination with `SKIP_MULTI_ROLE` if you want to test out playbook changes to `osconfig` (however, it won't show up in the final bootable ISO image unless you don't skip `SKIP_LIVECDCONTENT_ROLE`).
 
 # Division of Configuration Management responsibilities
 
@@ -87,3 +97,8 @@ Configuration management of the base OS is divided into several realms, each wit
 # Supported OSes
 
 - Ubuntu 20.04 LTS
+
+# FAQ
+
+Q: Why is the build target slow?
+A: There is a `mksquashfs` command which runs as part of the build target, and performs slowly if your build environment lacks certain CPU flags which accelerate compression. Use "host-passthrough" or equivalent in your build environment to pass through these CPU flags. In libvirt domain XML, you would change your `cpu` mode element as follows: `<cpu mode='host-passthrough' check='none'/>`

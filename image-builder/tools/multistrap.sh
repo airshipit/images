@@ -113,7 +113,7 @@ cp assets/playbooks/inventory.yaml $build_dir/opt/assets/playbooks/inventory.yam
 cp assets/playbooks/base-chroot.yaml $build_dir/opt/assets/playbooks/base-chroot.yaml
 cp -r assets/playbooks/roles/multistrap $build_dir/opt/assets/playbooks/roles
 # Run multistrap
-if [ -z $OSCONFIG_TEST ]; then
+if [ -z $SKIP_MULTI_ROLE ]; then
   sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-chroot.yaml -vv
 fi
 
@@ -126,13 +126,15 @@ else
   mkdir -p $build_dir/config
 fi
 cp -r $workdir/scripts $build_dir/config/
-sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --extra-vars "run_context=common" -vv
+if [ -z "$SKIP_OSCONFIG_ROLE" ]; then
+  sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --extra-vars "run_context=common" -vv
+fi
 
 umount_chroot
 
 cp assets/playbooks/base-livecdcontent.yaml $build_dir/opt/assets/playbooks/base-livecdcontent.yaml
 cp -r assets/playbooks/roles/livecdcontent $build_dir/opt/assets/playbooks/roles
-if [ -z $OSCONFIG_TEST ]; then
+if [ -z "$SKIP_LIVECDCONTENT_ROLE" ]; then
   sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-livecdcontent.yaml -vv
 fi
 
