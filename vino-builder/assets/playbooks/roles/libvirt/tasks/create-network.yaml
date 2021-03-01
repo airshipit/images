@@ -1,0 +1,52 @@
+# Facts will be available as 'ansible_libvirt_networks'
+- name: initially gather facts on existing virsh networks
+  virt_net:
+    command: facts
+    name: management # this attribute is not needed but required
+    uri: "{{ libvirt_uri }}"
+  ignore_errors: true
+
+- name: Print value of ansible networks
+  debug:
+    msg: "Value of ansible_libvirt_networks is {{ ansible_libvirt_networks }}"
+
+# TODO(alanmeadows): deal with updates as once its defined we will
+# never re-define it
+- name: add networks defined if they do not already exist
+  virt_net:
+    command: define
+    # looks like setting name here is a redundant, the name is anyways taken from the template xml file, but should set it to make virt_pool module happy.
+    name: "{{ item.name }}"
+    xml: "{{ item.libvirtTemplate }}"
+    uri: "{{ libvirt_uri }}"
+  when: 'item.name not in ansible_libvirt_networks'
+  vars:
+    nodebridgegw: ipam.bridge_ip
+
+# Re-gather Facts will be available as 'ansible_libvirt_networks'
+- name: re-gather facts on existing virsh networks
+  virt_net:
+    command: facts
+    name: management
+    uri: "{{ libvirt_uri }}"
+  ignore_errors: true
+
+- name: start the network
+  virt_net:
+    command: create
+    name: "{{ item.name }}"
+    uri: "{{ libvirt_uri }}"
+  when: item.name in ansible_libvirt_networks and ansible_libvirt_networks[item.name].state != "active"
+
+# these are idempotent so require no conditional checks
+- name: autostart the network
+  virt_net:
+    autostart: yes
+    name: "{{ item.name }}"
+    uri: "{{ libvirt_uri }}"
+
+- name: activate the network
+  virt_net:
+    state: active
+    name: "{{ item.name }}"
+    uri: "{{ libvirt_uri }}"

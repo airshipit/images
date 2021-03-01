@@ -1,0 +1,46 @@
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+        # - host-annotator that populates the k8s node object with approprite annotations
+        #     - report back information such as:
+        #         - vminfra-bridge ip address as label to k8s node
+        #         - sushy-tools ip endpoint for BMC control
+        # - vino-builder (ansible) that that consumes the `ConfigMap` that contains everything necessary for libvirt to define the virtual machines and networks on the host and does both green-field generation of VM resources and understands if the `ConfigMap` changed and will handle those lifecycle updates.  There is no need to stage or coordinate changes to these `ConfigMap` resources as they will result in a no-op `virsh update` which only take effect with a VM stop/start.
+        #     - do the following (assumption is all of this is idempotent for day 2):
+        #         - interogate host
+        #             - prevalidate (is kvm loaded, etc)
+        #             - define host facts (eg cpu list, vf list, etc)
+        #         - interogate existing vms or state recording somewhere
+        #             - collect resources in use
+        #                 - what cores are in use
+        #                 - what vfs are in use
+        #                 - memory in use
+        #         - define libvirt networks
+        #         - define libvirt storage pools
+        #         - ensure appropriate qcows exist
+        #         - define libvirt domains
+        #             - ensure mem/cpu aligned in one numa
+        #         - new domain validation (only on new domains):
+        #             - do a simple domain start/destroy test via redfish.
+        #             - wait for dhcp req on admin interface?
+
+---
+- hosts: localhost
+
+  tasks:
+
+  # generate libvirt definitions for storage, networks, and domains
+  - name: process libvirt definitions
+    include_role:
+      name: libvirt
