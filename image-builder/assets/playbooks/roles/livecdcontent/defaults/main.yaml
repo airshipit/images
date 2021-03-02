@@ -1,2 +1,5 @@
 root_chroot: build
 root_image: build
+# Additional flags for mksquashfs
+mksquashfs_compression: lz4
+mksquashfs_threads: "{{ ansible_processor_vcpus }}"

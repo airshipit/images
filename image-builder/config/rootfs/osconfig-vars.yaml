@@ -1,0 +1,10 @@
+# Custom user-defined overrides to the `osconfig` playbook can be placed here.
+# Example, writing an extra file to the OS:
+#files:
+#    - name: /test.sh
+#      file_content: |
+#          #!/bin/bash
+#          echo hello world
+#      permissions: '0755'
+#      owner: root
+#      group: root

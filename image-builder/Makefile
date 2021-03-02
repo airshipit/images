@@ -51,8 +51,16 @@ images: build generate_iso package_qcow
 
 build:
 	set -ex
-	# Apply any user-defined overrides to multistrap playbook
-	cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
+	# Apply any user-defined rootfs overrides to playbooks
+	if [ -f $(WORKDIR)/rootfs/multistrap-vars.yaml ]; then
+	  cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
+	fi
+	if [ -f $(WORKDIR)/rootfs/osconfig-vars.yaml ]; then
+	  cp $(WORKDIR)/rootfs/osconfig-vars.yaml assets/playbooks/roles/osconfig/vars/main.yaml
+	fi
+	if [ -f $(WORKDIR)/rootfs/livecdcontent-vars.yaml ]; then
+	  cp $(WORKDIR)/rootfs/livecdcontent-vars.yaml assets/playbooks/roles/livecdcontent/vars/main.yaml
+	fi
 ifneq ($(PROXY), )
 	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)

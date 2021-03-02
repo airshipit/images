@@ -1,10 +1,5 @@
 # Custom user-defined overrides to the `osconfig` playbook can be placed here.
-# Example, writing an extra file to the OS:
-#files:
-#    - name: /test.sh
-#      file_content: |
-#          #!/bin/bash
-#          echo hello world
-#      permissions: '0755'
-#      owner: root
-#      group: root
+#
+# You would only use this if you needed to apply some settings uniques to this
+# type of image (control-plane or data-plane). Ex: kernel boot params specific
+# to workers vs non-worker nodes.

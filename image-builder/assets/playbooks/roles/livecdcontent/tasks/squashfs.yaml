@@ -15,5 +15,6 @@
         mksquashfs \
             "{{ root_chroot }}" \
             "{{ root_image }}/live/filesystem.squashfs" \
-            -processors {{ ansible_processor_vcpus }} \
+            -processors {{ mksquashfs_threads }} \
+            -comp {{ mksquashfs_compression }} \
             -e boot
