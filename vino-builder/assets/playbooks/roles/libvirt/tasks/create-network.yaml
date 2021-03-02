@@ -2,7 +2,7 @@
 - name: initially gather facts on existing virsh networks
   virt_net:
     command: facts
-    name: management # this attribute is not needed but required
+    name: "" # this attribute is not needed but required
     uri: "{{ libvirt_uri }}"
   ignore_errors: true
 
@@ -27,7 +27,7 @@
 - name: re-gather facts on existing virsh networks
   virt_net:
     command: facts
-    name: management
+    name: ""
     uri: "{{ libvirt_uri }}"
   ignore_errors: true
 

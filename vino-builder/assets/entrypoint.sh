@@ -26,4 +26,10 @@ while [[ ! -e /var/run/libvirt/libvirt-sock ]]; do
   fi
 done
 
-ansible-playbook -v -e @/var/lib/vino-builder/vino-builder-config.yaml /playbooks/vino-builder.yaml
+ansible-playbook -v \
+    -e @/vino/spec \
+    -e @/var/lib/vino-builder/flavors/flavors.yaml \
+    -e @/var/lib/vino-builder/flavor-templates/flavor-templates.yaml \
+    -e @/var/lib/vino-builder/network-templates/network-templates.yaml \
+    -e @/var/lib/vino-builder/storage-templates/storage-templates.yaml \
+    /playbooks/vino-builder.yaml

@@ -60,7 +60,7 @@ def get_numa_cores():
                 numa_core_dict[numa] = parsed_range_list
     return numa_core_dict
 
-def allocate_cores(nodes, exclude_cpu):
+def allocate_cores(nodes, flavors, exclude_cpu):
     """Return"""
 
     core_state = {}
@@ -96,13 +96,16 @@ def allocate_cores(nodes, exclude_cpu):
     # address the case where previous != desired - delete previous, re-run
     for node in nodes:
 
+        flavor = node['labels']['vmFlavor']
+        vcpus = flavors[flavor]['vcpus']
+
         for num_node in range(0, node['count']):
 
             # generate a unique name such as master-0, master-1
             node_name = node['name'] + '-' + str(num_node)
 
             # extract the core count
-            core_count = int(node['instance']['vcpu'])
+            core_count = int(vcpus)
 
             # discover any previous allocation
             if 'assignments' in core_state:
@@ -140,10 +143,12 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             nodes=dict(required=True, type='list'),
+            flavors=dict(required=True, type='dict'),
             exclude_cpu=dict(required=True, type='str')
         )
     )
     result = allocate_cores(module.params["nodes"],
+                            module.params["flavors"],
                             module.params["exclude_cpu"])
     module.exit_json(**result)
 

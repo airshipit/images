@@ -21,6 +21,7 @@
 - name: allocate domain cores
   core_allocation:
     nodes: "{{ nodes }}"
+    flavors: "{{ flavors }}"
     exclude_cpu: "{{ configuration.cpuExclude }}"
   register: node_core_map
   when: nodes

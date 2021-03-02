@@ -5,7 +5,7 @@
 
 - name: debug print virsh xml domain
   debug:
-    msg: "{{ libvirtDomains[node.name]['domainTemplate'] }}"
+    msg: "{{ flavorTemplates[node.labels.vmFlavor]['domainTemplate'] }}"
   loop: "{{ range(0,node.count)|list }}"
 
 - name: get state of existing volumes
@@ -14,7 +14,7 @@
   register: vol_list
 
 - name: write out domain volume request xml
-  copy: content="{{libvirtDomains[node.name]['volumeTemplate']}}" dest=/tmp/vol-{{item}}.xml
+  copy: content="{{ flavorTemplates[node.labels.vmFlavor]['volumeTemplate'] }}" dest=/tmp/vol-{{item}}.xml
   loop: "{{ range(0,node.count)|list }}"
 
 - name: create domain volume if it doesn't exist
@@ -35,7 +35,7 @@
 # to domains, so we must shell out here instead
 
 - name: write out domain volume request xml
-  copy: content="{{libvirtDomains[node.name]['domainTemplate']}}" dest=/tmp/domain-{{item}}.xml
+  copy: content="{{ flavorTemplates[node.labels.vmFlavor]['domainTemplate'] }}" dest=/tmp/domain-{{item}}.xml
   loop: "{{ range(0,node.count)|list }}"
 
 - name: virsh define domain
@@ -43,10 +43,10 @@
     virsh define /tmp/domain-{{item}}.xml
   loop: "{{ range(0,node.count)|list }}"
 
-# - name: set vm to running
-#   virt:
-#     name: "{{ node.name + '-' + item|string}}"
-#     state: running
-#     # autostart: yes
-#   loop: "{{ range(0,node.count)|list }}"
-#   ignore_errors: true
+- name: set vm to running
+  virt:
+    name: "{{ node.name + '-' + item|string}}"
+    state: running
+    autostart: yes
+  loop: "{{ range(0,node.count)|list }}"
+  ignore_errors: true
