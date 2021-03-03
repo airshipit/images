@@ -11,3 +11,5 @@ image-builder/config/*.iso
 image-builder/config/*.qcow2
 image-builder/config/*.md5sum
 image-builder/assets/playbooks/roles/multistrap/vars/main.yaml
+image-builder/assets/playbooks/roles/livecdcontent/vars/main.yaml
+image-builder/assets/playbooks/roles/osconfig/vars/main.yaml
