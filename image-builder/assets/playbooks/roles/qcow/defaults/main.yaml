@@ -54,5 +54,3 @@ qcow_container_runtime_scripts:
     - file_content: |
           #!/bin/bash
           echo "custom qcow post-install script"
-# This is only needed if you want DNS working when running qcow scripts above
-qcow_container_runtime_scripts_dns: 8.8.8.8

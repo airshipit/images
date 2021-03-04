@@ -108,6 +108,7 @@ outputFileName: $img_name" > ${qcow_config}
    --volume /proc:/proc:rw \
    --volume /sys:/sys:rw \
    --volume /lib/modules:/lib/modules:rw \
+   --volume /run/systemd/resolve:/run/systemd/resolve:rw \
    --volume $workdir:/config \
    ${uefi_mount} \
    --env BUILDER_CONFIG=/config/${build_type}.yaml \

@@ -34,11 +34,16 @@ setup_chroot(){
     mountpoint $build_dir/dev/pts > /dev/null || sudo mount -t devpts /dev/pts $build_dir/dev/pts
     mkdir -p $osconfig_build_dir
     mountpoint $osconfig_build_dir > /dev/null || sudo mount -o bind $build_dir $osconfig_build_dir
+    if [ -d "/run/systemd/resolve" ]; then
+      mkdir -p $build_dir/run/systemd/resolve
+      mountpoint $build_dir/run/systemd/resolve > /dev/null || sudo mount -o bind /run/systemd/resolve $build_dir/run/systemd/resolve
+    fi
 }
 
 umount_helper(){
-    if [[ -d "$1" ]] && mountpoint "$1" > /devnull; then
-        sudo umount "$1"
+    if [[ -d "$1" ]] && mountpoint "$1" > /dev/null; then
+        # if umount fails in first attempt, we try to use lazy umount
+        sudo umount "$1" || sudo umount -l "$1"
     fi
 }
 
@@ -52,6 +57,9 @@ umount_chroot(){
     umount_helper $build_dir/sys
     umount_helper $build_dir/proc
     umount_helper $osconfig_build_dir
+    if [ -d "/run/systemd/resolve" ]; then
+      umount_helper $build_dir/run/systemd/resolve
+    fi
 }
 
 # Install pre-requisites
@@ -121,10 +129,8 @@ cp assets/playbooks/base-osconfig.yaml $build_dir/opt/assets/playbooks/base-osco
 cp -r assets/playbooks/roles/osconfig $build_dir/opt/assets/playbooks/roles
 if [ -d $build_dir/config ]; then
   sudo rm -r $build_dir/config
-  mkdir -p $build_dir/config
-else
-  mkdir -p $build_dir/config
 fi
+mkdir -p $build_dir/config
 cp -r $workdir/scripts $build_dir/config/
 if [ -z "$SKIP_OSCONFIG_ROLE" ]; then
   sudo -E ansible-playbook -i assets/playbooks/inventory.yaml assets/playbooks/base-osconfig.yaml --extra-vars "run_context=common" -vv

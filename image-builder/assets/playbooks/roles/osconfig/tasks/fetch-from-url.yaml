@@ -1,0 +1,18 @@
+- name: "Append any user-defined custom urls"
+  set_fact:
+    fetch_from_url: "{{ fetch_from_url + fetch_from_url_append }}"
+  when: fetch_from_url_append is defined
+- when: fetch_from_url is defined
+  block:
+    - name: "ensuring directory /tmp/url_resources exists"
+      file:
+        path: "/tmp/url_resources"
+        state: directory
+        mode: '0755'
+    - name: "Download from url {{ item.url }}"
+      get_url:
+        url: "{{ item.url }}"
+        dest: "/tmp/url_resources/{{ item.url | basename }}"
+        mode: '0755'
+        use_proxy: "{{ item.use_proxy }}"
+      loop: "{{ fetch_from_url }}"

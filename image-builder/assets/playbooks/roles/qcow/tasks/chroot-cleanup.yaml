@@ -6,8 +6,6 @@
 - name: "QCOW | unmount target"
   shell: |
         set -e
-        # restore resolv.conf
-        chroot "{{ dst }}" /bin/bash -c 'rm /etc/resolv.conf; cd /etc; ln -s ../run/systemd/resolve/stub-resolv.conf resolv.conf'
         cd "{{ dst }}"
         mountpoint dev/pts > /dev/null && umount dev/pts
         mountpoint dev > /dev/null && umount dev
@@ -16,3 +14,6 @@
         fi
         mountpoint sys > /dev/null && umount sys
         mountpoint proc > /dev/null && umount proc
+        if [ -d "/run/systemd/resolve" ]; then
+          mountpoint run/systemd/resolve > /dev/null && umount -l run/systemd/resolve
+        fi
