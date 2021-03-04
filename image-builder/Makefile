@@ -52,15 +52,9 @@ images: build generate_iso package_qcow
 build:
 	set -ex
 	# Apply any user-defined rootfs overrides to playbooks
-	if [ -f $(WORKDIR)/rootfs/multistrap-vars.yaml ]; then
-	  cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
-	fi
-	if [ -f $(WORKDIR)/rootfs/osconfig-vars.yaml ]; then
-	  cp $(WORKDIR)/rootfs/osconfig-vars.yaml assets/playbooks/roles/osconfig/vars/main.yaml
-	fi
-	if [ -f $(WORKDIR)/rootfs/livecdcontent-vars.yaml ]; then
-	  cp $(WORKDIR)/rootfs/livecdcontent-vars.yaml assets/playbooks/roles/livecdcontent/vars/main.yaml
-	fi
+	cp $(WORKDIR)/rootfs/multistrap-vars.yaml assets/playbooks/roles/multistrap/vars/main.yaml
+	cp $(WORKDIR)/rootfs/osconfig-vars.yaml assets/playbooks/roles/osconfig/vars/main.yaml
+	cp $(WORKDIR)/rootfs/livecdcontent-vars.yaml assets/playbooks/roles/livecdcontent/vars/main.yaml
 ifneq ($(PROXY), )
 	sudo -E ./tools/docker_proxy.sh $(PROXY) $(NO_PROXY)
 	export http_proxy=$(PROXY)
@@ -72,7 +66,7 @@ ifneq ($(PROXY), )
 ifneq ($(SKIP_MULTISTRAP), true)
 	sudo -E ./tools/multistrap.sh $(WORKDIR)
 endif
-	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
+	sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
@@ -88,15 +82,20 @@ else
 ifneq ($(SKIP_MULTISTRAP), true)
 	sudo -E ./tools/multistrap.sh $(WORKDIR)
 endif
-	sudo -E docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
+	sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $(IMAGE) -f Dockerfile.$(DISTRO) . \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=$(IMAGE_NAME)"
 endif
+	imgId=`sudo docker images | grep 'image-builder ' | awk '{print $$3}'`
+	sudo -E DOCKER_BUILDKIT=1 docker run $$imgId ls -ltra /build/usr/bin/sudo > /tmp/sticky_result
+	sudo grep '^-rws' /tmp/sticky_result >& /dev/null || \
+		(echo Could not find sticky bit set on target image sudo binary. Are you using buildkit? && \
+		sudo cat /tmp/sticky_result && exit 1)
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(IMAGE)
+	sudo -E DOCKER_BUILDKIT=1 docker push $(IMAGE)
 endif
 
 cut_image:
@@ -138,14 +137,14 @@ package_qcow:
 	export IMAGE_TYPE=qcow
 	export EXPLICIT_DIRS=$(QCOW_CONF_DIRS)
 	sudo -E make cut_image
-	sudo -E docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) $(WORKDIR) \
+	sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) $(WORKDIR) \
 	--label $(LABEL) \
 	--label "org.opencontainers.image.revision=$(COMMIT)" \
 	--label "org.opencontainers.image.created=\
 	$(shell date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)"
 ifeq ($(PUSH_IMAGE), true)
-	sudo -E docker push $(QCOW_IMAGE)
+	sudo -E DOCKER_BUILDKIT=1 docker push $(QCOW_IMAGE)
 endif
 
 tests:

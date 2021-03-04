@@ -71,7 +71,10 @@ fi
 install_pkg efivar
 # required for building UEFI image
 sudo -E modprobe efivars
-type docker >& /dev/null || install_pkg docker.io
+type docker >& /dev/null || (echo "Error: You do not have docker installed in your environment." && exit 1)
+sudo docker version | grep Community >& /dev/null || (echo "Error: Could not find Community version of docker" && \
+	echo "You must uninstall docker.io and install docker-ce. For instructions, see https://docs.docker.com/engine/install/ubuntu/" && \
+	exit 1)
 install_pkg equivs
 install_pkg ca-certificates
 install_pkg build-essential

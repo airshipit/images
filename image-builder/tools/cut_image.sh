@@ -56,7 +56,10 @@ install_pkg libvirt-daemon-system
 install_pkg libvirt-clients
 install_pkg cloud-image-utils
 install_pkg ovmf
-type docker >& /dev/null || install_pkg docker.io
+type docker >& /dev/null || (echo "Error: You do not have docker installed in your environment." && exit 1)
+sudo docker version | grep Community >& /dev/null || (echo "Error: Could not find Community version of docker" && \
+	echo "You must uninstall docker.io and install docker-ce. For instructions, see https://docs.docker.com/engine/install/ubuntu/" && \
+	exit 1)
 
 if [ -d /sys/firmware/efi ]; then
   uefi_mount='--volume /sys/firmware/efi:/sys/firmware/efi:rw'
