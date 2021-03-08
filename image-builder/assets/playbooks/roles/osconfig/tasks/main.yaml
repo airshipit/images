@@ -19,6 +19,9 @@
 - name: "configure grub"
   include_tasks: grub.yaml
   when: run_context == default_run_context
+- name: "configure kdump-tools"
+  include_tasks: kdump-tools.yaml
+  when: run_context == default_run_context
 - name: "configure kubernetes"
   include_tasks: kubernetes.yaml
   when: run_context == default_run_context

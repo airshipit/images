@@ -54,6 +54,9 @@ grub:
        - name: rcu_nocb_poll
          value: 'true'
 
+kdump_tools:
+    crashkernel: '768M'
+
 limits:
     - name: core_dump
       domain: '0:'

@@ -1,0 +1,6 @@
+# Settings here will be applied to /etc/default/grub.d/kdump-tools.cfg when kdump-tools is installed
+- name: "kdump-tools | kdump-tools config"
+  template:
+    src: kdump-tools.cfg.j2
+    dest: "/etc/default/grub.d/kdump-tools.cfg"
+    mode: 0644
