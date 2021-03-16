@@ -50,6 +50,7 @@ ubuntu_packages:
     - logrotate
     - lsb-release
     - lsof
+    - lvm2 # required for ceph cluster provisioning
     - man-db
     - mawk
     - mbr
