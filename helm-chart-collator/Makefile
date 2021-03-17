@@ -18,12 +18,13 @@ PUSH_IMAGE        ?= false
 IMAGE_ID          ?= none
 COMMIT            ?= $(shell git rev-parse HEAD)
 LABEL             ?= org.airshipit.build=community
-IMAGE_NAME        ?= collator
+IMAGE_NAME        ?= helm-chart-collator
 DOCKER_REGISTRY   ?= quay.io
 IMAGE_PREFIX      ?= airshipit
 IMAGE_TAG         ?= latest
 DISTRO            ?= debian_stable
-IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
+CHARTS			  ?= \"$(cat "config/charts.yaml")\"
+IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}
 SH_TO_CHECK       := $(wildcard files/*.sh )
 PROXY             ?= http://proxy.foo.com:8000
 NO_PROXY          ?= localhost,127.0.0.1,.svc.cluster.local
@@ -74,31 +75,23 @@ build_collator:
 	mkdir -p $(BUILD_DIR)
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
-	docker build . \
-	--iidfile $(BUILD_DIR)/image_id \
-	--tag $(IMAGE) \
-	--label $(LABEL) \
-	--label "org.opencontainers.image.revision=$(COMMIT)" \
-	--label "org.opencontainers.image.created=\
-	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(IMAGE_NAME)" \
-	--build-arg http_proxy=$(PROXY) \
-	--build-arg https_proxy=$(PROXY) \
-	--build-arg HTTP_PROXY=$(PROXY) \
-	--build-arg HTTPS_PROXY=$(PROXY) \
-	--build-arg no_proxy=$(NO_PROXY) \
-	--build-arg NO_PROXY=$(NO_PROXY) \
-	--build-arg GIT_COMMIT=$(COMMIT)
+	./build-image-make.sh \
+	    config/charts.yaml \
+		$(IMAGE_NAME) \
+		$(IMAGE) \
+		$(LABEL) \
+		$(BUILD_DIR) \
+		$(USE_PROXY) \
+		$(PROXY) \
+		$(NO_PROXY)
 else
-	docker build . \
-	--iidfile $(BUILD_DIR)/image_id \
-	--tag $(IMAGE) \
-	--label $(LABEL) \
-	--label "org.opencontainers.image.revision=$(COMMIT)" \
-	--label "org.opencontainers.image.created=\
-	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(IMAGE_NAME)" \
-	--build-arg GIT_COMMIT=$(COMMIT)
+	./build-image-make.sh \
+	    config/charts.yaml \
+		$(IMAGE_NAME) \
+		$(IMAGE) \
+		$(LABEL) \
+		$(BUILD_DIR) \
+		$(USE_PROXY)
 endif
 else
 	echo $(IMAGE_ID) > $(BUILD_DIR)/image_id
