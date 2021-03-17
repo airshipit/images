@@ -10,7 +10,7 @@ set -e
 # dockerhub user. Example: "docker.io/openstackhelm"
 : "${REGISTRY_URI:="quay.io/airshipit"}"
 # The openstack branch to build, if no per project branch is given.
-: "${OPENSTACK_VERSION:=stable/ussuri}"
+: "${OPENSTACK_VERSION:=stable/victoria}"
 # Sepcify OS distribution
 : "${DISTRO:="ubuntu_bionic"}"
 # extra build arguments for the base image. See loci's dockerfiles for

@@ -20,7 +20,7 @@ COMMIT               ?= $(shell git rev-parse HEAD)
 LABEL                ?= org.airshipit.build=community
 DOCKER_REGISTRY      ?= quay.io
 IMAGE_PREFIX         ?= airshipit
-OPENSTACK_VERSION    ?= stable/ussuri
+OPENSTACK_VERSION    ?= stable/victoria
 DISTRO               ?= ubuntu_bionic
 OS_VER               =  $(word 2, $(subst /, ,$(OPENSTACK_VERSION)))
 IMAGE_NAME           ?= ironic
