@@ -23,8 +23,8 @@ noproxy="$5"
 workdir="$(realpath ${host_mount_directory})"
 
 # Overrides
-: ${user_data:=$workdir/iso/user_data}
-: ${network_config:=$workdir/iso/network_data.json}
+: ${user_data:=$workdir/user_data}
+: ${network_config:=$workdir/network_data.json}
 : ${osconfig_params:=$workdir/qcow-control-plane/osconfig-control-plane-vars.yaml}
 : ${qcow_params:=$workdir/qcow-control-plane/qcow-control-plane-vars.yaml}
 
@@ -79,7 +79,6 @@ $(cat $network_config | sed 's/^/    /g')
 outputFileName: $img_name" > ${iso_config}
   sudo -E docker run -i --rm \
    --volume $workdir:/config \
-   --env BUILDER_CONFIG=/config/${build_type}.yaml \
    --env IMAGE_TYPE="iso" \
    --env VERSION="v2" \
    --env http_proxy=$proxy \

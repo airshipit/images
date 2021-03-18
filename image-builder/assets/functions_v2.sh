@@ -96,7 +96,8 @@ _process_input_data_set_vars_osconfig(){
   OSCONFIG_FILE="${yaml_dir}/${OSCONFIG_FILE}"
   # Optional user-supplied playbook vars
   if [[ -f "${OSCONFIG_FILE}" ]]; then
-    cp "${OSCONFIG_FILE}" /opt/assets/playbooks/roles/osconfig/vars/main.yaml
+    echo "" >> /opt/assets/playbooks/roles/osconfig/vars/main.yaml
+    cat "${OSCONFIG_FILE}" >> /opt/assets/playbooks/roles/osconfig/vars/main.yaml
   fi
 }
 

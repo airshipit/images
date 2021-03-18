@@ -16,7 +16,6 @@ SHELL		:= /bin/bash
 COMMIT		?= $(shell git rev-parse HEAD)
 LABEL		?= org.airshipit.build=community
 IMAGE_NAME	?= image-builder
-QCOW_IMAGE_NAME ?= qcow-bundle
 DOCKER_REGISTRY	?= quay.io
 IMAGE_PREFIX	?= airshipit
 IMAGE_TAG	?= latest
@@ -24,8 +23,9 @@ IMAGE_TYPE	?= iso # iso | qcow
 PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
 WORKDIR         ?= ./config
-# Specify if you want to specify qcow config directories manually instead of using default naming conventions
-QCOW_CONF_DIRS  ?=
+QCOW_BUNDLE     ?= ${WORKDIR}/qcow-bundle
+# Specify if you want to only build a certain subset of QCOW bundles
+QCOW_BUNDLE_DIRS  ?=
 # Set to true to skip multistrap.sh script. Useful for testing
 SKIP_MULTISTRAP ?=
 # Set to true to skip multistrap playbook. Useful for testing
@@ -35,7 +35,6 @@ SKIP_OSCONFIG_ROLE ?=
 # Set to true to skip livecdcontent playbook. Useful for testing
 SKIP_LIVECDCONTENT_ROLE ?=
 IMAGE           ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
-QCOW_IMAGE      ?= ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${QCOW_IMAGE_NAME}:${IMAGE_TAG}-${DISTRO}
 PROXY           ?=
 NO_PROXY        ?= localhost,127.0.0.1
 
@@ -109,23 +108,23 @@ ifneq ($(PROXY), )
 	export HTTPS_PROXY=$(PROXY)
 	export NO_PROXY=$(NO_PROXY)
 endif
-ifneq ($(EXPLICIT_DIRS), )
-	iterDirs="$(EXPLICIT_DIRS)"
+ifeq ($(IMAGE_TYPE), iso)
+	sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR)/iso $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
 else
-	# Assemble all images based on configs defined in each $(IMAGE_TYPE)* subdirectory
-	iterDirs=`find $(WORKDIR) -maxdepth 1 -name "$(IMAGE_TYPE)*" -type d -exec basename {} \;`
-endif
+	# Assemble all images based on configs defined in each subdirectory
+	iterDirs=`find $(QCOW_BUNDLE) -maxdepth 1 -mindepth 1 -type d -exec basename {} \;`
 	for subdir in $$iterDirs; do
 	    # ISO configs
-	    export user_data=$(WORKDIR)/$$subdir/user_data
-	    export network_config=$(WORKDIR)/$$subdir/network_data.json
+	    export user_data=$(QCOW_BUNDLE)/$$subdir/user_data
+	    export network_config=$(QCOW_BUNDLE)/$$subdir/network_data.json
 	    # QCOW configs
-	    export osconfig_params=$(WORKDIR)/$$subdir/osconfig-*-vars.yaml
-	    export qcow_params=$(WORKDIR)/$$subdir/qcow-*-vars.yaml
+	    export osconfig_params=$(QCOW_BUNDLE)/$$subdir/osconfig-*-vars.yaml
+	    export qcow_params=$(QCOW_BUNDLE)/$$subdir/qcow-*-vars.yaml
 	    # Shared configs
-	    export img_name=$$(cat $(WORKDIR)/$$subdir/img_name)
-	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR) $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
+	    export img_name=$$(cat $(QCOW_BUNDLE)/$$subdir/img_name)
+	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(QCOW_BUNDLE) $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
 	done
+endif
 
 generate_iso:
 	set -ex
@@ -135,17 +134,25 @@ generate_iso:
 package_qcow:
 	set -ex
 	export IMAGE_TYPE=qcow
-	export EXPLICIT_DIRS=$(QCOW_CONF_DIRS)
-	sudo -E make cut_image
-	sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $(QCOW_IMAGE) -f Dockerfile-qcow.$(DISTRO) $(WORKDIR) \
-	--label $(LABEL) \
-	--label "org.opencontainers.image.revision=$(COMMIT)" \
-	--label "org.opencontainers.image.created=\
-	$(shell date --rfc-3339=seconds --utc)" \
-	--label "org.opencontainers.image.title=$(QCOW_IMAGE_NAME)"
-ifeq ($(PUSH_IMAGE), true)
-	sudo -E DOCKER_BUILDKIT=1 docker push $(QCOW_IMAGE)
+ifneq ($(QCOW_BUNDLE_DIRS), )
+	bundleDirs="$(QCOW_BUNDLE_DIRS)"
+else
+	# Assemble all images based on configs defined in each $(IMAGE_TYPE)* subdirectory
+	bundleDirs=`find $(WORKDIR) -maxdepth 1 -mindepth 1 -name "qcow-bundle*" -type d -exec basename {} \;`
 endif
+	for bundledir in $$bundleDirs; do
+	    export QCOW_BUNDLE="$(WORKDIR)/$$bundledir"
+	    sudo -E make cut_image
+	    sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $$bundledir -f Dockerfile-qcow.$(DISTRO) $(WORKDIR)/$$bundledir \
+	    --label $(LABEL) \
+	    --label "org.opencontainers.image.revision=$(COMMIT)" \
+	    --label "org.opencontainers.image.created=\
+	    $(shell date --rfc-3339=seconds --utc)" \
+	    --label "org.opencontainers.image.title=$(DOCKER_REGISTRY)/$(IMAGE_PREFIX)/$$bundledir:$(IMAGE_TAG)-$(DISTRO)"
+ifeq ($(PUSH_IMAGE), true)
+	    sudo -E DOCKER_BUILDKIT=1 docker push $$bundledir
+endif
+	done
 
 tests:
 	true
@@ -153,6 +160,6 @@ tests:
 clean:
 	set -ex
 	sudo -E tools/multistrap.sh clean
-	if ls $(WORKDIR)/*.iso >& /dev/null; then sudo rm $(WORKDIR)/*.iso; fi
-	if ls $(WORKDIR)/*.qcow2 >& /dev/null; then sudo rm $(WORKDIR)/*.qcow2; fi
-	if ls $(WORKDIR)/*.md5sum >& /dev/null; then sudo rm $(WORKDIR)/*.md5sum; fi
+	find $(WORKDIR) -name "*.iso" -exec rm {} \; >& /dev/null
+	find $(WORKDIR) -name "*.qcow2" -exec rm {} \; >& /dev/null
+	find $(WORKDIR) -name "*.md5sum" -exec rm {} \; >& /dev/null
