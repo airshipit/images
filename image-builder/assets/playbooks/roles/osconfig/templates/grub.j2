@@ -4,6 +4,7 @@
 #   info -f grub -n 'Simple configuration'
 
 GRUB_DEFAULT=0
+GRUB_TERMINAL="serial console"
 GRUB_TIMEOUT_STYLE=menu
 GRUB_TIMEOUT={{ grub.GRUB_TIMEOUT }}
 GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
@@ -13,3 +14,8 @@ GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
 {% endfor %}
 GRUB_CMDLINE_LINUX_DEFAULT="{{ ns.content }}"
 GRUB_CMDLINE_LINUX=""
+{% set ns = namespace (content = '') %}
+{% for arg in grub.GRUB_SERIAL_COMMAND %}
+{% set ns.content = ns.content + ' --' + arg.name + '=' + arg.value %}
+{% endfor %}
+GRUB_SERIAL_COMMAND="serial {{ ns.content }}"
