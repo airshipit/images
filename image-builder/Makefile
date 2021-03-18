@@ -118,8 +118,9 @@ else
 	    export user_data=$(QCOW_BUNDLE)/$$subdir/user_data
 	    export network_config=$(QCOW_BUNDLE)/$$subdir/network_data.json
 	    # QCOW configs
-	    export osconfig_params=$(QCOW_BUNDLE)/$$subdir/osconfig-*-vars.yaml
-	    export qcow_params=$(QCOW_BUNDLE)/$$subdir/qcow-*-vars.yaml
+	    qcow_type=$$(echo $$subdir | sed -e "s/^qcow-//")
+	    export osconfig_params="$(QCOW_BUNDLE)/$$subdir/osconfig-$$qcow_type-vars.yaml"
+	    export qcow_params="$(QCOW_BUNDLE)/$$subdir/qcow-$$qcow_type-vars.yaml"
 	    # Shared configs
 	    export img_name=$$(cat $(QCOW_BUNDLE)/$$subdir/img_name)
 	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(QCOW_BUNDLE) $(IMAGE) "$(PROXY)" "$(NO_PROXY)"

@@ -18,7 +18,7 @@
   when: run_context == default_run_context
 - name: "configure grub"
   include_tasks: grub.yaml
-  when: run_context == default_run_context
+  when: run_context == default_run_context or run_context == qcow_run_context
 - name: "configure kdump-tools"
   include_tasks: kdump-tools.yaml
   when: run_context == default_run_context
