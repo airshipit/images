@@ -21,9 +21,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY playbooks /opt/playbooks
-COPY config /opt/config
 
-ARG CHARTS="/opt/config/charts.yaml"
+ARG CHARTS=""
 RUN ansible-playbook -v /opt/playbooks/create_repository.yaml \
   -i /opt/playbooks/inventory.yaml \
   --extra-vars "CHARTS=$CHARTS"
