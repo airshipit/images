@@ -76,6 +76,7 @@ ubuntu_packages:
     - xz-utils
 unapproved_packages: # provide the exact name of the packages that need to be blocked
     - unattended-upgrades
+    - systemd-timesyncd
 repos:
     - register_repo_with_rootfs: true
       name: Ubuntu
