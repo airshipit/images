@@ -12,7 +12,7 @@ BASEDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 build_dir=assets/playbooks/build
 osconfig_build_dir=$(basename $build_dir)
-host_mount_directory="${1:-$BASEDIR/../config}"
+host_mount_directory="${1:-$BASEDIR/../manifests}"
 workdir="$(realpath ${host_mount_directory})"
 
 install_pkg(){

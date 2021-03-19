@@ -22,7 +22,7 @@ IMAGE_TAG	?= latest
 IMAGE_TYPE	?= iso # iso | qcow
 PUSH_IMAGE	?= false
 DISTRO          ?= ubuntu_focal
-WORKDIR         ?= ./config
+WORKDIR         ?= ./manifests
 QCOW_BUNDLE     ?= ${WORKDIR}/qcow-bundle
 # Specify if you want to only build a certain subset of QCOW bundles
 QCOW_BUNDLE_DIRS  ?=
@@ -114,15 +114,11 @@ else
 	# Assemble all images based on configs defined in each subdirectory
 	iterDirs=`find $(QCOW_BUNDLE) -maxdepth 1 -mindepth 1 -type d -exec basename {} \;`
 	for subdir in $$iterDirs; do
-	    # ISO configs
-	    export user_data=$(QCOW_BUNDLE)/$$subdir/user_data
-	    export network_config=$(QCOW_BUNDLE)/$$subdir/network_data.json
 	    # QCOW configs
-	    qcow_type=$$(echo $$subdir | sed -e "s/^qcow-//")
-	    export osconfig_params="$(QCOW_BUNDLE)/$$subdir/osconfig-$$qcow_type-vars.yaml"
-	    export qcow_params="$(QCOW_BUNDLE)/$$subdir/qcow-$$qcow_type-vars.yaml"
-	    # Shared configs
-	    export img_name=$$(cat $(QCOW_BUNDLE)/$$subdir/img_name)
+	    export osconfig_params="$(QCOW_BUNDLE)/$$subdir/osconfig-vars.yaml"
+	    export qcow_params="$(QCOW_BUNDLE)/$$subdir/qcow-vars.yaml"
+	    # Image name
+	    export img_name=$$subdir.qcow2
 	    sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(QCOW_BUNDLE) $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
 	done
 endif
@@ -144,7 +140,7 @@ endif
 	for bundledir in $$bundleDirs; do
 	    export QCOW_BUNDLE="$(WORKDIR)/$$bundledir"
 	    sudo -E make cut_image
-	    sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $$bundledir -f Dockerfile-qcow.$(DISTRO) $(WORKDIR)/$$bundledir \
+	    sudo -E DOCKER_BUILDKIT=1 docker -D -l debug build --tag $(DOCKER_REGISTRY)/$(IMAGE_PREFIX)/$$bundledir:$(IMAGE_TAG)-$(DISTRO) -f Dockerfile-qcow.$(DISTRO) $(WORKDIR)/$$bundledir \
 	    --label $(LABEL) \
 	    --label "org.opencontainers.image.revision=$(COMMIT)" \
 	    --label "org.opencontainers.image.created=\

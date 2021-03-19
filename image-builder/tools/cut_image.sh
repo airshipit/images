@@ -12,7 +12,7 @@ BASEDIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 # Whether to build an 'iso' or 'qcow'
 build_type="${1:-qcow}"
 # The host mount to use to exchange data with this container
-host_mount_directory="${2:-$BASEDIR/../config}"
+host_mount_directory="${2:-$BASEDIR/../manifests}"
 # Docker image to use when launching this container
 image="${3:-port/image-builder:latest-ubuntu_focal}"
 # proxy to use, if applicable
@@ -89,7 +89,7 @@ outputFileName: $img_name" > ${iso_config}
   disk1="--disk path=${workdir}/${img_name},device=cdrom"
   network='--network network=default,mac=52:54:00:6c:99:85'
 elif [[ $build_type == qcow ]]; then
-  : ${img_name:=$(cat $(dirname ${osconfig_params})/img_name)}
+  : ${img_name:=airship-ubuntu.qcow}
   if sudo virsh list | grep ${img_name}; then
     sudo virsh destroy ${img_name}
   fi
