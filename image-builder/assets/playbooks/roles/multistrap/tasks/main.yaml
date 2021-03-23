@@ -57,6 +57,14 @@
         set -e
         chattr +i "{{ rootfs_root }}/etc/kernel/postinst.d/kdump-tools"
 
+# Setting up a dummy hostname required for some packages to properly install
+- name: "hostname and hosts | write out hostname file"
+  shell:
+    cmd: "echo \"$(hostname)\" > {{rootfs_root}}/etc/hostname"
+- name: "hostname and hosts | write out hosts file"
+  shell:
+    cmd: "echo \"127.0.0.1 localhost $(hostname)\" > {{rootfs_root}}/etc/hosts"
+
 - name: "Running multistrap"
   shell:
       cmd: "multistrap -f {{ multistrap_tempdir.path }}/multistrap.conf"
