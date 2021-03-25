@@ -82,6 +82,7 @@ endif
 else
 	echo $(IMAGE_ID) > $(BUILD_DIR)/image_id
 endif
+# push image
 ifeq ($(PUSH_IMAGE), true)
 	docker push $(IMAGE)
 endif
