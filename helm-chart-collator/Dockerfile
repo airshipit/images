@@ -14,15 +14,20 @@ RUN apt-get update && \
         openssh-client \
         jq \
         git && \
-    pip3 install --upgrade wheel && \
-    pip3 install --upgrade ansible && \
-    pip3 install --upgrade jmespath && \
-    pip3 install --upgrade yq && \
+    pip3 install --upgrade wheel --trusted-host pypi.org \
+                 --trusted-host files.pythonhosted.org && \
+    pip3 install --upgrade ansible --trusted-host pypi.org \
+                 --trusted-host files.pythonhosted.org && \
+    pip3 install --upgrade jmespath --trusted-host pypi.org \
+                 --trusted-host files.pythonhosted.org && \
+    pip3 install --upgrade yq --trusted-host pypi.org \
+                 --trusted-host files.pythonhosted.org && \
     rm -rf /var/lib/apt/lists/*
 
 COPY playbooks /opt/playbooks
+COPY config /opt/config
 
-ARG CHARTS=""
+ARG CHARTS="/opt/config/charts.yaml"
 RUN ansible-playbook -v /opt/playbooks/create_repository.yaml \
   -i /opt/playbooks/inventory.yaml \
   --extra-vars "CHARTS=$CHARTS"
