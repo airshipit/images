@@ -46,6 +46,9 @@
 - name: "fetch url resource"
   include_tasks: fetch-from-url.yaml
   when: run_context == default_run_context
+- name: "cgroup count"
+  include_tasks: hanging-cgroup-release.yaml
+  when: run_context == default_run_context
 
 # Context-dependent tasks
 - name: "write user-provided files"
