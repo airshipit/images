@@ -40,13 +40,14 @@
 
 - job:
     name: airship-images-functional
+    nodeset: airship-images-single-node
     pre-run: playbooks/airship-images-deploy-docker.yaml
     run: playbooks/airship-images-test.yaml
     post-run: playbooks/airship-collect-logs.yaml
-    nodeset: airship-images-single-node
 
 - job:
     name: airship-images-build
+    nodeset: airship-images-single-node
     timeout: 7200
     post-timeout: 7200
     pre-run: playbooks/airship-images-deploy-docker.yaml
@@ -55,6 +56,7 @@
 
 - job:
     name: airship-images-publish
+    nodeset: airship-images-single-node
     timeout: 7200
     post-timeout: 7200
     pre-run: playbooks/airship-images-deploy-docker.yaml
