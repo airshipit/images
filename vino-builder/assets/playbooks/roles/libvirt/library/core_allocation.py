@@ -96,7 +96,7 @@ def allocate_cores(nodes, flavors, exclude_cpu):
     # address the case where previous != desired - delete previous, re-run
     for node in nodes:
 
-        flavor = node['labels']['vmFlavor']
+        flavor = node['bmhLabels']['airshipit.org/k8s-role']
         vcpus = flavors[flavor]['vcpus']
 
         for num_node in range(0, node['count']):
