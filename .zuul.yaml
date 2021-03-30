@@ -82,6 +82,18 @@
       - name: primary
         label: ubuntu-bionic
 
+# We use this as a way to schedule to nodes with SSDs. SSDs are needed
+# to build this project to avoid timeouts we see on slower HDDs. This is an INDIRECT
+# way to schedule to SSDs. We have no need for 32GB of RAM. We need fast disks which
+# we can't seem to guarantee any other way. It just so happens that all of nodes in
+# the 32GB pool also have SSDs which can build this project in a reasonable amount
+# of time.
+- nodeset:
+    name: airship-images-single-node-32GB
+    nodes:
+      - name: primary
+        label: ubuntu-bionic-32GB
+
 - secret:
     name: images_airshipit_github_secret
     data:
