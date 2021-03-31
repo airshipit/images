@@ -36,13 +36,15 @@
       include_role:
         name: "{{ pre_build_role }}"
       when: pre_build_role is defined
-    - name: Publish images
+    - name: Push Images
       block:
-        - docker_login:
+        - name: Login to Image Registry
+          docker_login:
             username: "{{ airship_images_quay_creds.username }}"
             password: "{{ airship_images_quay_creds.password }}"
             registry_url: "{{ docker_registry }}"
-        - make:
+        - name: Push Images with Latest and Commit Tags
+          make:
             chdir: "{{ makefile_chdir }}"
             target: "images"
             params:
@@ -51,7 +53,7 @@
               DOCKER_REGISTRY: "{{ docker_registry }}"
               GCP_SDK: "{{ gcp_sdk }}"
               IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
-              IMAGE_TAG: "{{ image_tag | default('latest') }}"
+              IMAGE_TAG: "{{ item }}"
               LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
               NO_PROXY: "{{ proxy.noproxy }}"
               PUSH_IMAGE: "true"
@@ -59,4 +61,7 @@
               QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
               USE_PROXY: "{{ proxy.enabled | lower }}"
               WORKDIR: "{{ image_config_dir | default('config') }}"
+          with_items:
+            - "{{ image_tag | default('latest') }}"
+            - "{{ zuul.newrev }}"
       become: True
