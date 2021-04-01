@@ -37,6 +37,9 @@
       jobs:
         - images-upload-git-mirror
         - airship-images-publish
+    tag:
+      jobs:
+        - images-upload-git-mirror
 
 - job:
     name: airship-images-functional
