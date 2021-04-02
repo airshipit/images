@@ -37,6 +37,9 @@
 - name: "unattended upgrades"
   include_tasks: unattended-upgrades.yaml
   when: run_context == default_run_context
+- name: "configure systemd-resolved"
+  include_tasks: systemd-resolved.yaml
+  when: run_context == default_run_context
 - name: "configure base systemd"
   include_tasks: systemd.yaml
   when: run_context == default_run_context
