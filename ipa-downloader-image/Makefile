@@ -90,4 +90,8 @@ images: build_ipa
 tests:
 	echo TODO
 
-.PHONY: images build_ipa tests
+clean:
+	docker image rm $(IMAGE)
+	# TODO: Clean up ipa builder container/image/artifacts
+
+.PHONY: images build_ipa tests clean

@@ -38,21 +38,21 @@
       when: pre_build_role is defined
     - name: Publish images
       block:
-        - make:
+        - command: make images clean
+          args:
             chdir: "{{ makefile_chdir }}"
-            target: "images"
-            params:
-              AZ_SDK: "{{ az_sdk }}"
-              COMMIT: "{{ zuul.newrev | default('') }}"
-              DOCKER_REGISTRY: "{{ docker_registry }}"
-              GCP_SDK: "{{ gcp_sdk }}"
-              IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
-              IMAGE_TAG: "{{ image_tag | default('latest') }}"
-              LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
-              NO_PROXY: "{{ proxy.noproxy }}"
-              PUSH_IMAGE: "false"
-              PROXY: "{{ proxy.http }}"
-              QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
-              USE_PROXY: "{{ proxy.enabled | lower }}"
-              WORKDIR: "{{ image_config_dir | default('config') }}"
+          environment:
+            AZ_SDK: "{{ az_sdk }}"
+            COMMIT: "{{ zuul.newrev | default('') }}"
+            DOCKER_REGISTRY: "{{ docker_registry }}"
+            GCP_SDK: "{{ gcp_sdk }}"
+            IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
+            IMAGE_TAG: "{{ image_tag | default('latest') }}"
+            LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
+            NO_PROXY: "{{ proxy.noproxy }}"
+            PUSH_IMAGE: "false"
+            PROXY: "{{ proxy.http }}"
+            QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
+            USE_PROXY: "{{ proxy.enabled | lower }}"
+            WORKDIR: "{{ image_config_dir | default('config') }}"
       become: True
