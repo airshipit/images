@@ -5,3 +5,14 @@
 #    dest: "/etc/systemd/resolved.conf"
 #    mode: 0644
 #  when: domain is defined
+
+- name: "systemd-resolved | Ensuring systemd-resolved overrides directory exists"
+  file:
+    path: "/etc/systemd/system/systemd-resolved.service.d"
+    state: directory
+    mode: '0755'
+- name: "systemd-resolved | Place startup retry override"
+  template:
+    src: systemd-resolved-overrides.j2
+    dest: "/etc/systemd/system/systemd-resolved.service.d/override.conf"
+    mode: '0644'
