@@ -1,4 +1,4 @@
-TOPTGTS := images lint all docs run_images tests
+TOPTGTS := images lint all docs run_images tests clean
 IMAGES := $(wildcard */Makefile)
 
 $(TOPTGTS): $(IMAGES)
