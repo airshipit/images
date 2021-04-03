@@ -53,7 +53,7 @@
             DOCKER_REGISTRY: "{{ docker_registry }}"
             GCP_SDK: "{{ gcp_sdk }}"
             IMAGE_PREFIX: "{{ image_prefix | default('airshipit') }}"
-            IMAGE_TAG: "{{ item }}"
+            IMAGE_TAG: "{{ image_tag | default('latest') }}"
             LABEL: "{{ image_label | default('org.airshipit.build=community') }}"
             NO_PROXY: "{{ proxy.noproxy }}"
             PUSH_IMAGE: "true"
@@ -61,7 +61,4 @@
             QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
             USE_PROXY: "{{ proxy.enabled | lower }}"
             WORKDIR: "{{ image_config_dir | default('config') }}"
-          with_items:
-            - "{{ image_tag | default('latest') }}"
-            - "{{ zuul.newrev }}"
       become: True

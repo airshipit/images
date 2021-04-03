@@ -37,6 +37,9 @@
       jobs:
         - images-upload-git-mirror
         - airship-images-publish
+        - airship-images-publish:
+            vars:
+              image_tag: "{{ zuul.newrev }}"
     tag:
       jobs:
         - images-upload-git-mirror
