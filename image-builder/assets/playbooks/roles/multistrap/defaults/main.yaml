@@ -34,12 +34,14 @@ ubuntu_packages:
     - ifenslave
     - isc-dhcp-client
     - iproute2
+    - ipset
     - iptables
     - iputils-arping
     - iputils-ping
     - iputils-tracepath
     - ipvsadm
     - kdump-tools
+    - keepalived
     - "{{ kernel_base_pkg }}"
     - "{{ kernel_headers_pkg }}"
     - kmod
