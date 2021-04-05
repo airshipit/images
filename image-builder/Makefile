@@ -147,7 +147,7 @@ endif
 	    $(shell date --rfc-3339=seconds --utc)" \
 	    --label "org.opencontainers.image.title=$(DOCKER_REGISTRY)/$(IMAGE_PREFIX)/$$bundledir:$(IMAGE_TAG)-$(DISTRO)"
 ifeq ($(PUSH_IMAGE), true)
-	    sudo -E DOCKER_BUILDKIT=1 docker push $$bundledir
+	    sudo -E DOCKER_BUILDKIT=1 docker push $(DOCKER_REGISTRY)/$(IMAGE_PREFIX)/$$bundledir:$(IMAGE_TAG)-$(DISTRO)
 endif
 	done
 
