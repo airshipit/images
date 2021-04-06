@@ -60,5 +60,5 @@
             PROXY: "{{ proxy.http }}"
             QCOW_CONF_DIRS: "{{ qcow_conf_dirs | default('') }}"
             USE_PROXY: "{{ proxy.enabled | lower }}"
-            WORKDIR: "{{ image_config_dir | default('config') }}"
+            WORKDIR: "{{ image_config_dir | default('manifests') }}"
       become: True

@@ -21,7 +21,7 @@
         https: ""
         noproxy: ""
       makefile_chdir: "{{ zuul.project.src_dir }}"
-      image_config_dir: config
+      image_config_dir: manifests
       image_prefix: airshipit
       image_label: org.airshipit.build=community
       image_tag: latest

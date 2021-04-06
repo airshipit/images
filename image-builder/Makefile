@@ -112,7 +112,8 @@ ifeq ($(IMAGE_TYPE), iso)
 	sudo -E tools/cut_image.sh $(IMAGE_TYPE) $(WORKDIR)/iso $(IMAGE) "$(PROXY)" "$(NO_PROXY)"
 else
 	# Assemble all images based on configs defined in each subdirectory
-	iterDirs=`find $(QCOW_BUNDLE) -maxdepth 1 -mindepth 1 -type d -exec basename {} \;`
+	#                     Trailing / allows proper function with symlinks
+	iterDirs="$(find $(QCOW_BUNDLE)/ -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)"
 	for subdir in $$iterDirs; do
 	    # QCOW configs
 	    export osconfig_params="$(QCOW_BUNDLE)/$$subdir/osconfig-vars.yaml"
@@ -135,7 +136,8 @@ ifneq ($(QCOW_BUNDLE_DIRS), )
 	bundleDirs="$(QCOW_BUNDLE_DIRS)"
 else
 	# Assemble all images based on configs defined in each $(IMAGE_TYPE)* subdirectory
-	bundleDirs=`find $(WORKDIR) -maxdepth 1 -mindepth 1 -name "qcow-bundle*" -type d -exec basename {} \;`
+	#                   Trailing / allows proper function with symlinks
+	bundleDirs="$(find $(WORKDIR)/ -maxdepth 1 -mindepth 1 -name "qcow-bundle*" -type d -exec basename {} \;)"
 endif
 	for bundledir in $$bundleDirs; do
 	    export QCOW_BUNDLE="$(WORKDIR)/$$bundledir"
