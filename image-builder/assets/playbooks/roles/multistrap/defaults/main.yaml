@@ -5,6 +5,8 @@ kernel_base_pkg: linux-image-generic
 kernel_headers_pkg: linux-headers-generic
 systemd_nic_names_policy: kernel database onboard path slot
 systemd_nic_alternative_names_policy: database onboard path slot
+multistrap_retries: 3
+multistrap_retries_delay: 3
 ubuntu_packages:
     - apparmor
     - apt-file
