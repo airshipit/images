@@ -43,10 +43,10 @@
     virsh define /tmp/domain-{{item}}.xml
   loop: "{{ range(0,node.count)|list }}"
 
-- name: set vm to running
-  virt:
-    name: "{{ node.name + '-' + item|string}}"
-    state: running
-    autostart: yes
-  loop: "{{ range(0,node.count)|list }}"
-  ignore_errors: true
+#- name: set vm to running
+#  virt:
+#    name: "{{ node.name + '-' + item|string}}"
+#    state: running
+#    autostart: yes
+#  loop: "{{ range(0,node.count)|list }}"
+#  ignore_errors: true

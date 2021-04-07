@@ -14,6 +14,7 @@
 
 set -ex
 
+# wait for libvirt socket to be ready
 TIMEOUT=300
 while [[ ! -e /var/run/libvirt/libvirt-sock ]]; do
   if [[ ${TIMEOUT} -gt 0 ]]; then
@@ -26,10 +27,34 @@ while [[ ! -e /var/run/libvirt/libvirt-sock ]]; do
   fi
 done
 
+# wait for dynamic data to be ready
+# data is node-specific, so it will be passed as a node annotations
+# of the form
+# metadata:
+#   annotations:
+#     airshipit.org/vino.network-values: |
+#       bunch-of-yaml
+DYNAMIC_DATA_FILE=/var/lib/vino-builder/dynamic.yaml
+TIMEOUT=300
+while [[ ${TIMEOUT} -gt 0 ]]; do
+  let TIMEOUT-=10
+  if [[ ${TIMEOUT} -le 0 ]]; then
+    echo "ERROR: vino-builder dynamic data was not ready in time"
+    exit 1
+  fi
+  kubectl get node $HOSTNAME -o=jsonpath="{.metadata.annotations.airshipit\.org/vino\.network-values}" > $DYNAMIC_DATA_FILE
+  if [[ -s $DYNAMIC_DATA_FILE ]]; then
+    break
+  fi
+  echo "vino-builder dynamic data not ready yet - sleeping for 10 seconds..."
+  sleep 10
+done
+
 ansible-playbook -v \
     -e @/vino/spec \
     -e @/var/lib/vino-builder/flavors/flavors.yaml \
     -e @/var/lib/vino-builder/flavor-templates/flavor-templates.yaml \
     -e @/var/lib/vino-builder/network-templates/network-templates.yaml \
     -e @/var/lib/vino-builder/storage-templates/storage-templates.yaml \
+    -e @$DYNAMIC_DATA_FILE \
     /playbooks/vino-builder.yaml
