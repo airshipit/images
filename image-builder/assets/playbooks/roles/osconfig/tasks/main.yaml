@@ -61,5 +61,5 @@
   include_tasks: file-permissions.yaml
 
 # Context-independent cleanup tasks
-- name: "finalise rootfs"
-  include_tasks: finalise-rootfs.yaml
+- name: "finalize rootfs"
+  include_tasks: finalize-rootfs.yaml

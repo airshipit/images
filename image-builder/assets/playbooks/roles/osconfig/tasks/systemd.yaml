@@ -1,7 +1,3 @@
-- name: "Systemd | Remove machine id"
-  copy:
-    content: ""
-    dest: "/etc/machine-id"
 - name: "Systemd | Link systemd to /sbin/init"
   file:
     src: /bin/systemd
