@@ -68,6 +68,10 @@
 - name: "Running multistrap"
   shell:
       cmd: "multistrap -f {{ multistrap_tempdir.path }}/multistrap.conf"
+  retries: "{{ multistrap_retries }}"
+  delay: "{{ multistrap_retries_delay }}"
+  register: result
+  until: result.rc == 0
 
 - name: "Set systemd NIC naming"
   template:
