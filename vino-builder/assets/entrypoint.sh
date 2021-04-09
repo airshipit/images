@@ -14,6 +14,11 @@
 
 set -ex
 
+READINESS_CHECK_FILE="/tmp/healthy"
+
+## Remove healthy status before starting
+[ -f "${READINESS_CHECK_FILE}" ] && rm ${READINESS_CHECK_FILE}
+
 # wait for libvirt socket to be ready
 TIMEOUT=300
 while [[ ! -e /var/run/libvirt/libvirt-sock ]]; do
@@ -51,10 +56,15 @@ while [[ ${TIMEOUT} -gt 0 ]]; do
 done
 
 ansible-playbook -v \
-    -e @/vino/spec \
     -e @/var/lib/vino-builder/flavors/flavors.yaml \
     -e @/var/lib/vino-builder/flavor-templates/flavor-templates.yaml \
     -e @/var/lib/vino-builder/network-templates/network-templates.yaml \
     -e @/var/lib/vino-builder/storage-templates/storage-templates.yaml \
     -e @$DYNAMIC_DATA_FILE \
     /playbooks/vino-builder.yaml
+
+touch ${READINESS_CHECK_FILE}
+
+while true; do
+  sleep infinity
+done

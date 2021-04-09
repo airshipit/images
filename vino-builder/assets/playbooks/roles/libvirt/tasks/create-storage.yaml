@@ -4,45 +4,12 @@
     command: facts
     uri: "{{ libvirt_uri }}"
 
-- name: Print value of ansible storage pools
-  debug:
-    msg: "Value of ansible_libvirt_pools is {{ ansible_libvirt_pools }}"
-
-- name: write out storage xml template
-  copy: content="{{item.libvirtTemplate}}" dest="/tmp/storage-{{item.name}}.xml"
-
-- name: define the storage pool
-  shell: "virsh pool-define /tmp/storage-{{item.name}}.xml"
-
-# Re-gather facts after definining additional pools available as 'ansible_libvirt_pools'
-- name: re-gather facts on existing virsh pools after defining missing pools
+- name: define storage the storage pool
   virt_pool:
-    command: facts
-    uri: "{{ libvirt_uri }}"
-
-- name: build the storage pool
-  virt_pool:
-    command: build
+    state: present
     name: "{{ item.name }}"
     uri: "{{ libvirt_uri }}"
-  when: item.name in ansible_libvirt_pools and ansible_libvirt_pools[item.name].state != "active"
-
-- name: start the storage pool
-  virt_pool:
-    command: create
-    name: "{{ item.name }}"
-    uri: "{{ libvirt_uri }}"
-  when: item.name in ansible_libvirt_pools and ansible_libvirt_pools[item.name].state != "active"
-
-# these are idempotent so require no conditional checks
-
-# TODO: we are not actually defining configs on the host
-# for some reason we cannot do this
-- name: autostart the storage pool
-  virt_pool:
-    autostart: yes
-    name: "{{ item.name }}"
-    uri: "{{ libvirt_uri }}"
+    xml: "{{item.libvirtTemplate}}"
 
 - name: activate the storage pool
   virt_pool:
