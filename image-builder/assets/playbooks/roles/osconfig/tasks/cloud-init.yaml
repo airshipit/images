@@ -10,3 +10,14 @@
   systemd:
     masked: yes
     name: ssh.socket
+
+- name: "Cloud-Init | Ensuring cloud-init overrides directory exists"
+  file:
+    path: "/etc/systemd/system/cloud-init-local.service.d"
+    state: directory
+    mode: '0755'
+- name: "Cloud-Init | Place cloud-init override file"
+  template:
+    src: cloud-init-local-overrides.j2
+    dest: "/etc/systemd/system/cloud-init-local.service.d/override.conf"
+    mode: '0644'
