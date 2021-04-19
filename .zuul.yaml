@@ -36,10 +36,8 @@
     post:
       jobs:
         - images-upload-git-mirror
-        - airship-images-publish
-        - airship-images-publish:
-            vars:
-              image_tag: "{{ zuul.newrev }}"
+        - airship-images-publish-latest
+        - airship-images-publish-commit
     tag:
       jobs:
         - images-upload-git-mirror
@@ -61,7 +59,7 @@
     post-run: playbooks/airship-collect-logs.yaml
 
 - job:
-    name: airship-images-publish
+    name: airship-images-publish-latest
     nodeset: airship-images-single-node
     timeout: 7200
     post-timeout: 7200
@@ -70,6 +68,12 @@
     secrets:
       - name: airship_images_quay_creds
         secret: airship_images_quay_creds
+
+- job:
+    name: airship-images-publish-commit
+    parent: airship-images-publish-latest
+    vars:
+      image_tag: "{{ zuul.newrev }}"
 
 - job:
     name: images-upload-git-mirror
