@@ -226,6 +226,16 @@ file_permissions:
       # combined with previous item)
       run_contexts:
           - "{{ default_run_context }}"
+# Set password and login shell for existing users
+# Mainly intended to lock down system users
+# Will not create user if does not exist
+user_management:
+    - name: test
+      shell: /usr/sbin/nologin
+      password: '!'
+      password_lock: yes
+      run_contexts:
+          - "{{ default_run_context }}"
 # If any required resources need to be fetched from URL for image build customization, they can be added here.
 # Downloaded resources can be found in /tmp/url_resources directory.
 # Example:-

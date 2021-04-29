@@ -59,6 +59,8 @@
   include_tasks: user-scripts.yaml
 - name: "configure file permissions"
   include_tasks: file-permissions.yaml
+- name: "configure user password settings"
+  include_tasks: user-management.yaml
 
 # Context-independent cleanup tasks
 - name: "finalize rootfs"
