@@ -26,3 +26,11 @@ git_repos:
         path: helm-toolkit
         url: https://github.com/openstack/openstack-helm-infra
         sha: b1e66fd308b6bc9df090aebb5b3807a0df2d87dd
+  - name: private-repo
+    path: hidden
+    url: https://github.com/example-user/private-repo
+    sha: 037b976d91fa4679bc5528b7306ffc209eb03db3
+    key: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      *** REDACTED ***
+      -----END OPENSSH PRIVATE KEY-----
