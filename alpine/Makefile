@@ -21,7 +21,7 @@ LABEL             ?= org.airshipit.build=community
 IMAGE_NAME        ?= alpine
 DOCKER_REGISTRY   ?= quay.io
 IMAGE_PREFIX      ?= airshipit
-IMAGE_TAG         ?= 3_13_5
+IMAGE_TAG         := 3.13.5
 IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}
 SH_TO_CHECK       := $(wildcard files/*.sh )
 PROXY             ?= http://proxy.foo.com:8000
