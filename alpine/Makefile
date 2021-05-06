@@ -101,7 +101,7 @@ tests: lint unit_tests
 test-shellcheck: $(SH_TO_CHECK)
 
 unit_tests:
-	echo TODO
+	echo "TODO"
 
 $(SH_TO_CHECK):
 	docker run --rm -v $(shell pwd):/mnt \
