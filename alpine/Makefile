@@ -48,7 +48,7 @@ build_image:
 	mkdir -p $(BUILD_DIR)
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
-	curl -o alpine-minirootfs.tar.gz $(ALPINE_URL)
+	curl -o alpine-minirootfs.tar.gz $(ALPINE_URL) --proxy $(PROXY)
 	docker build . \
 	--iidfile $(BUILD_DIR)/image_id \
 	--tag $(IMAGE) \
