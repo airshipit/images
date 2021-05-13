@@ -5,6 +5,8 @@
     repo: "{{ chart_dependency['url'] }}"
     version: "{{ chart_dependency['sha'] | default('HEAD') }}"
     refspec: "{{ chart_dependency['refspec'] | default('refs/heads/master') }}"
+    accept_hostkey: "{{ 'key' in chart }}"
+    key_file: "/tmp/{{ chart['name'] }}-key_file"
 
 - name: ensure the parent's charts directory exists
   file:

@@ -34,10 +34,13 @@ heading. Listings must include:
   used for caching during the cloning process.
 * `path`: The path to the desired chart within the repo (e.g. `keystone`)
 * `url`: The URL where the git repo is hosted (e.g. `https://github.com/openstack/openstack-helm`)
-* `sha`: The SHA-1 of the commit from which the chart should be pulled (e.g. `30c9f003d227b799c636458dea161e24d5823c33`). (default: `HEAD`).
+* `sha`: The SHA-1 of the commit from which the chart should be pulled (e.g.
+  `30c9f003d227b799c636458dea161e24d5823c33`). (default: `HEAD`).
 * `refspec`: The refspec associated with the `sha`. This is only required if the `sha`
   can't be reached from the default (e.g. `refs/heads/master`)
 * `chart_version`: The version to package the chart with (e.g. `1.2.3`)
+* `key`: The contents of the private key needed to access a private repo. This
+  is only required for private repos (see examples/charts.yaml for example)
 
 If a chart in a git repo specifies dependencies which are not accessible, the
 dependencies must also be listed under the `dependencies` heading. Dependencies have the

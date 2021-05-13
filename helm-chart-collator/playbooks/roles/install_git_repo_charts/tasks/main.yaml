@@ -1,10 +1,26 @@
 ---
+- when: "'key' in chart"
+  block:
+  - name: create key file
+    copy:
+      dest: "/tmp/{{ chart['name'] }}-key_file"
+      content: "{{ chart['key'] }}"
+      mode: 0600
+
+  - name: assert key file ends in newline
+    shell:
+      executable: /bin/bash
+      cmd: |
+        echo >> "/tmp/{{ chart['name'] }}-key_file"
+
 - name: clone repos
   git:
     dest: /tmp/{{ chart['name'] }}
     repo: "{{ chart['url'] }}"
     version: "{{ chart['sha'] | default('HEAD') }}"
     refspec: "{{ chart['refspec'] | default('refs/heads/master') }}"
+    accept_hostkey: "{{ 'key' in chart }}"
+    key_file: "/tmp/{{ chart['name'] }}-key_file"
 
 - include_tasks: dependencies.yaml
   loop: "{{ chart['dependencies'] | default([]) }}"
