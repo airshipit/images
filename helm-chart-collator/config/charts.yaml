@@ -3,25 +3,7 @@ git_repos:
     url: https://review.opendev.org/airship/charts
     path: charts/dex-aio
     refspec: refs/heads/master
-    sha: 460a817d579b7f6594f664bb44a3ac4c6107e596
-    chart_version: 1.0.0
-  - name: jarvis-project
-    url: https://review.opendev.org/airship/charts
-    path: charts/jarvis-project
-    refspec: refs/heads/master
-    sha: 460a817d579b7f6594f664bb44a3ac4c6107e596
-    chart_version: 1.0.0
-  - name: jarvis-system
-    url: https://review.opendev.org/airship/charts
-    path: charts/jarvis-system
-    refspec: refs/heads/master
-    sha: 460a817d579b7f6594f664bb44a3ac4c6107e596
-    chart_version: 1.0.0
-  - name: harbor
-    url: https://review.opendev.org/airship/charts
-    path: charts/harbor
-    refspec: refs/heads/master
-    sha: 460a817d579b7f6594f664bb44a3ac4c6107e596
+    sha: 2081013e7209318dbc782df08949e5e9d752dc36
     chart_version: 1.0.0
   - name: local-static-provisioner
     url: https://review.opendev.org/airship/charts
