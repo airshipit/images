@@ -23,3 +23,9 @@ git_repos:
     refspec: refs/heads/master
     sha: 460a817d579b7f6594f664bb44a3ac4c6107e596
     chart_version: 1.0.0
+  - name: local-static-provisioner
+    url: https://review.opendev.org/airship/charts
+    path: charts/local-static-provisioner
+    refspec: refs/heads/master
+    sha: 2081013e7209318dbc782df08949e5e9d752dc36
+    chart_version: 1.0.0
