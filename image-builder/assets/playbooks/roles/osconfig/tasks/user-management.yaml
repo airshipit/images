@@ -1,7 +1,3 @@
-- name: "Get all account info"
-  getent:
-    database: passwd
-
 - name: "User Management | Modifying user settings for {{ item.name }}"
   user:
     name: "{{ item.name }}"
@@ -9,4 +5,4 @@
     password_lock: "{{ item.password_lock }}"
     shell: "{{ item.shell }}"
   loop: "{{ user_management  }}"
-  when: run_context in item.run_contexts and item.name in ansible_facts.getent_passwd
+  when: run_context in item.run_contexts
