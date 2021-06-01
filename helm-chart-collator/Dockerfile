@@ -30,7 +30,7 @@ COPY config /opt/config
 ARG CHARTS="/opt/config/charts.yaml"
 RUN ansible-playbook -v /opt/playbooks/create_repository.yaml \
   -i /opt/playbooks/inventory.yaml \
-  --extra-vars "CHARTS=$CHARTS"
+  --extra-vars "CHARTS='$CHARTS'"
 
 FROM chartmuseum/chartmuseum:latest
 
