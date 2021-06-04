@@ -9,3 +9,36 @@ git_repos:
     path: charts/local-static-provisioner
     refspec: refs/heads/master
     sha: 2081013e7209318dbc782df08949e5e9d752dc36
+helm_repos:
+  - repo: elastic
+    url: https://helm.elastic.co
+    name: elasticsearch
+    version: 7.12.1
+  - repo: elastic
+    url: https://helm.elastic.co
+    name: kibana
+    version: 7.12.1
+  - repo: grafana
+    url: https://grafana.github.io/helm-charts
+    name: grafana
+    version: 6.9.1
+  - repo: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+    name: kube-prometheus-stack
+    version: 16.0.1
+  - repo: banzai-cloud
+    url: https://kubernetes-charts.banzaicloud.com
+    name: logging-operator
+    version: 3.9.5
+  - repo: banzai-cloud
+    url: https://kubernetes-charts.banzaicloud.com
+    name: logging-operator-logging
+    version: 3.9.5
+  - repo: minio
+    url: https://helm.min.io
+    name: minio
+    version: 8.0.10
+  - repo: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+    name: ingress-nginx
+    version: 3.5.1
