@@ -228,11 +228,11 @@ file_permissions:
           - "{{ default_run_context }}"
 # Set password and login shell for existing users
 # Mainly intended to lock down system users
-# Will not create user if does not exist
+# Creates user if does not exist
 user_management:
     - name: test
-      shell: /usr/sbin/nologin
-      password: '!'
+      shell: /bin/false
+      password: ''
       password_lock: yes
       run_contexts:
           - "{{ default_run_context }}"
