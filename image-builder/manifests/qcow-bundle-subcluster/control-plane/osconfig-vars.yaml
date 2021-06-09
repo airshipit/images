@@ -1,0 +1,4 @@
+# Custom user-defined overrides to the `osconfig` playbook can be placed here.
+#
+# You would only use this if you needed to apply some settings uniques to
+# control-plane image. Ex: kernel boot params specific to non-worker nodes.
