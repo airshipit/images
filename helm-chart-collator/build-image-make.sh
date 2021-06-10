@@ -5,7 +5,7 @@
 if [[ $# < 5 ]]; then
   echo "usage:"
   echo "  $0 \\\n"
-  echo "     <charts filename> \\\n"
+  echo "     <charts file> \\\n"
   echo "     <image name> \\\n"
   echo "     <image uri> \\\n"
   echo "     <label> \\\n"
@@ -46,7 +46,7 @@ docker build . \
 	$(date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=${IMAGE_NAME}" \
 	--force-rm=true \
-	--build-arg "CHARTS=\"$(cat "${CHARTS}")\"" \
+	--build-arg "CHARTS=$(cat "${CHARTS}")" \
 	--build-arg http_proxy=${PROXY} \
 	--build-arg https_proxy=${PROXY} \
 	--build-arg HTTP_PROXY=${PROXY} \
@@ -65,6 +65,6 @@ docker build . \
 	$(date --rfc-3339=seconds --utc)" \
 	--label "org.opencontainers.image.title=${IMAGE_NAME}" \
 	--force-rm=true \
-    --build-arg "CHARTS=\"$(cat "${CHARTS}")\"" \
+        --build-arg "CHARTS=$(cat "${CHARTS}")" \
 	--build-arg GIT_COMMIT=${COMMIT}
 fi

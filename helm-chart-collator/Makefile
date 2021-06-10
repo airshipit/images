@@ -23,7 +23,7 @@ DOCKER_REGISTRY   ?= quay.io
 IMAGE_PREFIX      ?= airshipit
 IMAGE_TAG         ?= latest
 DISTRO            ?= debian_stable
-CHARTS			  ?= \"$(cat "config/charts.yaml")\"
+CHARTS            ?= config/charts.yaml
 IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}
 SH_TO_CHECK       := $(wildcard files/*.sh )
 PROXY             ?= http://proxy.foo.com:8000
@@ -76,7 +76,7 @@ build_collator:
 ifeq ($(IMAGE_ID), none)
 ifeq ($(USE_PROXY), true)
 	./build-image-make.sh \
-	    config/charts.yaml \
+	        $(CHARTS) \
 		$(IMAGE_NAME) \
 		$(IMAGE) \
 		$(LABEL) \
@@ -86,7 +86,7 @@ ifeq ($(USE_PROXY), true)
 		$(NO_PROXY)
 else
 	./build-image-make.sh \
-	    config/charts.yaml \
+	        $(CHARTS) \
 		$(IMAGE_NAME) \
 		$(IMAGE) \
 		$(LABEL) \
