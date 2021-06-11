@@ -4,10 +4,8 @@ git_repos:
     path: charts/dex-aio
     refspec: refs/heads/master
     sha: 2081013e7209318dbc782df08949e5e9d752dc36
-    chart_version: 1.0.0
   - name: local-static-provisioner
     url: https://review.opendev.org/airship/charts
     path: charts/local-static-provisioner
     refspec: refs/heads/master
     sha: 2081013e7209318dbc782df08949e5e9d752dc36
-    chart_version: 1.0.0
