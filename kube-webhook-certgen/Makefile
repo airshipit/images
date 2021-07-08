@@ -17,8 +17,8 @@ PUSH_IMAGE        ?= false
 IMAGE_NAME        ?= kube-webhook-certgen
 DOCKER_REGISTRY   ?= quay.io
 IMAGE_PREFIX      ?= airshipit
-IMAGE_TAG         := v1.5.2
-IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:${IMAGE_TAG}
+IMAGE_TAGS        := v1.3.0 v1.5.2
+IMAGE             := ${DOCKER_REGISTRY}/${IMAGE_PREFIX}/${IMAGE_NAME}:
 PROXY             ?= http://proxy.foo.com:8000
 NO_PROXY          ?= localhost,127.0.0.1,.svc.cluster.local
 USE_PROXY         ?= false
@@ -29,18 +29,17 @@ check-docker:
 	  exit 2; \
 	fi
 images: check-docker
-ifeq ($(USE_PROXY), true)
-	docker pull jettech/kube-webhook-certgen:amd64-v1.5.2
-	docker tag jettech/kube-webhook-certgen:amd64-v1.5.2 $(IMAGE)
-else
-	docker pull jettech/kube-webhook-certgen:amd64-v1.5.2
-	docker tag jettech/kube-webhook-certgen:amd64-v1.5.2 $(IMAGE)
-endif
-ifeq ($(PUSH_IMAGE), true)
-	docker push $(IMAGE)
-endif
+	for i in $(IMAGE_TAGS); do \
+		docker pull jettech/kube-webhook-certgen:amd64-$$i; \
+		docker tag jettech/kube-webhook-certgen:amd64-$$i $(IMAGE)$$i; \
+		if [ $(PUSH_IMAGE) == "true" ] ; then \
+			docker push $(IMAGE)$$i; \
+		fi \
+	done
 clean:
-	docker rmi $(IMAGE)
+	for i in $(IMAGE_TAGS); do \
+		docker rmi $(IMAGE)$$i; \
+	done
 tests:
 	echo "Dummy Test to Pass gates"
 .PHONY: all check-docker images clean tests
