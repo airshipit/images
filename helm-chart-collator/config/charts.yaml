@@ -13,11 +13,11 @@ helm_repos:
   - repo: elastic
     url: https://helm.elastic.co
     name: elasticsearch
-    version: 7.12.1
+    version: 7.11.2
   - repo: elastic
     url: https://helm.elastic.co
     name: kibana
-    version: 7.12.1
+    version: 7.11.2
   - repo: grafana
     url: https://grafana.github.io/helm-charts
     name: grafana
@@ -25,15 +25,23 @@ helm_repos:
   - repo: prometheus-community
     url: https://prometheus-community.github.io/helm-charts
     name: kube-prometheus-stack
-    version: 16.0.1
+    version: 16.12.1
+  - repo: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+    name: prometheus-elasticsearch-exporter
+    version: 4.4.0
   - repo: banzai-cloud
     url: https://kubernetes-charts.banzaicloud.com
     name: logging-operator
-    version: 3.9.5
+    version: 3.10.0
   - repo: banzai-cloud
     url: https://kubernetes-charts.banzaicloud.com
     name: logging-operator-logging
     version: 3.9.5
+  - repo: banzai-cloud
+    url: https://kubernetes-charts.banzaicloud.com
+    name: thanos-operator
+    version: 0.3.0
   - repo: minio
     url: https://helm.min.io
     name: minio
