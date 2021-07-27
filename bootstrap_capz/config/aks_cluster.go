@@ -47,7 +47,7 @@ const (
 	defaultResourceGroup = "airship2-aks-rg"
 	defaultClusterName   = "capi-azure"
 	defaultVMSize        = "Standard_B2s"
-	defaultK8SVersion    = "1.18.6"
+	defaultK8SVersion    = "1.21.2"
 	defaultKubeconfig    = "kubeconfig"
 )
 

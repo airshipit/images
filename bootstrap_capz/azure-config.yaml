@@ -22,7 +22,7 @@ spec:
     resourceGroup: airship2-zuul-rg
     region: centralus
     cluster:
-        k8sVersion: 1.18.6
+        k8sVersion: 1.21.2
         vmSize: Standard_B2s
         replicas: 1
         kubeconfig: capz.kubeconfig
