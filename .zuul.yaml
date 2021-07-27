@@ -27,11 +27,9 @@
       image_tag: latest
     check:
       jobs:
-        - airship-images-functional
         - airship-images-build
     gate:
       jobs:
-        - airship-images-functional
         - airship-images-build
     post:
       jobs:

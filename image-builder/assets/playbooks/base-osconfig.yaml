@@ -1,5 +1,0 @@
----
-- hosts: build
-  gather_facts: false
-  roles:
-     - osconfig

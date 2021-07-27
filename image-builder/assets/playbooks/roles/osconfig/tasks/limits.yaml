@@ -1,6 +1,0 @@
-- name: "Limits | Defining security limits"
-  template:
-    src: limits.j2
-    dest: "/etc/security/limits.d/99-{{ item.name }}.conf"
-    mode: 0644
-  loop: "{{ limits }}"

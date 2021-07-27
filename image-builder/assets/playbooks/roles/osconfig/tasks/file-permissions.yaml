@@ -1,9 +1,0 @@
-- name: "File Permissions | Modifying file or directory permissions for {{ item.name }}"
-  file:
-    path: "{{ item.name }}"
-    state: file
-    mode: "{{ item.permissions }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-  loop: "{{ file_permissions }}"
-  when: run_context in item.run_contexts

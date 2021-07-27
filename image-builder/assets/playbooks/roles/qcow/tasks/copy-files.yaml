@@ -1,5 +1,0 @@
-# Copy files onto partitioned disk
-- name: "mount-helper | Copy files onto partition"
-  shell: |
-        set -e
-        rsync -ah {{ src }}/ {{ dst }}/ --exclude 'live'

@@ -1,8 +1,0 @@
-- name: "User Management | Modifying user settings for {{ item.name }}"
-  user:
-    name: "{{ item.name }}"
-    password: "{{ item.password }}"
-    password_lock: "{{ item.password_lock }}"
-    shell: "{{ item.shell }}"
-  loop: "{{ user_management  }}"
-  when: run_context in item.run_contexts

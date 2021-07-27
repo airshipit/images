@@ -1,3 +1,0 @@
-# Custom user-defined overrides to the `qcow` playbook can be placed here.
-# Example, Changing disk size:
-#qcow_capacity: 200G

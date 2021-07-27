@@ -1,9 +1,0 @@
-# Settings here will be applied to /boot/grub/grub.cfg when grub is installed
-- name: "Append any user-defined grub cmdline linux default"
-  set_fact:
-    grub_cmdline_linux_default: "{% if grub_cmdline_linux_default_append is defined %}{{ grub.GRUB_CMDLINE_LINUX_DEFAULT + grub_cmdline_linux_default_append }}{% else %}{{ grub.GRUB_CMDLINE_LINUX_DEFAULT }}{% endif %}"
-- name: "Grub | Grub config"
-  template:
-    src: grub.j2
-    dest: "/etc/default/grub"
-    mode: 0644
