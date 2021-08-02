@@ -41,13 +41,6 @@
         - images-upload-git-mirror
 
 - job:
-    name: airship-images-functional
-    nodeset: airship-images-single-node
-    pre-run: playbooks/airship-images-deploy-docker.yaml
-    run: playbooks/airship-images-test.yaml
-    post-run: playbooks/airship-collect-logs.yaml
-
-- job:
     name: airship-images-build
     nodeset: airship-images-single-node
     timeout: 7200
