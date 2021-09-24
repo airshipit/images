@@ -13,7 +13,7 @@
     "resourceGroup":"airship2-zuul-rg",
     "spec":{
         "cluster":{
-            "k8sVersion":"1.18.6",
+            "k8sVersion":"1.21.2",
             "kubeconfig":"capz.kubeconfig",
             "replicas":1,
             "vmSize":"Standard_B2s"
